@@ -1,5 +1,8 @@
 "use client";
 
+import { EmergencyNote } from "@/components/legal/EmergencyNote";
+import { LegalLinks, LinkedText } from "@/components/legal/LegalLinks";
+import { legalUi } from "@/lib/i18n/legal";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
@@ -31,7 +34,7 @@ function FooterGroup({ title, children }: { title: string; children: ReactNode }
 
 /** Closing chapter of the home page: mission, navigation, updates, language. */
 export const Footer = () => {
-    const { dictionary } = useLanguage();
+    const { dictionary, language } = useLanguage();
     const copy = dictionary.homeLanding.footer;
 
     return (
@@ -91,12 +94,23 @@ export const Footer = () => {
                                 <ArrowRight className="transition-transform duration-300 ease-out-soft group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden />
                             </Button>
                         </div>
+                        <p className="mt-3 text-[0.8125rem] leading-5 text-ink-soft">
+                            <LinkedText
+                                template={legalUi[language].subscribeConsent}
+                                links={{ privacy: <Link href={ROUTES.privacy} className="font-semibold text-teal-700 underline underline-offset-4 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">{legalUi[language].privacyPolicy}</Link> }}
+                            />
+                        </p>
                     </motion.div>
                 </div>
 
+                <motion.div variants={fadeUp(0, 8)} className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+                    <LegalLinks />
+                    <EmergencyNote />
+                </motion.div>
+
                 <motion.div
                     variants={fadeUp(0, 8)}
-                    className="mt-16 flex flex-col-reverse items-center gap-5 border-t border-line-strong/70 pt-6 sm:flex-row sm:justify-between"
+                    className="mt-8 flex flex-col-reverse items-center gap-5 border-t border-line-strong/70 pt-6 sm:flex-row sm:justify-between"
                 >
                     <p className="text-[0.875rem] text-ink-soft">
                         © {new Date().getFullYear()} {BRAND.name}. {copy.rights}
