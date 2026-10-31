@@ -26,6 +26,10 @@ export type MiraAssessmentResult = {
   overlapping_with_mood_episodes?: string[];
   other_signals: string[];
   missing_information: string[];
+  /** Display name of each feature key above, in the session language (sent by Mira). */
+  feature_labels?: Record<string, string>;
+  /** Orientation percentage per area, 0-100 (ADHD / BIPOLAR / PSYCHOSIS). */
+  orientation_percentages?: Record<string, number>;
   safety: MiraSafety;
   recommended_test?: string | null;
   requires_clinician_review: boolean;

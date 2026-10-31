@@ -3,8 +3,8 @@ import type { MiraChapter } from "../types";
 /** The four visible chapters of the guided journey, in order. */
 export const CHAPTER_SEQUENCE: MiraChapter[] = ["MORNING", "MIDDAY", "EVENING", "INNER_VOICE"];
 
-/** Mira's default session length (agent DEFAULT_SESSION_QUESTIONS). The visitor may ask for more. */
-export const ESTIMATED_QUESTIONS = 10;
+/** Mira's session length: 16 questions (5 per track + 1 general); the agent reports the live total as `questions_total`. */
+export const ESTIMATED_QUESTIONS = 16;
 
 /**
  * Present the four-chapter journey by mapping global progress (0..1) onto the sequence.
@@ -29,13 +29,20 @@ export function chapterAtTurn(answersBefore: number): MiraChapter {
   return deriveChapter(answersBefore / ESTIMATED_QUESTIONS);
 }
 
-/** Answers given so far and the question currently being asked (1-based, capped at the estimate). */
-export function questionPosition(progress: number) {
-  const answered = Math.max(0, Math.min(ESTIMATED_QUESTIONS, Math.round(progress * ESTIMATED_QUESTIONS)));
+/** What the agent reports: questions resolved and the live total (16, up to 19 with clarifications). */
+export type QuestionCount = { answered: number; total: number };
+
+/**
+ * Answers given so far and the question currently being asked (1-based).
+ * Uses the agent's own count when known; the progress-based estimate only covers a restore without a live session.
+ */
+export function questionPosition(progress: number, questions?: QuestionCount | null) {
+  const total = Math.max(1, questions?.total ?? ESTIMATED_QUESTIONS);
+  const answered = Math.max(0, Math.min(total, questions ? questions.answered : Math.round(progress * total)));
   return {
     answered,
-    current: Math.min(ESTIMATED_QUESTIONS, answered + 1),
-    total: ESTIMATED_QUESTIONS,
-    remaining: Math.max(0, ESTIMATED_QUESTIONS - answered),
+    current: Math.min(total, answered + 1),
+    total,
+    remaining: Math.max(0, total - answered),
   };
 }

@@ -90,7 +90,7 @@ export function SignalList({ data, strongestLabel }: { data: SignalDatum[]; stro
               </span>
               <span className="shrink-0 text-[0.9375rem] font-semibold tabular-nums text-ink" dir="ltr">
                 {item.percent}
-                <span className="text-[0.8125rem] font-normal text-ink-muted">/100</span>
+                <span className="text-[0.8125rem] font-normal text-ink-muted">%</span>
               </span>
             </div>
             <span aria-hidden className="mt-2 block h-1.5 overflow-hidden rounded-full bg-teal-100">

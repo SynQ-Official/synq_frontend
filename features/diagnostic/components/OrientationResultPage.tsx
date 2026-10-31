@@ -7,6 +7,7 @@ import { RefreshCw } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AudioProvider } from "@/contexts/AudioContext";
 import { Button } from "@/components/ui/button";
+import { ensureSession } from "@/lib/api/client";
 import { createChatId } from "../lib/chat";
 import { fingerprintHeaders } from "../lib/fingerprint";
 import { useVisitorName } from "../lib/visitor";
@@ -57,6 +58,9 @@ export function OrientationResultPage() {
     let active = true;
     (async () => {
       try {
+        // After a reload the access token is not in memory yet: restore it first, or the proxy answers 401 and the
+        // finished report reads as "not ready".
+        await ensureSession();
         const res = await fetch(`/api/mira?resource=history&sessionId=${encodeURIComponent(sessionId)}`, {
           cache: "no-store",
           headers: fingerprintHeaders(),

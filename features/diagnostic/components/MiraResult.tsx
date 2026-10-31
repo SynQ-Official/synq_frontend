@@ -122,7 +122,7 @@ function StatusPill({ tone, children }: { tone: "ok" | "info" | "alert"; childre
 }
 
 /** One list of observations inside the shared card; hairlines separate the lists. */
-function ObservationGroup({ title, icon, items, tone = "default" }: { title: string; icon: ReactNode; items: string[]; tone?: "default" | "muted" }) {
+function ObservationGroup({ title, icon, items, labels, tone = "default" }: { title: string; icon: ReactNode; items: string[]; labels?: Record<string, string>; tone?: "default" | "muted" }) {
   if (items.length === 0) return null;
   return (
     <section aria-label={title} className="min-w-0 py-5 first:pt-0 last:pb-0">
@@ -136,7 +136,7 @@ function ObservationGroup({ title, icon, items, tone = "default" }: { title: str
         {items.map((item) => (
           <li key={item} className="flex items-start gap-3 text-[1rem] leading-7 text-ink-soft">
             <span aria-hidden className={cn("mt-3 size-1.5 shrink-0 rounded-full", tone === "muted" ? "bg-rose" : "bg-gold")} />
-            <span className="min-w-0">{readable(item)}</span>
+            <span className="min-w-0">{labels?.[item] ?? readable(item)}</span>
           </li>
         ))}
       </ul>
@@ -167,13 +167,15 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
     raw: score,
   }));
 
+  const labels = result.feature_labels;
+  const name = (key: string) => labels?.[key] ?? readable(key);
   const spokenReport = [
     mira.recommendationTitle,
     pathwayLabel,
     `${mira.matchStrength}: ${result.match_strength}`,
     ...entries.map(([name, score]) => `${name}: ${Math.round(score * 100)}%`),
-    ...(result.supporting_features.length > 0 ? [`${mira.supportingTitle}: ${result.supporting_features.join(". ")}`] : []),
-    ...(result.contradictory_features.length > 0 ? [result.contradictory_features.join(". ")] : []),
+    ...(result.supporting_features.length > 0 ? [`${mira.supportingTitle}: ${result.supporting_features.map(name).join(". ")}`] : []),
+    ...(result.contradictory_features.length > 0 ? [result.contradictory_features.map(name).join(". ")] : []),
     ...(result.recommended_test ? [`${mira.nextStep}: ${result.recommended_test}`] : []),
     result.disclaimer,
   ].join(". ");
@@ -325,12 +327,13 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
         )}
 
         {/* ── 2. The reading: the signals on the left; the next step and what Mira noticed on the right ── */}
-        <div className="grid gap-4 lg:grid-cols-12 lg:gap-5 print:block print:space-y-4">
+        {/* items-start: each column keeps its own height, so the signals card is not stretched into an empty band. */}
+        <div className="grid gap-4 lg:grid-cols-12 lg:items-start lg:gap-5 print:block print:space-y-4">
           {signals.length > 0 && (
             <motion.section {...reveal} aria-labelledby="signals-title" className={cn("surface-card !rounded-panel flex min-w-0 flex-col p-5 sm:p-8", hasSide ? "lg:col-span-7" : "lg:col-span-12")}>
               <SectionTitle id="signals-title" icon={<Activity className="size-5" strokeWidth={1.5} aria-hidden />} title={mira.scoresTitle} hint={mira.scoresHint} />
 
-              <div className="mt-6 grid flex-1 content-center gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:items-center xl:gap-8">
+              <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:items-center xl:gap-8">
                 <div className="min-w-0 rounded-3xl border border-teal-100 bg-[radial-gradient(circle_at_50%_45%,var(--color-teal-50),#ffffff_78%)] p-1 sm:p-4">
                   <SignalRadar data={signals} label={mira.scoresTitle} />
                 </div>
@@ -349,7 +352,6 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
                   className="group relative overflow-hidden rounded-panel border border-teal-100 bg-white p-5 shadow-[var(--shadow-soft)] transition-shadow duration-500 hover:shadow-[var(--shadow-soft-hover)] sm:p-7"
                 >
                   <span aria-hidden className="pointer-events-none absolute inset-y-6 start-0 w-1 rounded-full bg-[linear-gradient(180deg,var(--color-teal-500),var(--color-gold))]" />
-                  <span aria-hidden className="pointer-events-none absolute -end-16 -top-16 size-56 rounded-full bg-[radial-gradient(circle,var(--color-gold-100),transparent_70%)] print:hidden" />
                   <div className="relative flex items-start gap-4 sm:gap-5">
                     <span
                       aria-hidden
@@ -367,10 +369,10 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
 
               {hasObservations && (
                 <motion.div {...reveal} className="min-w-0 divide-y divide-line rounded-panel border border-line bg-white p-5 shadow-[var(--shadow-soft)] sm:p-7 print:shadow-none">
-                  <ObservationGroup title={mira.supportingTitle} icon={<Check className="size-4" aria-hidden />} items={result.supporting_features} />
-                  <ObservationGroup title={mira.contradictoryTitle} icon={<XCircle className="size-4" aria-hidden />} items={result.contradictory_features} tone="muted" />
-                  <ObservationGroup title={mira.overlapTitle} icon={<Info className="size-4" aria-hidden />} items={overlapping} />
-                  <ObservationGroup title={mira.missingTitle} icon={<Info className="size-4" aria-hidden />} items={result.missing_information} />
+                  <ObservationGroup title={mira.supportingTitle} icon={<Check className="size-4" aria-hidden />} items={result.supporting_features} labels={labels} />
+                  <ObservationGroup title={mira.contradictoryTitle} icon={<XCircle className="size-4" aria-hidden />} items={result.contradictory_features} labels={labels} tone="muted" />
+                  <ObservationGroup title={mira.overlapTitle} icon={<Info className="size-4" aria-hidden />} items={overlapping} labels={labels} />
+                  <ObservationGroup title={mira.missingTitle} icon={<Info className="size-4" aria-hidden />} items={result.missing_information} labels={labels} />
                 </motion.div>
               )}
             </div>

@@ -1,17 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { Check, CircleSlash, Copy, Info, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Check, CircleHelp, CircleSlash, Copy, Info, MessageCircleQuestion, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MIRA_MARK_SRC } from "@/components/layout/site-header/AgentAvatar";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LANGS } from "@/lib/i18n/config";
 import { EASE_OUT } from "@/lib/motion";
 import { useSpeech } from "@/hooks/useSpeech";
 import { cn } from "@/lib/utils";
-import { SERIF } from "@/components/home/typography";
+import { LABEL, SERIF } from "@/components/home/typography";
 import { MIRA_STREAM_COPY } from "../lib/stream-copy";
+import { splitQuestion } from "../lib/question";
 import { RichText } from "./RichText";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
 
@@ -37,7 +38,7 @@ interface MiraMessageProps {
 const AVATAR_SIZES = {
   sm: "size-9",
   md: "size-11",
-  lg: "size-12 sm:size-[3.25rem]",
+  lg: "size-10 sm:size-12 lg:size-[3.25rem]",
   xl: "size-14",
 } as const;
 
@@ -139,6 +140,7 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
   }
 
   const speaking = speech === "speaking" || speech === "loading";
+  const split = useMemo(() => splitQuestion(content), [content]);
 
   if (isUser) {
     return (
@@ -154,7 +156,8 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
             {time && <time className="ms-1.5 tabular-nums text-ink-muted">{time}</time>}
           </span>
           <div className="max-w-full rounded-[1.375rem] rounded-se-md bg-[linear-gradient(135deg,var(--color-teal-700),var(--color-teal-900))] px-5 py-3.5 text-white shadow-[0_14px_30px_-16px_rgb(17_76_97/0.7)]">
-            <RichText content={content} className="text-[0.9375rem] leading-7 break-words sm:text-base" />
+            {/* The visitor's own words, line breaks kept; each line takes its own direction (Arabic and English mixed). */}
+            <p className="whitespace-pre-line text-[0.9375rem] leading-7 [overflow-wrap:anywhere] [unicode-bidi:plaintext] sm:text-base">{content}</p>
           </div>
           {notCounted && (
             <span className="inline-flex items-center gap-1.5 px-1 text-[0.75rem] font-medium text-gold-700">
@@ -197,7 +200,26 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
           )}
           {/* Polite live region, busy while the reply is being written: assistive tech reads it once it is complete. */}
           <div aria-live="polite" aria-busy={streaming || undefined}>
-            <RichText content={content} className="text-base leading-7 text-ink-soft break-words sm:text-[1.0625rem] sm:leading-8" />
+            {split.lead && <RichText content={split.lead} className="text-base leading-7 text-ink-soft break-words sm:text-[1.0625rem]" />}
+            {split.question && (split.label ? (
+              // Labelled question: a quiet white block; situations get a gold edge so a scenario reads as one.
+              <section
+                aria-label={split.label}
+                className={cn(
+                  "rounded-2xl border bg-white px-4 py-3.5 shadow-xs sm:px-5 sm:py-4",
+                  split.lead && "mt-4",
+                  split.kind === "situation" ? "border-gold-100 border-s-[3px] border-s-gold-300" : "border-teal-100",
+                )}
+              >
+                <p className={cn(LABEL, "mb-2 flex items-center gap-1.5", split.kind === "situation" ? "text-gold-700" : "text-teal-700")}>
+                  {split.kind === "situation" ? <MessageCircleQuestion className="size-3.5" aria-hidden /> : <CircleHelp className="size-3.5" aria-hidden />}
+                  {split.label}
+                </p>
+                <RichText content={split.question} className="text-base font-medium leading-7 text-ink break-words sm:text-[1.0625rem]" />
+              </section>
+            ) : (
+              <RichText content={split.question} className={cn("text-base font-medium leading-7 text-ink break-words sm:text-[1.0625rem]", split.lead && "mt-3")} />
+            ))}
           </div>
           {streaming && <StreamingDots />}
         </div>

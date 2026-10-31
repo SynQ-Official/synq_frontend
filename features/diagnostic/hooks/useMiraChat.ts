@@ -9,24 +9,32 @@ import { useTurnStream } from "@/hooks/patient/useTurnStream";
 import { classifyTurnFailure, type TurnFailureKind } from "@/lib/patient/turn-errors";
 import { copy, LANGUAGE_STORAGE_KEY, normalizeLanguage, type Lang } from "@/lib/i18n/config";
 import type { MiraAssessmentResult, MiraAttemptState, MiraChapter, MiraMessage, MiraSafety } from "../types";
-import { deriveChapter } from "../lib/chapters";
+import { deriveChapter, type QuestionCount } from "../lib/chapters";
 import { fingerprintHeaders } from "../lib/fingerprint";
+
+/** One selectable answer of a choice question; while options are shown typing is not accepted (backend input_enabled = false). */
+export type MiraOption = { id: string; label: string; emoji: string; text: string };
 
 type StartResponse = {
   session_id: string;
   chapter: MiraChapter;
   assistant_message: string;
+  options?: MiraOption[];
   language: Lang;
   attempt?: MiraAttemptState;
+  questions_answered?: number;
+  questions_total?: number;
 };
 
 type SendResponse = {
   assistant_message: string;
   chapter: MiraChapter;
   chapter_progress: number;
-  /** Questions resolved so far, out of `questions_total` (always 10). An unreadable message does not move it. */
+  /** Questions resolved so far, out of `questions_total` (16, more only when Mira asks a clarification). An unreadable message does not move it. */
   questions_answered?: number;
   questions_total?: number;
+  phase?: "OPEN" | "SITUATIONS" | "CHOICES" | "FINAL" | "DONE";
+  input_enabled?: boolean;
   /** `invalid`: nothing to read (spaces, symbols, repeated or random keys). Not counted; the question stays. */
   input_status?: "ok" | "invalid";
   invalid_reason?: "empty" | "symbols" | "repeated" | "mashing";
@@ -35,6 +43,7 @@ type SendResponse = {
   safety: MiraSafety;
   result?: MiraAssessmentResult | null;
   language: Lang;
+  options?: MiraOption[];
 };
 
 type SessionResponse = {
@@ -47,7 +56,21 @@ type SessionResponse = {
   result: MiraAssessmentResult | null;
   assistant_message: string | null;
   language: Lang;
+  options?: MiraOption[];
+  questions_answered?: number;
+  questions_total?: number;
 };
+
+/** "A)  Often" lines: Mira lists a choice question's answers in its text; here they are the buttons, so not repeated. */
+const OPTION_LINE = /^[ \t]*(?:[A-E]|[أبجد]|هـ)\)[^\n]*\n?/gm;
+const withoutOptionLines = (content: string) => content.replace(OPTION_LINE, "").trimEnd();
+
+/** The agent's own question count, when the response carries it. */
+function countOf(data: { questions_answered?: number; questions_total?: number }): QuestionCount | null {
+  return typeof data.questions_answered === "number" && typeof data.questions_total === "number"
+    ? { answered: data.questions_answered, total: data.questions_total }
+    : null;
+}
 
 type HistoryResponse = {
   session_id: string;
@@ -115,11 +138,13 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
   const [messages, setMessages] = useState<MiraMessage[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
+  const [questions, setQuestions] = useState<QuestionCount | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [safety, setSafety] = useState<MiraSafety>({ level: "routine", flags: [] });
+  const [options, setOptions] = useState<MiraOption[]>([]);
   const [result, setResult] = useState<MiraAssessmentResult | null>(null);
   /** The result just arrived with the tenth answer (not restored from history): worth a proper finishing beat. */
   const [finishedLive, setFinishedLive] = useState(false);
@@ -161,7 +186,7 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
   const pushAssistant = useCallback((content: string, msgChapter?: MiraChapter) => {
     setMessages((prev) => [
       ...prev,
-      { id: uid("mira"), role: "assistant", content, chapter: msgChapter, createdAt: new Date().toISOString() },
+      { id: uid("mira"), role: "assistant", content: withoutOptionLines(content), chapter: msgChapter, createdAt: new Date().toISOString() },
     ]);
   }, []);
 
@@ -212,6 +237,8 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
       if (storageKey) window.localStorage.setItem(storageKey, data.session_id);
       setSessionId(data.session_id);
       setProgress(0);
+      setQuestions(countOf(data));
+      setOptions(data.options ?? []);
       pushAssistant(data.assistant_message, data.chapter);
     } catch (err) {
       startedRef.current = false;
@@ -266,7 +293,7 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
         const restored: MiraMessage[] = history.messages.map((m) => ({
           id: uid("hist"),
           role: m.role,
-          content: m.content,
+          content: m.role === "assistant" ? withoutOptionLines(m.content) : m.content,
           chapter: (m.chapter as MiraChapter) ?? undefined,
           createdAt: m.createdAt,
         }));
@@ -286,9 +313,11 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
         const live = (await liveRes.json()) as SessionResponse & { error?: string };
         if (liveRes.ok) {
           setProgress(live.chapter_progress);
+          setQuestions(countOf(live));
           setSafety(live.safety);
+          setOptions(live.options ?? []);
           if (restored.length === 0 && live.assistant_message && live.assessment_complete === false) {
-            setMessages([{ id: uid("mira-resync"), role: "assistant", content: live.assistant_message, chapter: live.chapter, createdAt: new Date().toISOString() }]);
+            setMessages([{ id: uid("mira-resync"), role: "assistant", content: withoutOptionLines(live.assistant_message), chapter: live.chapter, createdAt: new Date().toISOString() }]);
           }
           if (live.complete && live.result) setResult(live.result);
           setSessionReady(true);
@@ -352,7 +381,7 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
           path: `/mira/session/${encodeURIComponent(sid)}/message/stream`,
           body: { text, language: requestLanguage },
           headers: fingerprintHeaders(),
-          auth: false,
+          // Authenticated: an expired access token is refreshed and retried instead of failing the turn with a 401.
           signal: live.signal,
           onDelta: (delta) => {
             if (!streamed) {
@@ -384,7 +413,9 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
         }
         unanswered.current = null;
         setProgress(data.chapter_progress);
+        setQuestions((prev) => countOf(data) ?? prev);
         setSafety(data.safety);
+        setOptions(data.options ?? []);
         // Nothing to read: Mira kept the question open and did not count it. Say so on both sides of the exchange.
         const unreadable = data.input_status === "invalid";
         // The final body is the source of truth; a streamed reply keeps its key so it never remounts.
@@ -393,7 +424,7 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
           {
             id: uid("mira"),
             role: "assistant",
-            content: data.assistant_message,
+            content: withoutOptionLines(data.assistant_message),
             chapter: data.chapter,
             createdAt: new Date().toISOString(),
             renderKey: streamed ? key : undefined,
@@ -484,7 +515,9 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
     setMessages([]);
     setSessionId(null);
     setProgress(0);
+    setQuestions(null);
     setSafety({ level: "routine", flags: [] });
+    setOptions([]);
     setResult(null);
     setFinishedLive(false);
     setSessionLanguage(null);
@@ -527,6 +560,8 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
     sessionLanguage: sessionLanguage ?? lang,
     chapter,
     progress,
+    /** The agent's count (answered / live total, which grows past 16 with clarifications); null until known. */
+    questions,
     isSending,
     isBotTyping,
     isStarting,
@@ -535,6 +570,8 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
     phase,
     error,
     safety,
+    /** Answers to tap for the current situation; empty when typing is the only way to reply. */
+    options,
     result,
     finishedLive,
     attempt,
