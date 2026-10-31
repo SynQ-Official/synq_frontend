@@ -70,6 +70,8 @@ export const SITEMAP_ROUTES: ReadonlyArray<{ path: string; priority: number; cha
   { path: ROUTES.psy, priority: 0.7, changeFrequency: "monthly" },
   { path: ROUTES.tracks, priority: 0.8, changeFrequency: "monthly" },
   { path: ROUTES.trust, priority: 0.7, changeFrequency: "monthly" },
+  { path: ROUTES.privacy, priority: 0.4, changeFrequency: "monthly" },
+  { path: ROUTES.terms, priority: 0.4, changeFrequency: "monthly" },
   { path: ROUTES.support, priority: 0.6, changeFrequency: "monthly" },
   { path: ROUTES.signUp, priority: 0.5, changeFrequency: "monthly" },
 ];
