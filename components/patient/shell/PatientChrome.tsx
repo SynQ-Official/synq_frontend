@@ -1,72 +1,125 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { LogoSpinner } from "@/components/shared/LogoLoader";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { NotificationBell } from "@/components/patient/shell/NotificationBell";
 import { isActive, navFor, PATIENT_NAV } from "@/components/patient/shell/nav";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { useCalmTrack } from "@/hooks/useCalmTrack";
 import { profileApi } from "@/lib/api/patient";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
-import { SPRING_SOFT } from "@/lib/motion";
+import { EASE_OUT, SPRING_SOFT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-/** Desktop rail: the dark teal navigation. */
+const MotionLink = motion.create(Link);
+
+/**
+ * One rail item. The current page carries the pill, which glides between items as the patient moves
+ * (on the calm tracks it fades in place instead of sliding).
+ */
+function RailLink({ href, active, calm, tour, variants, children }: {
+  href: string;
+  active: boolean;
+  calm: boolean;
+  tour?: string;
+  variants: Variants;
+  children: ReactNode;
+}) {
+  return (
+    <MotionLink variants={variants} href={href} data-tour={tour} aria-current={active ? "page" : undefined} className="lm-nav-link isolate">
+      {active && (
+        <motion.span
+          aria-hidden
+          layoutId={calm ? undefined : "rail-pill"}
+          initial={calm ? { opacity: 0 } : false}
+          animate={{ opacity: 1 }}
+          transition={calm ? { duration: 0.3 } : SPRING_SOFT}
+          className="lm-rail-pill"
+        />
+      )}
+      {children}
+    </MotionLink>
+  );
+}
+
+/** Desktop rail: brand, profile, the screens, then help, settings and a clearly separate sign-out. */
 export function PatientRail() {
   const pathname = usePathname();
   const copy = usePatientCopy();
+  const { direction } = useLanguage();
   const { signOut, profile } = usePatient();
+  const calm = useCalmTrack();
   const [signingOut, setSigningOut] = useState(false);
   const main = navFor(profile.track).filter((item) => item.key !== "settings");
   const settings = PATIENT_NAV.find((item) => item.key === "settings")!;
 
+  // Items arrive one after another from the rail's edge (a plain fade on the calm tracks; still under reduced motion).
+  const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.045, delayChildren: 0.12 } } };
+  const item: Variants = calm
+    ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } }
+    : { hidden: { opacity: 0, x: direction === "rtl" ? 12 : -12 }, show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE_OUT } } };
+
   return (
-    <aside className="lm-rail sticky top-4 m-4 me-0 hidden h-[calc(100dvh-2rem)] w-64 shrink-0 self-start lg:flex lg:flex-col">
-      <div className="px-5 pb-3 pt-6">
+    <motion.aside
+      initial="hidden"
+      animate="show"
+      variants={list}
+      className="lm-rail sticky top-4 m-4 me-0 hidden h-[calc(100dvh-2rem)] w-64 shrink-0 self-start lg:flex lg:flex-col"
+    >
+      <motion.div variants={item} className="px-5 pb-3 pt-6">
         <span className="inline-flex rounded-2xl bg-white/90 px-3 py-1.5 shadow-sm">
           <BrandLogo size="sm" href={null} />
         </span>
-      </div>
+      </motion.div>
 
-      <RailProfile />
+      <motion.div variants={item}>
+        <RailProfile />
+      </motion.div>
 
-      <nav aria-label={copy.shell.navLabel} className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      <motion.nav variants={list} aria-label={copy.shell.navLabel} className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {main.map(({ key, href, icon: Icon }) => (
-          <Link key={key} href={href} data-tour={`nav-${key}`} aria-current={isActive(pathname, href) ? "page" : undefined} className="lm-nav-link">
+          <RailLink key={key} href={href} active={isActive(pathname, href)} calm={calm} tour={`nav-${key}`} variants={item}>
             <Icon className="size-[1.125rem] shrink-0" aria-hidden />
             {copy.shell.nav[key]}
-          </Link>
+          </RailLink>
         ))}
-      </nav>
+      </motion.nav>
 
-      <div className="space-y-3 px-3 pb-4">
-        <div className="space-y-1 border-t border-white/10 pt-3">
+      <motion.div variants={list} className="space-y-1 border-t border-white/10 px-3 pb-4 pt-3">
+        <motion.div variants={item}>
           <TourReplayButton className="lm-nav-link w-full" />
-          <Link href={settings.href} aria-current={isActive(pathname, settings.href) ? "page" : undefined} className="lm-nav-link">
-            <settings.icon className="size-[1.125rem] shrink-0" aria-hidden />
-            {copy.shell.nav.settings}
-          </Link>
+        </motion.div>
+        <RailLink href={settings.href} active={isActive(pathname, settings.href)} calm={calm} variants={item}>
+          <settings.icon className="size-[1.125rem] shrink-0" aria-hidden />
+          {copy.shell.nav.settings}
+        </RailLink>
+        <motion.div variants={item} className="pt-2">
           <button
             type="button"
             disabled={signingOut}
+            aria-busy={signingOut}
             onClick={() => {
               setSigningOut(true);
               void signOut();
             }}
-            className="lm-nav-link w-full disabled:opacity-60"
+            className="lm-signout group"
           >
-            <LogOut className="size-[1.125rem] shrink-0 rtl:-scale-x-100" aria-hidden />
-            {copy.shell.signOut}
+            <span aria-hidden className="lm-signout-icon">
+              {signingOut ? <LogoSpinner size={16} /> : <LogOut className="size-4 rtl:-scale-x-100" />}
+            </span>
+            <span className="min-w-0 flex-1 truncate text-start">{signingOut ? copy.shell.signingOut : copy.shell.signOut}</span>
           </button>
-        </div>
-      </div>
-    </aside>
+        </motion.div>
+      </motion.div>
+    </motion.aside>
   );
 }
 

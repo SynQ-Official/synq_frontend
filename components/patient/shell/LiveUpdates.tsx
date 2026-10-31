@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarCheck, CloudOff, Wifi, X } from "lucide-react";
+import { AlarmClock, CalendarCheck, CloudOff, Wifi, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useReminderPrefs } from "@/hooks/patient/useNotifications";
 import { useEventStream, type JobProgressData, type LiveEvent, type ReportReadyData } from "@/hooks/useEventStream";
 import { invalidatePatientData } from "@/hooks/usePatientResource";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
@@ -25,7 +27,14 @@ export function LiveUpdates() {
   const copy = usePatientCopy();
   const live = copy.live;
   const [notice, setNotice] = useState<{ id: number; weekStart: string } | null>(null);
+  const [reminder, setReminder] = useState<{ id: number; title: string; body: string; href: string } | null>(null);
   const seen = useRef(new Set<number>());
+  const router = useRouter();
+  const prefs = useReminderPrefs();
+  const browserAlerts = useRef(false);
+  useEffect(() => {
+    browserAlerts.current = prefs.browser;
+  }, [prefs.browser]);
 
   const onEvent = useCallback((event: LiveEvent) => {
     if (typeof event.id === "number") {
@@ -40,6 +49,22 @@ export function LiveUpdates() {
       invalidatePatientData("reports");
       // `weekStart` arrives as a full timestamp; the reports are keyed by day.
       setNotice({ id: event.id, weekStart: String(report.weekStart).slice(0, 10) });
+    } else if (event.type === "notification") {
+      const note = event.data as { notificationType?: string; title?: string; body?: string; href?: string };
+      if (note.notificationType !== "CHECKIN_REMINDER" || !note.title) return;
+      // Only ever a link inside the patient app.
+      const href = note.href?.startsWith("/dashboard/") ? note.href : "/dashboard/check-in";
+      setReminder({ id: event.id, title: note.title, body: note.body ?? "", href });
+      invalidatePatientData("checkins:schedule");
+      // The device's own choice: a system notification too, when the tab is not in view.
+      if (browserAlerts.current && typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && document.visibilityState !== "visible") {
+        const system = new Notification(note.title, { body: note.body, icon: "/logo.png", tag: `vitamind-checkin-${event.id}` });
+        system.onclick = () => {
+          window.focus();
+          router.push(href);
+          system.close();
+        };
+      }
     } else if (event.type === "job.progress") {
       const job = event.data as JobProgressData;
       recordJob(job);
@@ -47,11 +72,17 @@ export function LiveUpdates() {
         invalidatePatientData("journal");
       }
     }
-  }, []);
+  }, [router]);
 
   const { state } = useEventStream({ enabled: true, onEvent });
 
   useEffect(() => clearJobs, []);
+
+  useEffect(() => {
+    if (!reminder) return;
+    const timer = window.setTimeout(() => setReminder(null), NOTICE_MS * 2);
+    return () => window.clearTimeout(timer);
+  }, [reminder]);
 
   useEffect(() => {
     if (!notice) return;
@@ -89,6 +120,42 @@ export function LiveUpdates() {
     <>
       <div className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex flex-col items-center gap-2 px-4 lg:bottom-6">
         <AnimatePresence>
+          {reminder && (
+            <motion.div
+              key="reminder"
+              role="status"
+              aria-live="polite"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.4, ease: EASE_OUT }}
+              className="lm-glass pointer-events-auto flex w-full max-w-md items-start gap-3 rounded-2xl border border-teal-100 px-4 py-3.5 shadow-lg"
+            >
+              <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700" aria-hidden>
+                <AlarmClock className="size-[1.125rem]" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-ink">{reminder.title}</p>
+                <p className="mt-0.5 text-sm text-ink-muted">{reminder.body}</p>
+                <Link
+                  href={reminder.href}
+                  onClick={() => setReminder(null)}
+                  className="mt-2 inline-flex min-h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+                >
+                  {copy.checkinSchedule.openCheckin}
+                </Link>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReminder(null)}
+                aria-label={copy.checkinSchedule.dismiss}
+                className="-m-1.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-teal-50 hover:text-ink focus-visible:outline-2 focus-visible:outline-teal-500"
+              >
+                <X className="size-4" aria-hidden />
+              </button>
+            </motion.div>
+          )}
+
           {notice && (
             <motion.div
               key="report"

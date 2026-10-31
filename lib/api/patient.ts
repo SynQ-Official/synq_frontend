@@ -94,6 +94,20 @@ export const checkinsApi = {
   setGoal: (goalId: string, status: GoalStatus) => api.patch<{ data: CheckinGoal }>(`/me/checkins/goals/${id(goalId)}`, { status }),
   weeklyReport: (weekStart: LocalDay) => api.get<{ data: DailyReport }>("/me/checkins/reports/weekly", { weekStart }),
   monthlyReport: (year: number, month: number) => api.get<{ data: DailyReport }>("/me/checkins/reports/monthly", { year, month }),
+  /** The patient's check-in time and reminder choices (null until set), with today's status in their own zone. */
+  schedule: () => api.get<{ data: CheckinSchedule | null }>("/me/checkins/schedule"),
+  /** Set or change it: one schedule per patient; reminders are sent by the server. */
+  setSchedule: (input: CheckinScheduleInput) => api.put<{ data: CheckinSchedule }>("/me/checkins/schedule", input),
+};
+
+export type CheckinScheduleInput = { time: string; timezone: string; remindersEnabled?: boolean; emailReminders?: boolean };
+export type CheckinSchedule = {
+  time: string;
+  timezone: string;
+  remindersEnabled: boolean;
+  emailReminders: boolean;
+  updatedAt: string;
+  today: { localDate: string; dueAt: string; overdueAt: string; completed: boolean };
 };
 
 export const journalApi = {

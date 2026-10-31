@@ -1,21 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useReports } from "@/hooks/patient/useReports";
-import { useTodayCheckin } from "@/hooks/patient/useCheckin";
+import { useCheckinSchedule, useTodayCheckin } from "@/hooks/patient/useCheckin";
 import { fill } from "@/lib/i18n/patient";
 import { formatRange, localDay } from "@/lib/patient/format";
 import {
-  markReminderFired,
-  minutesOf,
   parseReminderPrefs,
   readNotificationIds,
   readNotificationSnapshot,
   readReminderSnapshot,
-  reminderAlreadyFired,
   saveNotificationIds,
   subscribeReminders,
 } from "@/lib/patient/reminders";
@@ -40,14 +36,13 @@ export function useReminderPrefs() {
  * The patient's notification center, derived from what is true right now:
  *  - "time for your daily check-in" while today's check-in is missing;
  *  - "your weekly report is ready" for the latest finished week they have not opened.
- * Read state lives on the device. When the browser permission is granted, the same
- * reminder also fires as a system notification at the chosen time (while the app is open).
+ * Read state lives on the device. The reminders themselves are sent by the server at the patient's
+ * time (see CheckinReminderService); an open app also shows them live (LiveUpdates).
  */
 export function useNotifications() {
   const copy = usePatientCopy();
   const { language } = useLanguage();
-  const router = useRouter();
-  const prefs = useReminderPrefs();
+  const schedule = useCheckinSchedule();
   const today = useTodayCheckin();
   const reports = useReports(2);
   // The read-state snapshot re-renders us whenever it changes on this or another tab.
@@ -87,34 +82,8 @@ export function useNotifications() {
     saveNotificationIds(ids);
   }, [items]);
 
-  // System notification at the reminder time, at most once a day, only while a check-in is due.
-  const dueToday = today.data === null && !today.isLoading;
-  useEffect(() => {
-    if (!prefs.enabled || !prefs.browser || !dueToday) return;
-    if (typeof window === "undefined" || !("Notification" in window) || Notification.permission !== "granted") return;
-
-    const tick = () => {
-      const now = new Date();
-      const day = localDay(now);
-      if (reminderAlreadyFired(day)) return;
-      if (now.getHours() * 60 + now.getMinutes() < minutesOf(prefs.time)) return;
-      markReminderFired(day);
-      const notification = new Notification(copy.shell.notifications.checkinTitle, {
-        body: copy.shell.notifications.checkinBody,
-        icon: "/logo.png",
-        tag: `vitamind-checkin-${day}`,
-      });
-      notification.onclick = () => {
-        window.focus();
-        router.push("/dashboard/check-in");
-        notification.close();
-      };
-    };
-    tick();
-    const timer = window.setInterval(tick, 60_000);
-    return () => window.clearInterval(timer);
-  }, [prefs.enabled, prefs.browser, prefs.time, dueToday, copy, router]);
-
-  const visible = prefs.enabled ? items : items.filter((item) => item.kind !== "checkin");
+  // The check-in item follows the reminder choice saved on the server (shown until a schedule says otherwise).
+  const remindersOn = schedule.data?.remindersEnabled ?? true;
+  const visible = remindersOn ? items : items.filter((item) => item.kind !== "checkin");
   return { items: visible, unreadCount: visible.filter((item) => !item.read).length, markRead, markAllRead };
 }
