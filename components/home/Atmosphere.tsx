@@ -2,6 +2,7 @@
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
+import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /** Fine film grain: a tiled noise tile, tinted white on deep surfaces and ink on light ones. */
@@ -83,4 +84,49 @@ export function WaveLines({ tone = "light", className }: { tone?: "light" | "dee
       </svg>
     </div>
   );
+}
+
+/** Motes of light rising through the landscape: [left %, size px, seconds, delay, gold?]. */
+const MOTES = [
+    [8, 4, 13, 0, true], [16, 3, 16, 3, false], [24, 5, 12, 6, true], [33, 3, 18, 1, false],
+    [41, 4, 14, 8, true], [52, 3, 17, 4, false], [60, 5, 12, 9, true], [69, 3, 15, 2, false],
+    [77, 4, 13, 7, true], [85, 3, 19, 5, false], [92, 5, 14, 10, true],
+] as const;
+
+export function Motes({ className }: { className?: string } = {}) {
+    const reduce = useReducedMotion();
+    if (reduce) return null;
+    return (
+        <div aria-hidden className={cn("pointer-events-none absolute inset-x-0 bottom-0 top-1/3 -z-10 overflow-hidden", className)}>
+            {MOTES.map(([left, size, seconds, delay, gold], index) => (
+                <motion.span
+                    key={left}
+                    className={cn("absolute bottom-0 rounded-full", index % 2 === 1 && "max-sm:hidden", gold ? "bg-gold shadow-[0_0_14px_3px_rgb(201_175_111/0.45)]" : "bg-teal-300 shadow-[0_0_12px_3px_rgb(134_186_188/0.45)]")}
+                    style={{ left: `${left}%`, width: size, height: size }}
+                    initial={{ y: 0, opacity: 0 }}
+                    animate={{ y: [0, -420], opacity: [0, 0.9, 0] }}
+                    transition={{ duration: seconds, delay, repeat: Infinity, ease: "easeOut" }}
+                />
+            ))}
+        </div>
+    );
+}
+
+/** A single brush stroke drawn under the accent phrase once the headline has landed. */
+export function Swash({ delay = 2.1 }: { delay?: number }) {
+    return (
+        <svg aria-hidden viewBox="0 0 400 16" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 -bottom-[0.14em] h-[0.16em] w-full overflow-visible text-gold">
+            <motion.path
+                d="M2 10 C 70 2, 150 15, 230 7 S 350 11, 398 4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 0.9 }}
+                transition={{ duration: 1.4, delay, ease: EASE_OUT }}
+            />
+        </svg>
+    );
 }

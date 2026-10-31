@@ -5,7 +5,8 @@ import { authApi } from "@/lib/api/auth";
 import { ApiError, api } from "@/lib/api/client";
 import { useSessionState } from "@/hooks/useSessionState";
 import { clearTokens, hasValidSession } from "@/lib/api/tokens";
-import { AuthLoading } from "@/components/auth/AuthLayout";
+import { AUTH_CARD, AUTH_TITLE, AuthLoading } from "@/components/auth/AuthLayout";
+import { ACCENT_LIGHT } from "@/components/home/typography";
 import { PasswordChecklist, passwordMeetsPolicy } from "@/components/auth/PasswordChecklist";
 import { setUser } from "@/lib/storage/storage";
 import { Button } from "@/components/ui/button";
@@ -229,21 +230,21 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: DURATION.slow, ease: EASE_OUT, delay: 0.1 }}
-      className="relative w-full rounded-2xl border border-line-strong/70 bg-white p-6 shadow-[var(--shadow-soft)] sm:p-9 lg:p-10"
+      className={AUTH_CARD}
     >
-      <span aria-hidden className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-teal-400 to-transparent" />
+      <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
       {/* ── HEADING ──────────────────────────────────────────────────── */}
       <header>
-        <p className="inline-flex items-center gap-2 rounded-full border border-line-strong/70 bg-surface-muted px-3 py-1.5 text-[0.8125rem] font-medium text-ink-soft">
+        <p className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-1.5 text-[0.8125rem] font-medium text-ink-soft shadow-sm">
           <ShieldCheck className="size-3.5 text-teal-600" aria-hidden />
           {auth.badge}
         </p>
         <h1
           id="auth-title"
-          className="mt-6 text-[clamp(1.875rem,1.2vw+1.5rem,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] text-ink rtl:tracking-normal"
+          className={cn(AUTH_TITLE, "mt-6")}
         >
           {isSignUp ? auth.titleSignUpA : auth.titleSignInA}{" "}
-          <span className="text-ink-muted">{isSignUp ? auth.titleSignUpB : auth.titleSignInB}</span>
+          <span className={ACCENT_LIGHT}>{isSignUp ? auth.titleSignUpB : auth.titleSignInB}</span>
         </h1>
         <p className="mt-3 text-[1rem] leading-7 text-ink-soft">
           {isSignUp ? auth.subtitleSignUp : auth.subtitleWelcome}
@@ -485,7 +486,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
             size="lg"
             disabled={isPending}
             aria-busy={isPending}
-            className="group min-h-14 bg-ink shadow-[0_18px_36px_-16px_rgb(17_76_97/0.75)] hover:bg-teal-700 hover:shadow-[0_18px_36px_-16px_rgb(17_76_97/0.7)]"
+            className="group min-h-14 hover:shadow-[0_18px_36px_-14px_rgb(17_76_97/0.65)]"
           >
             {isPending ? (
               <>

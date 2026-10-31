@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2, Eye, EyeOff, Lock, Mail, MailCheck, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { AUTH_CARD, AUTH_TITLE } from "@/components/auth/AuthLayout";
 import { PasswordChecklist, passwordMeetsPolicy } from "@/components/auth/PasswordChecklist";
 import { FormField, IconInput } from "@/components/shared/FormField";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
@@ -12,6 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { passwordResetApi, resetFailure } from "@/lib/api/password-reset";
 import { ROUTES } from "@/lib/config/routes";
 import { DURATION, EASE_OUT } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import { PASSWORD_MAX_BYTES, passwordResetCopy } from "@/lib/i18n/passwordReset";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,11 +26,12 @@ function Card({ icon, title, children }: { icon?: ReactNode; title: string; chil
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: DURATION.base, ease: EASE_OUT }}
-      className="flex flex-col gap-6"
+      className={cn(AUTH_CARD, "flex flex-col gap-6")}
     >
+      <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
       <header className="flex flex-col gap-3">
         {icon}
-        <h1 className="text-balance text-[clamp(1.875rem,1.2vw+1.5rem,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] text-ink rtl:tracking-normal">{title}</h1>
+        <h1 className={cn(AUTH_TITLE, "text-balance")}>{title}</h1>
       </header>
       {children}
     </motion.section>
@@ -177,7 +180,7 @@ export function ForgotPasswordScreen() {
               size="lg"
               disabled={pending}
               aria-busy={pending}
-              className="group min-h-14 bg-ink shadow-[0_18px_36px_-16px_rgb(17_76_97/0.75)] hover:bg-teal-700"
+              className="group min-h-14 hover:shadow-[0_18px_36px_-14px_rgb(17_76_97/0.65)]"
             >
               <SubmitLabel pending={pending} label={copy.submit} busy={dictionary.auth.processing} />
             </Button>
@@ -256,7 +259,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
         <p role="status" className="text-[1.0625rem] leading-7 text-ink-soft">
           {copy.doneBody}
         </p>
-        <Button asChild variant="auth" size="lg" className="min-h-14 bg-ink hover:bg-teal-700">
+        <Button asChild variant="auth" size="lg" className="min-h-14">
           <Link href={ROUTES.signIn}>{copy.goToSignIn}</Link>
         </Button>
       </Card>
@@ -276,7 +279,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
         <p role="alert" className="text-[1.0625rem] leading-7 text-ink-soft">
           {copy.invalidBody}
         </p>
-        <Button asChild variant="auth" size="lg" className="min-h-14 bg-ink hover:bg-teal-700">
+        <Button asChild variant="auth" size="lg" className="min-h-14">
           <Link href={ROUTES.forgotPassword}>{copy.requestNew}</Link>
         </Button>
         <Link href={ROUTES.signIn} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
@@ -330,7 +333,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
           size="lg"
           disabled={pending}
           aria-busy={pending}
-          className="group min-h-14 bg-ink shadow-[0_18px_36px_-16px_rgb(17_76_97/0.75)] hover:bg-teal-700"
+          className="group min-h-14 hover:shadow-[0_18px_36px_-14px_rgb(17_76_97/0.65)]"
         >
           <SubmitLabel pending={pending} label={copy.submit} busy={auth.processing} />
         </Button>

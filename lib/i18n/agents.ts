@@ -176,7 +176,7 @@ const en: AgentPagesCopy = {
       secondary: "See how it works",
     },
     stats: [
-      ["~10", "minutes"],
+      ["~2", "minutes"],
       ["3", "screening areas"],
       ["1", "per account"],
     ],
@@ -185,7 +185,7 @@ const en: AgentPagesCopy = {
       titleA: "Careful,",
       titleB: "and human-first.",
       items: [
-        ["Gentle intake", "About ten questions, four short chapters.", "Intake"],
+        ["Gentle intake", "Five everyday situations, about two minutes.", "Intake"],
         ["Established screening tools", "ASRS · MDQ · PQ-B, asked in a natural conversation.", "Screening"],
         ["Structured triage", "Signals become a match level and a next step.", "Triage"],
         ["Risk detection", "A safety check runs the whole time.", "Safety"],
@@ -218,7 +218,7 @@ const en: AgentPagesCopy = {
     handoff: { eyebrow: "After Mira", title: "Meet Lumina.", body: "Your daily space: check-in, journal, baseline.", cta: "Discover Lumina" },
     cta: {
       eyebrow: "Begin when you are ready",
-      titleA: "Ten minutes.",
+      titleA: "Two minutes.",
       titleB: "One clear picture.",
       body: "Create your account and give your consent: the orientation opens right away.",
       primary: "Start with Mira",
@@ -304,7 +304,7 @@ const en: AgentPagesCopy = {
       doesNot: ["Diagnose or label", "Score you against others", "Replace your clinician", "Share your journal"],
       note: "Lumina is not an emergency service. If you are in danger, contact local emergency services right away.",
     },
-    handoff: { eyebrow: "Before Lumina", title: "Start with Mira.", body: "A private orientation in about ten minutes, done once with your account.", cta: "Meet Mira" },
+    handoff: { eyebrow: "Before Lumina", title: "Start with Mira.", body: "A private orientation in about two minutes, done once with your account.", cta: "Meet Mira" },
     cta: {
       eyebrow: "Make the days count",
       titleA: "Your next month,",
@@ -581,7 +581,7 @@ const ar: AgentPagesCopy = {
       secondary: "اكتشف كيف تعمل",
     },
     stats: [
-      ["~10", "دقائق"],
+      ["~2", "دقائق"],
       ["3", "مجالات فحص"],
       ["1", "لكل حساب"],
     ],
@@ -590,7 +590,7 @@ const ar: AgentPagesCopy = {
       titleA: "حذرة،",
       titleB: "والإنسان أولاً.",
       items: [
-        ["استقبال هادئ", "نحو عشرة أسئلة في أربعة فصول قصيرة.", "استقبال"],
+        ["استقبال هادئ", "خمسة مواقف يومية في نحو دقيقتين.", "استقبال"],
         ["أدوات فحص معروفة", "ASRS · MDQ · PQ-B، تُطرح ضمن محادثة طبيعية.", "فحص"],
         ["فرز منظَّم", "تتحول الإشارات إلى مستوى تطابق وخطوة تالية.", "فرز"],
         ["رصد المخاطر", "فحص أمان يعمل طوال الوقت.", "أمان"],
@@ -623,7 +623,7 @@ const ar: AgentPagesCopy = {
     handoff: { eyebrow: "بعد ميرا", title: "تعرّف على لومينا.", body: "مساحتك اليومية: فحص ومفكرة وخط مرجعي.", cta: "اكتشف لومينا" },
     cta: {
       eyebrow: "ابدأ حين تكون مستعداً",
-      titleA: "عشر دقائق.",
+      titleA: "دقيقتان.",
       titleB: "صورة واحدة واضحة.",
       body: "أنشئ حسابك وامنح موافقتك: يُفتح التوجيه فوراً.",
       primary: "ابدأ مع ميرا",
@@ -709,7 +709,7 @@ const ar: AgentPagesCopy = {
       doesNot: ["لا تشخّص ولا تصنّف", "لا تقيّمك مقارنةً بغيرك", "لا تحلّ محل مختصك", "لا تشارك مفكرتك"],
       note: "لومينا ليست خدمة طوارئ. إن كنت في خطر، تواصل فوراً مع خدمات الطوارئ المحلية.",
     },
-    handoff: { eyebrow: "قبل لومينا", title: "ابدأ مع ميرا.", body: "توجيه خاص في نحو عشر دقائق، يُجرى مرة واحدة مع حسابك.", cta: "تعرّف على ميرا" },
+    handoff: { eyebrow: "قبل لومينا", title: "ابدأ مع ميرا.", body: "توجيه خاص في نحو دقيقتين، يُجرى مرة واحدة مع حسابك.", cta: "تعرّف على ميرا" },
     cta: {
       eyebrow: "اجعل أيامك محسوبة",
       titleA: "شهرك القادم،",

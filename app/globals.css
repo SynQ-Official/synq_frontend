@@ -2397,6 +2397,94 @@ html[data-track="PSYCHOSIS"] .lm-canvas[data-surface="clean"]::after {
   opacity: 0.55;
 }
 
+/* Rail: the current item's pill is its own element (.lm-rail-pill) so it can glide between items. */
+.lm-rail .lm-nav-link[aria-current="page"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+.lm-rail .lm-nav-link[aria-current="page"]::before {
+  opacity: 0;
+}
+
+.lm-rail-pill {
+  background: #fff;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 1px rgb(70 120 120 / 0.08),
+    0 8px 20px -10px color-mix(in srgb, var(--acc) 55%, transparent),
+    0 2px 6px -2px rgb(36 107 112 / 0.1);
+  inset: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.lm-rail-pill::before {
+  background: #347b7e;
+  border-radius: 9999px;
+  content: "";
+  inset-block: 0.75rem;
+  inset-inline-start: 0.375rem;
+  position: absolute;
+  width: 2px;
+}
+
+/* A small lift of the icon on hover: felt, not seen. */
+@media (prefers-reduced-motion: no-preference) {
+  .lm-rail .lm-nav-link svg {
+    transition: color 300ms ease, transform 300ms var(--ease-out-soft);
+  }
+
+  .lm-rail .lm-nav-link:hover svg {
+    transform: scale(1.1);
+  }
+}
+
+/* Sign out: set apart from navigation, with a quiet rose tint so it is never mistaken for a screen. */
+.lm-signout {
+  align-items: center;
+  border: 1px solid rgb(70 120 120 / 0.14);
+  border-radius: var(--radius-control);
+  color: #15302f;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 500;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.625rem;
+  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+  width: 100%;
+}
+
+.lm-signout-icon {
+  align-items: center;
+  background: #fdf2f3;
+  border-radius: 0.625rem;
+  color: #b4404f;
+  display: flex;
+  flex-shrink: 0;
+  height: 2rem;
+  justify-content: center;
+  transition: background-color 250ms ease;
+  width: 2rem;
+}
+
+.lm-signout:hover:not(:disabled) {
+  background: #fdf6f7;
+  border-color: #f2cdd2;
+  color: #9b2f3d;
+}
+
+.lm-signout:hover:not(:disabled) .lm-signout-icon {
+  background: #fbe3e6;
+}
+
+.lm-signout:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
 /* One clear teal focus ring across the shell. */
 :is(.lm-rail, .lm-topbar, .lm-tabbar) :focus-visible {
   outline: 2px solid #347b7e;

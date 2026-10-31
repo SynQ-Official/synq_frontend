@@ -33,13 +33,14 @@ function alreadyPlayed() {
   }
 }
 
-function Stat({ value, label, loading }: { value: number; label: string; loading: boolean }) {
+/** `value` is null when the history could not load: a dash, never a discouraging 0. */
+function Stat({ value, label, loading }: { value: number | null; label: string; loading: boolean }) {
   return (
     <div className="min-w-0">
       {loading ? (
         <Skeleton className="h-8 w-12" />
       ) : (
-        <CountUp value={String(value)} className={cn(SERIF, "block text-[clamp(1.75rem,1.2rem+1.4vw,2.5rem)] font-light leading-none tabular-nums text-ink")} />
+        <CountUp value={value === null ? "—" : String(value)} className={cn(SERIF, "block text-[clamp(1.75rem,1.2rem+1.4vw,2.5rem)] font-light leading-none tabular-nums text-ink")} />
       )}
       <p className="mt-1.5 text-[0.8125rem] font-medium leading-snug text-ink">{label}</p>
     </div>
@@ -165,8 +166,8 @@ export function DayWelcome() {
       </div>
 
       <motion.div {...enter(0.45)} className="relative grid grid-cols-3 gap-4 bg-white/45 px-6 py-5 sm:px-8 lg:px-10">
-        <Stat value={history.data?.length ?? 0} label={w.stats.checkins} loading={history.isLoading} />
-        <Stat value={history.streak} label={w.stats.streak} loading={history.isLoading} />
+        <Stat value={history.error ? null : history.data?.length ?? 0} label={w.stats.checkins} loading={history.isLoading} />
+        <Stat value={history.error ? null : history.streak} label={w.stats.streak} loading={history.isLoading} />
         <Stat value={together} label={w.stats.together} loading={false} />
       </motion.div>
     </section>

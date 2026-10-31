@@ -33,11 +33,12 @@ export function Skeleton({ className, style }: { className?: string; style?: CSS
   return <div aria-hidden className={cn("lm-skeleton", className)} style={style} />;
 }
 
-export function SectionTitle({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+/** `id` lets the card point `aria-labelledby` at this heading. */
+export function SectionTitle({ id, title, subtitle, action }: { id?: string; title: string; subtitle?: string; action?: ReactNode }) {
   return (
     <div className="mb-5 flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <h2 className={cn(SERIF, "text-[1.1875rem] font-normal leading-snug tracking-[-0.01em] text-ink sm:text-xl rtl:font-semibold")}>{title}</h2>
+        <h2 id={id} className={cn(SERIF, "text-[1.1875rem] font-normal leading-snug tracking-[-0.01em] text-ink sm:text-xl rtl:font-semibold")}>{title}</h2>
         {subtitle && <p className="mt-0.5 text-[0.8125rem] leading-snug text-muted-foreground">{subtitle}</p>}
       </div>
       {action}
