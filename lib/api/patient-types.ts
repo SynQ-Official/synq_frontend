@@ -293,3 +293,48 @@ export type SparkView = {
   /** How many tasks the last piece of text became. */
   added: number;
 };
+
+/** Comfort sounds (`/me/ambiences`): the sounds this patient may see, with their settings. */
+export type AmbienceCategory = "NOISE" | "LOFI" | "SOFT_MUSIC" | "NATURE";
+
+export type AmbienceSound = {
+  id: string;
+  category: AmbienceCategory;
+  label: { en: string; ar: string };
+  /** Path in the media bucket without extension; the player adds ".opus" / ".m4a". */
+  url: string;
+  licence: string;
+  author: string;
+  source: string;
+  isDefault: boolean;
+};
+
+export type AmbiencePreferences = {
+  enabled: boolean;
+  /** Always one of `sounds` (the default when the patient has not chosen), or null when there is none. */
+  favoriteSoundId: string | null;
+  /** Percent, 0 to 70. */
+  volume: number;
+  /** Regular bedtime "HH:MM" in `timezone`. */
+  eveningTime: string | null;
+  timezone: string | null;
+};
+
+export type Ambiences = {
+  track: PatientTrack;
+  /** False when there is nothing to offer: no track, or the psychosis track before the clinician has switched it on. */
+  available: boolean;
+  preferences: AmbiencePreferences;
+  sounds: AmbienceSound[];
+  /** For the help button, always one tap away while a sound plays. */
+  emergencyResources: string[];
+};
+
+export type AmbiencePreferencesInput = {
+  enabled?: boolean;
+  favoriteSoundId?: string | null;
+  volume?: number;
+  /** null clears the bedtime and its time zone. */
+  eveningTime?: string | null;
+  timezone?: string;
+};

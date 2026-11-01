@@ -12,6 +12,7 @@ import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { NotificationBell } from "@/components/patient/shell/NotificationBell";
 import { isActive, navFor, PATIENT_NAV } from "@/components/patient/shell/nav";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAmbiences } from "@/hooks/patient/useAmbiences";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { useCalmTrack } from "@/hooks/useCalmTrack";
 import { profileApi } from "@/lib/api/patient";
@@ -58,7 +59,8 @@ export function PatientRail() {
   const { signOut, profile } = usePatient();
   const calm = useCalmTrack();
   const [signingOut, setSigningOut] = useState(false);
-  const main = navFor(profile.track).filter((item) => item.key !== "settings");
+  const { available: hasAmbiences } = useAmbiences();
+  const main = navFor(profile.track, hasAmbiences).filter((item) => item.key !== "settings");
   const settings = PATIENT_NAV.find((item) => item.key === "settings")!;
 
   // Items arrive one after another from the rail's edge (a plain fade on the calm tracks; still under reduced motion).

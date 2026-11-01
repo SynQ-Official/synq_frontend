@@ -1,5 +1,7 @@
 import { AGENT_TIMEOUT_MS, api } from "./client";
 import type {
+  AmbiencePreferencesInput,
+  Ambiences,
   AssignedExercise,
   Checkin,
   CheckinGoal,
@@ -189,4 +191,11 @@ export const sparkApi = {
     return api.delete<SparkView>(`/me/spark/tasks/${id}?date=${date}&hour=${hour}`);
   },
   focus: (minutes: number, taskId?: string) => api.post<SparkView>("/me/spark/focus", { minutes, taskId, ...sparkClock() }),
+};
+
+export const ambiencesApi = {
+  /** The sounds this patient may see and their settings. Empty until the clinician switches it on, on the psychosis track. */
+  get: () => api.get<{ data: Ambiences }>("/me/ambiences"),
+  /** Only the fields sent change. Switching off is always accepted. */
+  update: (input: AmbiencePreferencesInput) => api.patch<{ data: Ambiences }>("/me/ambiences/preferences", input),
 };

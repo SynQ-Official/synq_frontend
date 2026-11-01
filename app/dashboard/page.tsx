@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { AmbiencesCard } from "@/components/patient/home/AmbiencesCard";
 import { CheckinScheduleCard } from "@/components/patient/home/CheckinScheduleCard";
 import { DayWelcome } from "@/components/patient/home/DayWelcome";
 import { ReadsBand } from "@/components/patient/home/ReadsBand";
@@ -53,6 +54,8 @@ export default function HomePage() {
       <CheckinScheduleCard />
       {/* ADHD only: the card renders nothing for every other track. */}
       <SparkSlot />
+      {/* Comfort sounds: renders nothing until the server has sounds for this patient (psychosis: after the clinician's switch). */}
+      <AmbiencesCard />
 
       {/* Two columns from tablet; the goals panel joins as a third column only where there is real room (2xl). */}
       <div className="grid gap-5 md:grid-cols-2 lg:gap-6 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(21rem,25rem)] 2xl:items-start">
