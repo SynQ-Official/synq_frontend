@@ -27,7 +27,7 @@ export function LiveUpdates() {
   const copy = usePatientCopy();
   const live = copy.live;
   const [notice, setNotice] = useState<{ id: number; weekStart: string } | null>(null);
-  const [reminder, setReminder] = useState<{ id: number; title: string; body: string; href: string } | null>(null);
+  const [reminder, setReminder] = useState<{ id: number; title: string; body: string; href: string; bedtime: boolean } | null>(null);
   const seen = useRef(new Set<number>());
   const router = useRouter();
   const prefs = useReminderPrefs();
@@ -51,10 +51,14 @@ export function LiveUpdates() {
       setNotice({ id: event.id, weekStart: String(report.weekStart).slice(0, 10) });
     } else if (event.type === "notification") {
       const note = event.data as { notificationType?: string; title?: string; body?: string; href?: string };
-      if (note.notificationType !== "CHECKIN_REMINDER" || !note.title) return;
+      // The optional bedtime reminder of the comfort sounds: stored as SYSTEM, pointing at the sounds page.
+      const bedtime = note.notificationType === "SYSTEM" && note.href === "/dashboard/ambiances";
+      if ((note.notificationType !== "CHECKIN_REMINDER" && !bedtime) || !note.title) return;
       // Only ever a link inside the patient app.
       const href = note.href?.startsWith("/dashboard/") ? note.href : "/dashboard/check-in";
-      setReminder({ id: event.id, title: note.title, body: note.body ?? "", href });
+      setReminder({ id: event.id, title: note.title, body: note.body ?? "", href, bedtime });
+      // Inside the app only: no check-in refresh, and never a system notification (its text would show on a lock screen).
+      if (bedtime) return;
       invalidatePatientData("checkins:schedule");
       // The device's own choice: a system notification too, when the tab is not in view.
       if (browserAlerts.current && typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && document.visibilityState !== "visible") {
@@ -142,7 +146,7 @@ export function LiveUpdates() {
                   onClick={() => setReminder(null)}
                   className="mt-2 inline-flex min-h-9 items-center rounded-full bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
                 >
-                  {copy.checkinSchedule.openCheckin}
+                  {reminder.bedtime ? copy.ambiences.open : copy.checkinSchedule.openCheckin}
                 </Link>
               </div>
               <button
