@@ -1594,7 +1594,7 @@ html.lenis body {
  * Soft field for dashboard inputs and textareas. Declared as a utility so it
  * wins over the base Input's shape; padding stays with the element.
  */
-/* The deep surface: flat deep teal, used only by the closing call to action and a few small panels. */
+/* The deep surface: flat deep teal, used only by the closing call to action, the home film theatre and a few small panels. */
 @utility bg-deep {
   background-color: var(--color-teal-900);
 }

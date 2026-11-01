@@ -1,5 +1,5 @@
 import { ApiError, api, readJson, messageFrom, unwrap } from "./client";
-import { clearTokens, getAccessToken, saveTokens, type AuthTokens } from "./tokens";
+import { clearTokens, purgePatientData, saveTokens, type AuthTokens } from "./tokens";
 
 /** Patient auth — `/api/v1/auth/*` (UserAuthController). */
 
@@ -21,13 +21,10 @@ function withoutEmpty<T extends Record<string, unknown>>(input: T): Partial<T> {
 }
 
 /** The credentials go to the same-origin session route, which keeps the refresh token in an HttpOnly cookie. */
-async function session<T>(action: "login" | "register" | "logout", body: unknown, withBearer = false): Promise<T> {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  const token = withBearer ? getAccessToken() : null;
-  if (token) headers.Authorization = `Bearer ${token}`;
+async function session<T>(action: "login" | "register" | "logout", body: unknown): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`/api/session/${action}`, { method: "POST", headers, body: JSON.stringify(body), cache: "no-store" });
+    res = await fetch(`/api/session/${action}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), cache: "no-store" });
   } catch {
     throw new ApiError("Network error — check your connection and retry.", 0);
   }
@@ -55,12 +52,13 @@ export const authApi = {
     return tokens;
   },
 
+  /**
+   * The session route revokes the refresh token server-side and only then drops the cookie. This tab forgets the
+   * session only after that succeeds: a failed call throws and leaves everything as it was, so it can be retried.
+   */
   async logout() {
-    try {
-      // The session route also clears the refresh cookie, which only the server can do.
-      await session<{ message: string }>("logout", {}, true);
-    } finally {
-      clearTokens();
-    }
+    await session<{ message: string }>("logout", {});
+    clearTokens();
+    purgePatientData(); // explicit sign-out: the next person on this device inherits nothing
   },
 };

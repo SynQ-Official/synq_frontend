@@ -53,6 +53,10 @@ next-env.d.ts
 .claude/
 .kilo/
 
+# Large product films: hosted on R2, never committed (web encodes live in public/media/web/)
+public/media/*.mp4
+public/media/web/
+
 # 10. Markdown Documents (keep the root README)
 *.md
 !/README.md

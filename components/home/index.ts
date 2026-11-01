@@ -1,5 +1,3 @@
-export { AgentsSection } from "./AgentsSection";
-export { AudienceSection } from "./AudienceSection";
 export { CinematicIntro } from "./CinematicIntro";
 export { CTASection } from "./CTASection";
 export { Footer as FooterSection } from "./Footer";

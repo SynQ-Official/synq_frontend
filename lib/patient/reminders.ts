@@ -6,6 +6,8 @@
  * system notifications, the notification read state, and the time picked before reminders moved to the
  * server (only used as the first setup's default).
  */
+import { patientKey } from "@/lib/api/tokens";
+
 export type ReminderPrefs = { enabled: boolean; time: string; browser: boolean };
 
 const PREFS_KEY = "vitamind_reminder_prefs";
@@ -14,17 +16,21 @@ const CHANGE_EVENT = "vitamind-reminders-change";
 
 export const DEFAULT_REMINDER: ReminderPrefs = { enabled: true, time: "20:00", browser: false };
 
-function read(key: string): string | null {
+// Both keys are stored per patient (`key:<userId>`): a shared device never hands one patient's reminder time or
+// read notifications to the next, yet they are harmless preferences, so they stay with their owner across sign-outs.
+function read(base: string): string | null {
   try {
-    return window.localStorage.getItem(key);
+    const key = patientKey(base);
+    return key ? window.localStorage.getItem(key) : null;
   } catch {
     return null;
   }
 }
 
-function write(key: string, value: string) {
+function write(base: string, value: string) {
   try {
-    window.localStorage.setItem(key, value);
+    const key = patientKey(base);
+    if (key) window.localStorage.setItem(key, value);
   } catch {
     /* storage unavailable — the preference just won't persist */
   }

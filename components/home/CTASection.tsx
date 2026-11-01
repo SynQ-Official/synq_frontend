@@ -68,7 +68,7 @@ export const CTASection = () => {
 
             <div className="page-container">
                 <motion.div variants={stagger(0.09, 0.05)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT}>
-                    <div className="grid items-end gap-14 lg:grid-cols-12 lg:gap-10">
+                    <div className="grid grid-cols-1 items-end gap-14 lg:grid-cols-12 lg:gap-10">
                         <div className="lg:col-span-8">
                             <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3 text-teal-200")}>
                                 <span aria-hidden className="h-px w-10 bg-gold-300" />

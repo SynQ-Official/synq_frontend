@@ -67,7 +67,12 @@ export function UserMenu({ name, onOpenChange }: { name: string; onOpenChange?: 
 
   async function signOut() {
     setLeaving(true);
-    await authApi.logout().catch(() => undefined);
+    try {
+      await authApi.logout();
+    } catch {
+      setLeaving(false); // the server could not end the session: stay signed in so the visitor can retry
+      return;
+    }
     setLeaving(false);
     setOpen(false);
     notifySessionChange();

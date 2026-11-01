@@ -8,7 +8,6 @@ import { clearTokens, hasValidSession } from "@/lib/api/tokens";
 import { AUTH_CARD, AUTH_TITLE, AuthLoading } from "@/components/auth/AuthLayout";
 import { ACCENT_LIGHT } from "@/components/home/typography";
 import { PasswordChecklist, passwordMeetsPolicy } from "@/components/auth/PasswordChecklist";
-import { setUser } from "@/lib/storage/storage";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField, IconInput } from "@/components/shared/FormField";
@@ -172,13 +171,14 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           const target = safeRedirect(searchParams.get("redirect"), mode);
           // No leftover session can ride along: only the answer to THIS request opens the space.
           clearTokens();
-          const session = isSignUp
-            ? await authApi.register({ nickname: values.nickname.trim(), email, phone: e164 ?? undefined, password: values.password, lang: language, consentVersion: CONSENT_VERSION })
-            : await authApi.login(email, values.password);
+          if (isSignUp) {
+            await authApi.register({ nickname: values.nickname.trim(), email, phone: e164 ?? undefined, password: values.password, lang: language, consentVersion: CONSENT_VERSION });
+          } else {
+            await authApi.login(email, values.password);
+          }
           // Navigate only once the session is really established.
           if (!hasValidSession()) throw new Error("session-not-established");
           router.prefetch(target);
-          if (session.user) setUser({ id: session.user.id, fullName: session.user.nickname || email, email, password: "", disease: "ADHD", createdAt: new Date().toISOString() });
           // The first screens' data loads in parallel with the navigation itself.
           if (target.startsWith("/dashboard")) prefetchPatientHome();
           router.push(target);

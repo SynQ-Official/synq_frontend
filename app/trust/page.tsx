@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AgentJsonLd } from "@/components/agents/AgentJsonLd";
 import { TrustPage } from "@/components/trust/TrustPage";
 import { ROUTES } from "@/lib/config/routes";
 import { pageMetadata } from "@/lib/config/site";
@@ -9,5 +10,10 @@ const { seoTitle, seoDescription } = trustCopy.en;
 export const metadata: Metadata = pageMetadata({ title: seoTitle, description: seoDescription, path: ROUTES.trust });
 
 export default function Page() {
-  return <TrustPage />;
+  return (
+    <>
+      <AgentJsonLd path={ROUTES.trust} name={seoTitle} description={seoDescription} />
+      <TrustPage />
+    </>
+  );
 }

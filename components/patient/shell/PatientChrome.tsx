@@ -108,7 +108,9 @@ export function PatientRail() {
             aria-busy={signingOut}
             onClick={() => {
               setSigningOut(true);
-              void signOut();
+              void signOut().then((done) => {
+                if (!done) setSigningOut(false);
+              });
             }}
             className="lm-signout group"
           >

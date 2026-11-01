@@ -159,7 +159,7 @@ export const libraryApi = {
   /** Already-recommended articles; read-only, safe on every page load. */
   current: () => api.get<LibraryCurrent>("/me/library/recommendations/current"),
   /** Ask for new articles. Each one served goes on a 14-day cooldown, so call it on need, not on every load. */
-  recommend: (input: { limit?: number; contextTags?: Record<string, number> } = {}) =>
+  recommend: (input: { limit?: number } = {}) =>
     api.post<LibraryRecommendation>("/me/library/recommendations", input),
   /** Idempotent on `eventId`. */
   sendEvent: (input: { eventId: string; contentId: string; type: LibraryEventType }) =>

@@ -16,7 +16,6 @@ export const ROUTES = {
 } as const;
 
 /**
- * The clinician workspace (SynQ Psy) is its own app. Set NEXT_PUBLIC_PSY_URL to its public address (e.g. https://psy.vitamindspace.com);
  * until then the page's button leads to the support page, where a clinician can ask for access.
  */
 export const PSY_APP_URL = (process.env.NEXT_PUBLIC_PSY_URL ?? "").replace(/\/+$/, "");

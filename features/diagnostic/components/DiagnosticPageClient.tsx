@@ -12,6 +12,7 @@ import { createChatId } from "../lib/chat";
 import type { Lang } from "@/lib/i18n/config";
 import { ROUTES } from "@/lib/config/routes";
 import { useOrientationGate } from "../hooks/useOrientationGate";
+import { useSessionUserId } from "@/hooks/useSessionState";
 
 export function DiagnosticPageClient() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export function DiagnosticPageClient() {
   // Mira needs an account (no plan) and runs once per account. Settled before the chat mounts, so no
   // session is ever started for a visitor, or for an account that already finished.
   const gate = useOrientationGate();
+  const userId = useSessionUserId();
 
   useEffect(() => {
     if (gate === "signed-out") router.replace(`${ROUTES.signUp}?from=orientation&redirect=${encodeURIComponent(ROUTES.orientation)}`);
@@ -34,12 +36,14 @@ export function DiagnosticPageClient() {
   }, [gate, router]);
 
   useEffect(() => {
-    if (chatId) return;
+    // Only once the account is known and eligible: while the session is still loading, or when the visitor is being
+    // sent to sign up / the dashboard, a second `replace` here would race that redirect.
+    if (chatId || gate !== "open") return;
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("chatId", createChatId());
     router.replace(`${ROUTES.orientation}?${params.toString()}`);
-  }, [chatId, router, searchParams]);
+  }, [chatId, gate, router, searchParams]);
 
   if (!chatId || gate !== "open") return <OrientationSkeleton />;
 
@@ -49,7 +53,8 @@ export function DiagnosticPageClient() {
       <OrientationBackdrop />
       <DiagnosticHeader chatId={chatId} onLanguageChange={(nextLanguage) => setLanguageSwitch({ id: Date.now(), language: nextLanguage })} />
       {/* ACTIVE: Mira v5 flow (REST /api/mira → Nest /api/v1/mira/* → Mira agent /api/v1/mira/*). */}
-      <MiraChatExperience chatId={chatId} languageSwitch={languageSwitch} locked={false} />
+      {/* Keyed by account: if the signed-in user ever changes under this page, the whole conversation state remounts empty. */}
+      <MiraChatExperience key={userId} chatId={chatId} languageSwitch={languageSwitch} locked={false} />
     </div>
   );
 }

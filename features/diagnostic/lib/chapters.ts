@@ -3,7 +3,7 @@ import type { MiraChapter } from "../types";
 /** The four visible chapters of the guided journey, in order. */
 export const CHAPTER_SEQUENCE: MiraChapter[] = ["MORNING", "MIDDAY", "EVENING", "INNER_VOICE"];
 
-/** Mira's session length: 16 questions (5 per track + 1 general); the agent reports the live total as `questions_total`. */
+/** Mira's session length: 16 questions (5 per track, chosen by the agent among 20 topics each, + 1 general); the agent reports the live total as `questions_total`. */
 export const ESTIMATED_QUESTIONS = 16;
 
 /**

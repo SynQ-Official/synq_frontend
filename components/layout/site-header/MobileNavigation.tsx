@@ -83,7 +83,12 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
 
   async function signOut() {
     setLeaving(true);
-    await authApi.logout().catch(() => undefined);
+    try {
+      await authApi.logout();
+    } catch {
+      setLeaving(false); // the server could not end the session: stay signed in so the visitor can retry
+      return;
+    }
     setLeaving(false);
     notifySessionChange();
     close();

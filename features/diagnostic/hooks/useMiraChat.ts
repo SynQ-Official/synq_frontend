@@ -6,6 +6,7 @@ import { streamWithFallback } from "@/lib/api/stream";
 import { profileApi } from "@/lib/api/patient";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
 import { useTurnStream } from "@/hooks/patient/useTurnStream";
+import { useSessionUserId } from "@/hooks/useSessionState";
 import { classifyTurnFailure, type TurnFailureKind } from "@/lib/patient/turn-errors";
 import { copy, LANGUAGE_STORAGE_KEY, normalizeLanguage, type Lang } from "@/lib/i18n/config";
 import type { MiraAssessmentResult, MiraAttemptState, MiraChapter, MiraMessage, MiraSafety } from "../types";
@@ -134,7 +135,10 @@ export const ORIENTATION_CONSENT_REQUIRED = "ORIENTATION_CONSENT_REQUIRED";
 
 export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked = false }: { locked?: boolean } = {}) {
   const errors = copy[lang].diagnostic.errors;
-  const storageKey = chatId ? `vitamind-mira-session:${chatId}` : null;
+  // Scoped by account AND conversation: the pointer to an open session is never readable by another user, even
+  // through a shared/back-navigated `?chatId=`. No user, no key (nothing personal is stored).
+  const userId = useSessionUserId();
+  const storageKey = chatId && userId ? `vitamind-mira-session:${userId}:${chatId}` : null;
   const [messages, setMessages] = useState<MiraMessage[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);

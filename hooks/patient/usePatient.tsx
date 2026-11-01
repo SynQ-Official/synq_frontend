@@ -20,13 +20,13 @@ type PatientContextValue = {
   /** The name to greet with: the patient's nickname. */
   name: string;
   refreshProfile: () => Promise<void>;
-  signOut: () => Promise<void>;
+  /** Resolves `true` once the server has ended the session; `false` leaves the patient signed in, to retry. */
+  signOut: () => Promise<boolean>;
 };
 
 const PatientContext = createContext<PatientContextValue | null>(null);
 
 export const WELCOME_ROUTE = "/welcome";
-const TRACK_KEY = "vitamind_track";
 
 type Gate = "checking" | "ready" | "error";
 
@@ -86,26 +86,14 @@ export function PatientProvider({
     if (profile) writeCachedProfile(profile);
   }, [profile]);
 
-  // The app tints itself to the patient's track (see "PATIENT TRACK THEMES" in globals.css). The
-  // last track is remembered so the palette is right from the first paint of the next visit.
+  // The app tints itself to the patient's track (see "PATIENT TRACK THEMES" in globals.css). The track comes from
+  // the profile only — the server's answer, or this patient's own cached copy on a reload — never from a separate
+  // device-wide key, which would paint the previous patient's diagnosis on a shared device.
   const track = profile?.track;
   useEffect(() => {
     const root = document.documentElement;
-    const apply = (value: string | null) => (value ? (root.dataset.track = value) : delete root.dataset.track);
-    if (track) {
-      apply(track);
-      try {
-        window.localStorage.setItem(TRACK_KEY, track);
-      } catch {
-        /* the palette simply is not remembered */
-      }
-    } else {
-      try {
-        apply(window.localStorage.getItem(TRACK_KEY));
-      } catch {
-        /* default palette */
-      }
-    }
+    if (track) root.dataset.track = track;
+    else delete root.dataset.track;
     return () => {
       delete root.dataset.track;
     };
@@ -162,9 +150,15 @@ export function PatientProvider({
   const signOut = useCallback(async () => {
     // The live stream closes first: nothing keeps listening for a patient who is leaving.
     setSigningOut(true);
-    await authApi.logout().catch(() => undefined);
+    try {
+      await authApi.logout();
+    } catch {
+      setSigningOut(false); // the server could not end the session: stay signed in so the patient can retry
+      return false;
+    }
     clearPatientCache();
     router.replace(ROUTES.signIn);
+    return true;
   }, [router]);
 
   const refreshProfile = useCallback(() => refresh(), [refresh]);

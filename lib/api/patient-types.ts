@@ -238,7 +238,10 @@ export type LibraryContent = {
 };
 
 /** What in the patient's own check-ins or journal made an article relevant now. Shown as a gentle line, never a diagnosis. */
-export type LibraryBecause = "HIGH_ENERGY_LOW_SLEEP" | "SLEEP_SHORT" | "HIGH_ENERGY" | "SLEEP_LONG" | "LOW_MOOD" | "LOW_ENERGY" | "LOW_MOTIVATION" | "SOCIAL_WITHDRAWAL" | "LOW_FOCUS" | "HIGH_STRESS" | "SLEEP_IRREGULAR";
+export type LibraryBecause = "HIGH_STRESS" | "SLEEP" | "GOAL_DIFFICULTY" | "LOW_MOOD" | "LOW_ENERGY" | "LOW_MOTIVATION" | "HIGH_ENERGY" | "SOCIAL_WITHDRAWAL" | "LOW_FOCUS" | "WORK_STUDY" | "RELATIONSHIPS" | "ROUTINE" | "HEALTH" | "IMPROVING";
+
+/** Why the library has nothing to recommend. Anything else (a track without a library) reads as `NO_RELEVANT_CONTENT`. */
+export type LibraryEmptyReason = "NO_JOURNAL_ENTRIES" | "LIMITED_JOURNAL" | "NO_JOURNAL_PATTERN" | "SUPPORT_HOLD" | "NO_RELEVANT_CONTENT";
 
 export type LibraryItem = { recommendationId: string; content: LibraryContent; reasons: string[]; because?: LibraryBecause[] };
 
@@ -247,7 +250,7 @@ export type LibraryCurrent = {
   mode: string;
   items: LibraryItem[];
   reason?: string;
-  /** Recent check-ins or journal point to a theme no recommendation has answered yet: ask for new articles. */
+  /** The Journal points to a theme with an article not recommended yet: ask for new articles. */
   refresh?: boolean;
 };
 

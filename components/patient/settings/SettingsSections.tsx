@@ -326,7 +326,7 @@ export function SessionSection() {
   const [busy, setBusy] = useState(false);
   return (
     <Section icon={<LogOut className="size-[1.125rem] rtl:-scale-x-100" aria-hidden />} title={copy.settings.session.title}>
-      <Button variant="outline" disabled={busy} onClick={() => { setBusy(true); void signOut(); }}>
+      <Button variant="outline" disabled={busy} onClick={() => { setBusy(true); void signOut().then((done) => { if (!done) setBusy(false); }); }}>
         {busy && <LogoSpinner size={18} />}{copy.settings.session.signOut}
       </Button>
     </Section>
