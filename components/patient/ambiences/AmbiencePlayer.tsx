@@ -173,8 +173,11 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
             type="button"
             size="lg"
             onClick={toggle}
-            disabled={player.status === "loading" || player.status === "stopping"}
-            className="min-h-14 min-w-40 rounded-full px-8 text-base"
+            // Never `disabled`: a disabled button loses the keyboard focus, and the next Enter would go nowhere.
+            // While loading, another press cancels; while fading out it is ignored.
+            aria-busy={player.status === "loading" || player.status === "stopping"}
+            aria-disabled={player.status === "stopping"}
+            className="min-h-14 min-w-40 rounded-full px-8 text-base aria-disabled:opacity-60"
           >
             {running ? <Pause aria-hidden /> : <Play aria-hidden />}
             {running ? copy.pause : player.status === "loading" ? copy.loading : player.status === "stopping" ? copy.statusFading : copy.play}
