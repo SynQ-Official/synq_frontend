@@ -11,7 +11,10 @@ function originOf(value: string | undefined) {
   }
 }
 const apiOrigin = originOf(process.env.NEXT_PUBLIC_API_URL);
-/** Public origin of the R2 bucket that serves audio and video (e.g. `https://media.example.com`). Allowed in `media-src` only. */
+/**
+ * Public origin of the R2 bucket that serves audio and video (e.g. `https://media.example.com`). Allowed in `media-src`
+ * (video, html5 audio fallback) and in `connect-src`, because Howler's default Web Audio mode fetches the sound files.
+ */
 const mediaOrigin = originOf(process.env.NEXT_PUBLIC_MEDIA_URL);
 
 /**
@@ -26,7 +29,7 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   // API (REST + SSE), live updates, text-to-speech, and Iconify's public icon API (flags, provider logos).
-  ["connect-src 'self'", apiOrigin, apiOrigin.replace(/^http/, "ws"), "https://api.elevenlabs.io", "https://api.iconify.design", "https://api.simplesvg.com", "https://api.unisvg.com"]
+  ["connect-src 'self'", apiOrigin, apiOrigin.replace(/^http/, "ws"), mediaOrigin, "https://api.elevenlabs.io", "https://api.iconify.design", "https://api.simplesvg.com", "https://api.unisvg.com"]
     .filter(Boolean)
     .join(" "),
   ["media-src 'self' blob: data:", mediaOrigin].filter(Boolean).join(" "),

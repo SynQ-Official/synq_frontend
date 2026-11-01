@@ -57,9 +57,15 @@ next-env.d.ts
 public/media/*.mp4
 public/media/web/
 
+# Ambient sound files live in ../ambiances-src (outside this repo); never commit them if copied in by mistake
+ambiances-src/**/*.m4a
+ambiances-src/**/*.opus
+ambiances-src/**/*.wav
+
 # 10. Markdown Documents (keep the root README)
 *.md
 !/README.md
+!/scripts/ambiances/LICENCES.md
 
 # Do NOT Ignore (Critical Config & Guidelines Files)
 CLAUDE.md
