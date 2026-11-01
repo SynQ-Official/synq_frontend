@@ -11,6 +11,8 @@ function originOf(value: string | undefined) {
   }
 }
 const apiOrigin = originOf(process.env.NEXT_PUBLIC_API_URL);
+/** Public origin of the R2 bucket that serves audio and video (e.g. `https://media.example.com`). Allowed in `media-src` only. */
+const mediaOrigin = originOf(process.env.NEXT_PUBLIC_MEDIA_URL);
 
 /**
  * Content-Security-Policy. Next's own bootstrap and the JSON-LD blocks are inline scripts, so `script-src` keeps
@@ -27,7 +29,7 @@ const csp = [
   ["connect-src 'self'", apiOrigin, apiOrigin.replace(/^http/, "ws"), "https://api.elevenlabs.io", "https://api.iconify.design", "https://api.simplesvg.com", "https://api.unisvg.com"]
     .filter(Boolean)
     .join(" "),
-  "media-src 'self' blob: data:",
+  ["media-src 'self' blob: data:", mediaOrigin].filter(Boolean).join(" "),
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "frame-ancestors 'none'",
