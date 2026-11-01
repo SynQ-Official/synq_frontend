@@ -3,12 +3,14 @@ import type { AmbienceSound } from "@/lib/api/patient-types";
 import {
   AMBIENCE_DEFAULT_VOLUME,
   AMBIENCE_MAX_VOLUME,
+  capHowlVolume,
   clampVolume,
   defaultTimer,
   formatRemaining,
   howlVolume,
   msUntilBedtime,
   playableSounds,
+  restoreVolume,
   soundSources,
   timerChoices,
   timerDurationMs,
@@ -120,5 +122,38 @@ describe("soundSources", () => {
 
   it("is empty without a media origin, so nothing is requested from a wrong place", () => {
     expect(soundSources("ambiances/x", "")).toEqual([]);
+  });
+});
+
+describe("a restored volume is capped before it is applied", () => {
+  it("injecting 1.0 (Howler's full scale) gives 0.70", () => {
+    expect(capHowlVolume(1.0)).toBe(0.7);
+    expect(capHowlVolume(0.95)).toBe(0.7);
+    expect(capHowlVolume(0.7)).toBe(0.7);
+    expect(capHowlVolume(0.4)).toBe(0.4);
+  });
+
+  it("injecting 100 % (a stored maximum, from the server or the device) gives 0.70 on Howler's scale", () => {
+    expect(howlVolume(restoreVolume(100))).toBe(0.7);
+    expect(howlVolume(restoreVolume("100"))).toBe(0.7);
+    expect(howlVolume(restoreVolume(1000))).toBe(0.7);
+  });
+
+  it.each([null, undefined, "", "loud", {}, [], NaN, Infinity, -Infinity])("junk %j comes back as the default, never as a loud value", (junk) => {
+    expect(restoreVolume(junk)).toBe(AMBIENCE_DEFAULT_VOLUME);
+    expect(howlVolume(restoreVolume(junk))).toBe(0.4);
+  });
+
+  it("keeps a sensible stored value, as a whole percent", () => {
+    expect(restoreVolume(55)).toBe(55);
+    expect(restoreVolume("30")).toBe(30);
+    expect(restoreVolume(-5)).toBe(0);
+  });
+
+  it("whatever is injected, Howler never gets more than 0.70", () => {
+    for (const raw of [1.0, 100, 255, 1e9, "9999", Number.MAX_VALUE]) {
+      expect(howlVolume(restoreVolume(raw))).toBeLessThanOrEqual(0.7);
+      expect(capHowlVolume(Number(raw))).toBeLessThanOrEqual(0.7);
+    }
   });
 });

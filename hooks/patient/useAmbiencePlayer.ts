@@ -15,6 +15,9 @@ const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_URL ?? "";
  */
 const HTML5 = process.env.NEXT_PUBLIC_AMBIENCE_HTML5 === "1";
 
+/** What the player reports when a listening session ends: which sound, when it began and the seconds actually played. */
+export type EndedSession = { soundId: string; startedAt: Date; durationSec: number };
+
 /** Fade out, then free the sound. Independent of React, so it still finishes after the page was left. */
 function fadeOutAndUnload(howl: Howl, id: number | undefined, done?: () => void) {
   let finished = false;
@@ -49,7 +52,7 @@ function clearAnnouncement() {
  * always `howlVolume` (never above the ceiling), playback fades in and out over three seconds, and it ends on its own
  * when the timer (`durationMs`) runs out. Leaving the page fades the sound out too.
  */
-export function useAmbiencePlayer({ sound, volume, label }: { sound: AmbienceSound | undefined; volume: number; label: string }) {
+export function useAmbiencePlayer({ sound, volume, label, onEnd }: { sound: AmbienceSound | undefined; volume: number; label: string; onEnd?: (session: EndedSession) => void }) {
   const [status, setStatus] = useState<PlayerStatus>("idle");
   const [error, setError] = useState<PlayerError | null>(null);
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
@@ -59,6 +62,21 @@ export function useAmbiencePlayer({ sound, volume, label }: { sound: AmbienceSou
   const ticker = useRef<number | undefined>(undefined);
   const loaded = useRef(false);
   const volumeRef = useRef(volume);
+  const startedAt = useRef<Date | null>(null);
+  const playedSound = useRef("");
+  const onEndRef = useRef(onEnd);
+
+  useEffect(() => {
+    onEndRef.current = onEnd;
+  }, [onEnd]);
+
+  /** Reports the session once: only a sound that really started counts, and each start is reported a single time. */
+  const endSession = useCallback(() => {
+    const started = startedAt.current;
+    startedAt.current = null;
+    if (!started) return;
+    onEndRef.current?.({ soundId: playedSound.current, startedAt: started, durationSec: Math.round((Date.now() - started.getTime()) / 1000) });
+  }, []);
 
   const stop = useCallback(() => {
     const current = howl.current;
@@ -72,9 +90,10 @@ export function useAmbiencePlayer({ sound, volume, label }: { sound: AmbienceSou
       setStatus("idle");
       return;
     }
+    endSession();
     setStatus("stopping");
     fadeOutAndUnload(current, playId.current, () => setStatus("idle"));
-  }, []);
+  }, [endSession]);
 
   const play = useCallback(
     (durationMs: number) => {
@@ -103,6 +122,8 @@ export function useAmbiencePlayer({ sound, volume, label }: { sound: AmbienceSou
         onload: () => {
           if (howl.current !== instance) return;
           loaded.current = true;
+          startedAt.current = new Date();
+          playedSound.current = sound.id;
           const id = instance.play();
           playId.current = id;
           instance.fade(0, howlVolume(volumeRef.current), AMBIENCE_FADE_MS, id);
@@ -140,10 +161,14 @@ export function useAmbiencePlayer({ sound, volume, label }: { sound: AmbienceSou
       howl.current = null;
       if (!current) return;
       clearAnnouncement();
-      if (loaded.current) fadeOutAndUnload(current, playId.current);
-      else current.unload();
+      if (loaded.current) {
+        endSession();
+        fadeOutAndUnload(current, playId.current);
+      } else {
+        current.unload();
+      }
     },
-    [],
+    [endSession],
   );
 
   return { status, error, remainingMs, play, stop };

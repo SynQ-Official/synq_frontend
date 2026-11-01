@@ -15,8 +15,30 @@ export function clampVolume(percent: number): number {
   return Math.min(AMBIENCE_MAX_VOLUME, Math.max(0, Math.round(percent)));
 }
 
+/** The loudest level Howler may ever be given (its scale is 0 to 1). */
+export const MAX_HOWL_VOLUME = AMBIENCE_MAX_VOLUME / 100;
+
+/** Howler's own scale, capped: whatever number arrives (a stored 1.0, a bug, a stale value) comes out at 0.70 at most. */
+export function capHowlVolume(level: number): number {
+  if (!Number.isFinite(level)) return AMBIENCE_DEFAULT_VOLUME / 100;
+  return Math.min(MAX_HOWL_VOLUME, Math.max(0, level));
+}
+
 /** The only volume Howler is ever given: 0 to 0.7. */
-export const howlVolume = (percent: number) => clampVolume(percent) / 100;
+export const howlVolume = (percent: number) => capHowlVolume(clampVolume(percent) / 100);
+
+/**
+ * A volume brought back from the server or from anything stored on the device (a number, a numeric string, junk):
+ * a whole percent from 0 to 70 before it is shown or applied. The player keeps nothing on the device, but whatever
+ * comes back from anywhere goes through here first.
+ */
+export function restoreVolume(raw: unknown): number {
+  const value = typeof raw === "string" && raw.trim() !== "" ? Number(raw) : raw;
+  return clampVolume(typeof value === "number" ? value : Number.NaN);
+}
+
+/** A stray tap is not a listening session: the app does not record anything shorter than this (seconds). */
+export const MIN_RECORDED_SESSION_SEC = 10;
 
 /**
  * The server already sends only what this patient may see. This is the second lock: no track, no sounds; the psychosis

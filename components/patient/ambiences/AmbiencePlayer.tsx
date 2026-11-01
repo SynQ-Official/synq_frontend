@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { HeartHandshake, Pause, Play } from "lucide-react";
 import { deviceTimeZone } from "@/components/patient/home/CheckinScheduleCard";
 import { GlassCard } from "@/components/patient/ui/primitives";
+import { AmbienceFeedbackCard } from "@/components/patient/ambiences/AmbienceFeedbackCard";
 import { SupportCard } from "@/components/patient/ui/SupportCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,15 +13,18 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MIRA_STREAM_COPY } from "@/features/diagnostic/lib/stream-copy";
-import { useAmbiencePlayer } from "@/hooks/patient/useAmbiencePlayer";
+import { useAmbiencePlayer, type EndedSession } from "@/hooks/patient/useAmbiencePlayer";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
-import type { AmbiencePreferencesInput, AmbienceSound, Ambiences } from "@/lib/api/patient-types";
+import { ambiencesApi } from "@/lib/api/patient";
+import type { AmbienceAnswer, AmbiencePreferencesInput, AmbienceSound, Ambiences } from "@/lib/api/patient-types";
 import { fill } from "@/lib/i18n/patient";
 import {
   AMBIENCE_MAX_VOLUME,
   clampVolume,
   defaultTimer,
   formatRemaining,
+  MIN_RECORDED_SESSION_SEC,
+  restoreVolume,
   timerChoices,
   timerDurationMs,
   type TimerChoice,
@@ -38,10 +42,11 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
   const copy = usePatientCopy().ambiences;
   const { language, direction } = useLanguage();
   const { track, preferences, emergencyResources } = ambiences;
-  const ids = { sound: useId(), timer: useId(), bedtime: useId(), toggle: useId(), help: useId() };
+  const ids = { sound: useId(), timer: useId(), bedtime: useId(), reminder: useId(), toggle: useId(), help: useId() };
 
   const [soundId, setSoundId] = useState(preferences.favoriteSoundId ?? sounds[0].id);
-  const [volume, setVolume] = useState(clampVolume(preferences.volume));
+  // Whatever comes back from the server goes through the same cap (0 to 70 %) before it is shown or applied.
+  const [volume, setVolume] = useState(restoreVolume(preferences.volume));
   const bedtime = preferences.eveningTime && preferences.timezone ? { time: preferences.eveningTime, timeZone: preferences.timezone } : null;
   const choices = timerChoices(track, Boolean(bedtime));
   const [timerPick, setTimerPick] = useState<TimerChoice>(defaultTimer(track, Boolean(bedtime)));
@@ -53,8 +58,18 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
   const [saveFailed, setSaveFailed] = useState(false);
   const helpRef = useRef<HTMLDivElement>(null);
 
+  // The session whose answer may be asked (5 minutes or more). Recording is best effort: a failure never interrupts listening.
+  const [askAbout, setAskAbout] = useState<string | null>(null);
+  const recordSession = (session: EndedSession) => {
+    if (session.durationSec < MIN_RECORDED_SESSION_SEC) return;
+    ambiencesApi
+      .recordSession({ soundId: session.soundId, startedAt: session.startedAt.toISOString(), durationSec: session.durationSec })
+      .then(({ data }) => setAskAbout(data.canAnswer ? data.id : null))
+      .catch(() => undefined);
+  };
+
   const sound = sounds.find((s) => s.id === soundId) ?? sounds[0];
-  const player = useAmbiencePlayer({ sound, volume, label: sound.label[language] });
+  const player = useAmbiencePlayer({ sound, volume, label: sound.label[language], onEnd: recordSession });
   const busy = player.status !== "idle";
   const running = player.status === "playing";
 
@@ -257,6 +272,13 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
                 </Button>
               )}
             </div>
+            <div className="mt-4 flex items-start justify-between gap-4 border-t border-ink/10 pt-3">
+              <div className="min-w-0">
+                <label htmlFor={ids.reminder} className="text-sm font-medium text-ink">{copy.reminderLabel}</label>
+                <p className="text-xs text-ink-muted">{copy.reminderNote}</p>
+              </div>
+              <Switch id={ids.reminder} checked={preferences.eveningReminder} disabled={!bedtime} onCheckedChange={(checked) => save({ eveningReminder: checked })} />
+            </div>
           </div>
         )}
 
@@ -267,6 +289,16 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
           <p className="mt-1 text-xs text-ink-muted">{fill(copy.credit, { author: sound.author, licence: sound.licence })}</p>
         </div>
       </GlassCard>
+
+      {askAbout && (
+        <AmbienceFeedbackCard
+          track={track}
+          onAnswer={async (answer: AmbienceAnswer) => {
+            await ambiencesApi.answer(askAbout, answer);
+          }}
+          onClose={() => setAskAbout(null)}
+        />
+      )}
     </div>
   );
 }

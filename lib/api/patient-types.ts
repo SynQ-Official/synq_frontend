@@ -318,6 +318,8 @@ export type AmbiencePreferences = {
   /** Regular bedtime "HH:MM" in `timezone`. */
   eveningTime: string | null;
   timezone: string | null;
+  /** An in-app notification at the bedtime. Off by default; needs a bedtime; never an e-mail. */
+  eveningReminder: boolean;
 };
 
 export type Ambiences = {
@@ -337,4 +339,10 @@ export type AmbiencePreferencesInput = {
   /** null clears the bedtime and its time zone. */
   eveningTime?: string | null;
   timezone?: string;
+  eveningReminder?: boolean;
 };
+
+/** A listening session, recorded when playback ends. `canAnswer`: long enough (5 minutes or more) to ask how the patient feels. */
+export type AmbienceSessionInput = { soundId: string; startedAt: string; durationSec: number };
+export type AmbienceSessionResult = { id: string; canAnswer: boolean };
+export type AmbienceAnswer = "BETTER" | "SAME" | "WORSE";
