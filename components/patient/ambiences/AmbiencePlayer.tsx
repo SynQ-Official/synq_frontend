@@ -62,8 +62,14 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
   const [askAbout, setAskAbout] = useState<string | null>(null);
   const recordSession = (session: EndedSession) => {
     if (session.durationSec < MIN_RECORDED_SESSION_SEC) return;
+    const input = { id: session.id, soundId: session.soundId, startedAt: session.startedAt.toISOString(), durationSec: session.durationSec };
+    // The page is closing: send a request that outlives it (nobody is left to answer a question). Same id, so a repeat is harmless.
+    if (session.closing) {
+      ambiencesApi.recordSessionOnClose(input);
+      return;
+    }
     ambiencesApi
-      .recordSession({ soundId: session.soundId, startedAt: session.startedAt.toISOString(), durationSec: session.durationSec })
+      .recordSession(input)
       .then(({ data }) => setAskAbout(data.canAnswer ? data.id : null))
       .catch(() => undefined);
   };
@@ -99,11 +105,12 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
     <>
       <div className="sticky top-3 z-30 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2 text-sm text-ink-soft">
-          <span role="status" aria-live="polite" className={cn("truncate rounded-full bg-white/85 px-3.5 py-2 shadow-soft", !status && "sr-only")}>
+          {/* Opaque on purpose: this bar sticks over the page while it scrolls, and translucent text over text is unreadable. */}
+          <span role="status" aria-live="polite" className={cn("truncate rounded-full bg-white px-3.5 py-2 text-ink shadow-soft", !status && "sr-only")}>
             {status}
           </span>
           {running && player.remainingMs !== null && (
-            <span className="tabular-nums text-ink-muted">{fill(copy.remaining, { time: formatRemaining(player.remainingMs) })}</span>
+            <span className="truncate rounded-full bg-white px-3 py-2 tabular-nums text-ink shadow-soft">{fill(copy.remaining, { time: formatRemaining(player.remainingMs) })}</span>
           )}
         </div>
         <Button

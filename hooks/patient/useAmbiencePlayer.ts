@@ -15,8 +15,14 @@ const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_URL ?? "";
  */
 const HTML5 = process.env.NEXT_PUBLIC_AMBIENCE_HTML5 === "1";
 
-/** What the player reports when a listening session ends: which sound, when it began and the seconds actually played. */
-export type EndedSession = { soundId: string; startedAt: Date; durationSec: number };
+/**
+ * What the player reports when a listening session ends: its own id (chosen at the start, so a repeat is harmless), which
+ * sound, when it began and the seconds actually played. `closing` is true when the page itself is going away.
+ */
+export type EndedSession = { id: string; soundId: string; startedAt: Date; durationSec: number; closing: boolean };
+
+/** A fresh id for a session; `randomUUID` needs a secure context, which this app always runs in, with a fallback anyway. */
+const newSessionId = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (Number(c) ^ (Math.random() * 16) >> (Number(c) / 4)).toString(16)));
 
 /** Fade out, then free the sound. Independent of React, so it still finishes after the page was left. */
 function fadeOutAndUnload(howl: Howl, id: number | undefined, done?: () => void) {
@@ -64,6 +70,7 @@ export function useAmbiencePlayer({ sound, volume, label, onEnd }: { sound: Ambi
   const volumeRef = useRef(volume);
   const startedAt = useRef<Date | null>(null);
   const playedSound = useRef("");
+  const sessionId = useRef("");
   const onEndRef = useRef(onEnd);
 
   useEffect(() => {
@@ -71,12 +78,20 @@ export function useAmbiencePlayer({ sound, volume, label, onEnd }: { sound: Ambi
   }, [onEnd]);
 
   /** Reports the session once: only a sound that really started counts, and each start is reported a single time. */
-  const endSession = useCallback(() => {
+  const endSession = useCallback((closing = false) => {
     const started = startedAt.current;
     startedAt.current = null;
     if (!started) return;
-    onEndRef.current?.({ soundId: playedSound.current, startedAt: started, durationSec: Math.round((Date.now() - started.getTime()) / 1000) });
+    onEndRef.current?.({ id: sessionId.current, soundId: playedSound.current, startedAt: started, durationSec: Math.round((Date.now() - started.getTime()) / 1000), closing });
   }, []);
+
+  // Closing the tab or leaving the site: no effect cleanup is sure to run, `pagehide` is. The session is reported from
+  // here, in a way that survives the page going away; the server ignores it if it was already recorded.
+  useEffect(() => {
+    const onPageHide = () => endSession(true);
+    window.addEventListener("pagehide", onPageHide);
+    return () => window.removeEventListener("pagehide", onPageHide);
+  }, [endSession]);
 
   const stop = useCallback(() => {
     const current = howl.current;
@@ -124,6 +139,7 @@ export function useAmbiencePlayer({ sound, volume, label, onEnd }: { sound: Ambi
           loaded.current = true;
           startedAt.current = new Date();
           playedSound.current = sound.id;
+          sessionId.current = newSessionId();
           const id = instance.play();
           playId.current = id;
           instance.fade(0, howlVolume(volumeRef.current), AMBIENCE_FADE_MS, id);

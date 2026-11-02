@@ -1,4 +1,4 @@
-import { AGENT_TIMEOUT_MS, api } from "./client";
+import { AGENT_TIMEOUT_MS, api, sendOnClose } from "./client";
 import type {
   AmbienceAnswer,
   AmbiencePreferencesInput,
@@ -203,6 +203,8 @@ export const ambiencesApi = {
   update: (input: AmbiencePreferencesInput) => api.patch<{ data: Ambiences }>("/me/ambiences/preferences", input),
   /** Record a listening session when playback ends. Health data, own rows only; answers `canAnswer` for 5 minutes or more. */
   recordSession: (input: AmbienceSessionInput) => api.post<{ data: AmbienceSessionResult }>("/me/ambiences/sessions", input),
+  /** The same request, for the moment the page closes: fire and forget, and safe to repeat (the server keys on `input.id`). */
+  recordSessionOnClose: (input: AmbienceSessionInput) => sendOnClose("/me/ambiences/sessions", input),
   /** The optional answer after a session of 5 minutes or more. One per session. */
   answer: (sessionId: string, answer: AmbienceAnswer) => api.post<{ data: { id: string } }>("/me/ambiences/feedback", { sessionId, answer }),
 };

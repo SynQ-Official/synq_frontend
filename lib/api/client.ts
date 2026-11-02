@@ -193,6 +193,19 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   return unwrap<T>(payload);
 }
 
+/**
+ * A POST that survives the page being closed, for a `pagehide` handler. Everything is synchronous on purpose: nothing
+ * after an `await` is sure to run once the page is going away, so there is no session refresh here, only the token
+ * already held. `keepalive` lets the browser finish the request after unload. (`navigator.sendBeacon` is the usual tool,
+ * but it cannot carry the Authorization header this API needs.) The caller makes the request idempotent.
+ */
+export function sendOnClose(path: string, body: unknown): void {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const token = getAccessToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  void fetch(apiUrl(path), { method: "POST", headers, body: JSON.stringify(body), keepalive: true, cache: "no-store" }).catch(() => undefined);
+}
+
 export const api = {
   get: <T>(path: string, query?: QueryParams, options?: RequestOptions) =>
     apiRequest<T>(path, { ...options, query }),

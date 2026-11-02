@@ -343,6 +343,7 @@ export type AmbiencePreferencesInput = {
 };
 
 /** A listening session, recorded when playback ends. `canAnswer`: long enough (5 minutes or more) to ask how the patient feels. */
-export type AmbienceSessionInput = { soundId: string; startedAt: string; durationSec: number };
+/** `id` is chosen by the app when playback starts: sending the same session twice (a retry, the page-close request) records it once. */
+export type AmbienceSessionInput = { id: string; soundId: string; startedAt: string; durationSec: number };
 export type AmbienceSessionResult = { id: string; canAnswer: boolean };
 export type AmbienceAnswer = "BETTER" | "SAME" | "WORSE";
