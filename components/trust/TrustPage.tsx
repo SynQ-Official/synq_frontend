@@ -6,6 +6,7 @@ import { homeSerif } from "@/components/home/fonts";
 import { ACCENT_LIGHT, BODY, BODY_SM, DISPLAY_L, DISPLAY_S, LABEL } from "@/components/home/typography";
 import { MinimalFooter } from "@/components/layout/MinimalFooter";
 import { SiteHeader } from "@/components/layout/site-header";
+import { EmergencyNote } from "@/components/legal/EmergencyNote";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CONTACT } from "@/lib/config/brand";
@@ -36,7 +37,7 @@ const reveal = {
 } as const;
 
 /** Only the details the company has actually provided are shown. */
-function ContactDetails({ labels }: { labels: { emailLabel: string; phoneLabel: string; addressLabel: string } }) {
+export function ContactDetails({ labels }: { labels: { emailLabel: string; phoneLabel: string; addressLabel: string } }) {
   const rows = [
     { icon: Mail, label: labels.emailLabel, value: CONTACT.email, href: CONTACT.email ? `mailto:${CONTACT.email}` : undefined },
     { icon: Phone, label: labels.phoneLabel, value: CONTACT.phone, href: CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s+/g, "")}` : undefined },
@@ -198,6 +199,8 @@ export function TrustPage() {
                         ))}
                       </motion.ul>
                     ) : null}
+
+                    {section.id === "security" ? <EmergencyNote className="mt-6" /> : null}
 
                     {section.id === "contact" ? (
                       <>

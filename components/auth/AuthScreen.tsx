@@ -21,6 +21,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { ROUTES } from "@/lib/config/routes";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
+import { LinkedText } from "@/components/legal/LegalLinks";
+import { legalUi } from "@/lib/i18n/legal";
 import { prefetchPatientHome } from "@/lib/patient/prefetch";
 import { cn } from "@/lib/utils";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
@@ -40,7 +42,7 @@ function safeRedirect(redirect: string | null, mode: AuthMode) {
 }
 
 type FormValues = { nickname: string; email: string; password: string; confirmPassword: string };
-type FieldName = keyof FormValues | "phone" | "consent";
+type FieldName = keyof FormValues | "phone" | "consent" | "terms";
 
 /** Which control to focus when a field fails validation. */
 const FIELD_IDS: Record<FieldName, string> = {
@@ -50,6 +52,7 @@ const FIELD_IDS: Record<FieldName, string> = {
   password: "auth-password",
   confirmPassword: "auth-confirm-password",
   consent: "auth-consent",
+  terms: "auth-terms",
 };
 
 const LINK_CLASS =
@@ -121,6 +124,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const [remember, setRemember] = useState(true);
   // Explicit, never pre-ticked: no consent, no account, so no Mira.
   const [consent, setConsent] = useState(false);
+  // Separate from the health-data consent above: acceptance of the Terms and the Privacy Policy, also never pre-ticked.
+  const [agreed, setAgreed] = useState(false);
 
   // Fields the visitor has already left: only those show live feedback, so nothing shouts while they are still typing.
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
@@ -163,6 +168,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     if (isSignUp && !passwordMeetsPolicy(values.password)) return fail("password", auth.errors.passwordRules);
     if (isSignUp && values.password !== values.confirmPassword) return fail("confirmPassword", auth.errors.confirmPassword);
     if (isSignUp && !consent) return fail("consent", auth.errors.consent);
+    if (isSignUp && !agreed) return fail("terms", legalUi[language].agreeError);
 
     startTransition(() => {
       (async () => {
@@ -457,6 +463,39 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
             </label>
             {errorField === "consent" && (
               <p id="auth-consent-error" role="alert" className="mt-2 text-[0.8125rem] leading-5 text-rose-700">{error}</p>
+            )}
+          </motion.div>
+        )}
+
+        {isSignUp && (
+          <motion.div variants={fadeUp(0, 8)}>
+            <div className="flex items-start gap-3 text-[0.9375rem] leading-6 text-ink-soft">
+              <Checkbox
+                id="auth-terms"
+                name="terms"
+                checked={agreed}
+                aria-labelledby="auth-terms-label"
+                aria-invalid={errorField === "terms"}
+                aria-describedby={errorField === "terms" ? "auth-terms-error" : undefined}
+                onCheckedChange={(state) => {
+                  setAgreed(state === true);
+                  if (errorField === "terms") { setError(""); setErrorField(null); }
+                }}
+                className="mt-1 h-[1.125rem] w-[1.125rem] shrink-0 rounded-[0.3125rem] border-line-strong bg-white shadow-none transition-colors duration-200 hover:border-teal-400 focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 data-[state=checked]:border-primary [&_svg]:h-3 [&_svg]:w-3"
+              />
+              {/* Not a <label>: a click on the two links must open the pages, not toggle the box. */}
+              <p id="auth-terms-label">
+                <LinkedText
+                  template={legalUi[language].agree}
+                  links={{
+                    terms: <Link href={ROUTES.terms} target="_blank" className={LINK_CLASS}>{legalUi[language].terms}</Link>,
+                    privacy: <Link href={ROUTES.privacy} target="_blank" className={LINK_CLASS}>{legalUi[language].privacyPolicy}</Link>,
+                  }}
+                />
+              </p>
+            </div>
+            {errorField === "terms" && (
+              <p id="auth-terms-error" role="alert" className="mt-2 text-[0.8125rem] leading-5 text-rose-700">{error}</p>
             )}
           </motion.div>
         )}

@@ -7,6 +7,8 @@ export const ROUTES = {
   psy: "/clinician",
   tracks: "/tracks",
   trust: "/trust",
+  privacy: "/privacy",
+  terms: "/terms",
   support: "/support",
   signIn: "/auth/signin",
   signUp: "/auth/signup",

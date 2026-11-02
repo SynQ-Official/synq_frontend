@@ -8,6 +8,7 @@ import { AuthBackdrop } from "@/components/auth/AuthBackdrop";
 import { homeSerif } from "@/components/home/fonts";
 import { SERIF } from "@/components/home/typography";
 import { SiteHeader } from "@/components/layout/site-header";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 import { LogoLoader } from "@/components/shared/LogoLoader";
 import { Toaster } from "@/components/ui/sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -45,6 +46,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           <ShieldCheck className="size-4 shrink-0 text-sage-700" aria-hidden />
           © {new Date().getFullYear()} {BRAND.name}
         </p>
+        <LegalLinks />
         <Link href="/support" className="inline-flex min-h-10 items-center rounded-md transition-colors duration-200 hover:text-teal-700">
           <span className="home-link-line">{dictionary.nav.support}</span>
         </Link>

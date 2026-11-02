@@ -13,3 +13,9 @@ export const CONTACT: { email: string | null; phone: string | null; address: str
     phone: null,
     address: null,
 };
+
+/**
+ * Emergency line shown in footers and on /trust. TODO(owner): confirm the number and add a local helpline.
+ * Only the number given by the owner is used here; nothing is looked up or invented.
+ */
+export const EMERGENCY = { number: "999" } as const;
