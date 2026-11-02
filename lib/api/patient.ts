@@ -73,6 +73,7 @@ export type ConsentInput = {
   shareSleepData?: boolean;
   shareMedication?: boolean;
   shareExercises?: boolean;
+  shareAmbiences?: boolean;
   journalShare?: JournalShareLevel;
   safetyAlertsConsent?: boolean;
   monitoringNoticeAccepted?: boolean;

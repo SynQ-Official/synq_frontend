@@ -176,11 +176,12 @@ function ConsentCard({ consent }: { consent: Consent }) {
     }
   }
 
-  const toggles: { key: keyof typeof s.categories; field: "shareMoodData" | "shareSleepData" | "shareMedication" | "shareExercises" | "shareDiagnostics"; value: boolean }[] = [
+  const toggles: { key: keyof typeof s.categories; field: "shareMoodData" | "shareSleepData" | "shareMedication" | "shareExercises" | "shareAmbiences" | "shareDiagnostics"; value: boolean }[] = [
     { key: "mood", field: "shareMoodData", value: consent.categories.mood },
     { key: "sleep", field: "shareSleepData", value: consent.categories.sleep },
     { key: "medication", field: "shareMedication", value: consent.categories.medication },
     { key: "exercises", field: "shareExercises", value: consent.categories.exercises },
+    { key: "ambiences", field: "shareAmbiences", value: consent.categories.ambiences },
     { key: "diagnostics", field: "shareDiagnostics", value: consent.categories.diagnostics },
   ];
 

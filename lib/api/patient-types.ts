@@ -175,7 +175,7 @@ export type Consent = {
   consentedAt: string | null;
   clinician: { firstName: string; lastName: string; role: string };
   monitoring: { clinicName: string | null; emergencyNumber: string | null };
-  categories: { diagnostics: boolean; mood: boolean; sleep: boolean; medication: boolean; exercises: boolean; journal: "NONE" | "FLAGGED_EXCERPTS" | "FULL" };
+  categories: { diagnostics: boolean; mood: boolean; sleep: boolean; medication: boolean; exercises: boolean; ambiences: boolean; journal: "NONE" | "FLAGGED_EXCERPTS" | "FULL" };
   safetyAlertsConsentAt: string | null;
   monitoringNoticeAckAt: string | null;
   /** Relationships created while sharing was pre-ticked: confirm what is shared (`required` once the 30 days have passed). */

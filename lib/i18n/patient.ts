@@ -373,7 +373,7 @@ const en = {
     privacy: {
       title: "Privacy & care team", body: "Choose what each clinician can see. Changes apply immediately and are logged.",
       empty: "You're not connected to a care team. Everything you write stays private to you.",
-      clinician: "{name}", pending: "Waiting for your approval", categories: { mood: "Mood", sleep: "Sleep", medication: "Medication", exercises: "Exercises", diagnostics: "Orientation results" },
+      clinician: "{name}", pending: "Waiting for your approval", categories: { mood: "Mood", sleep: "Sleep", medication: "Medication", exercises: "Exercises", ambiences: "Comfort sounds", diagnostics: "Orientation results" },
       journal: "Journal sharing", journalOptions: { NONE: "Nothing", FLAGGED_EXCERPTS: "Passages I choose", FULL: "Everything not marked private" },
       alerts: "Safety alerts", alertsBody: "Let my clinician know if my check-ins or journal suggest I may need urgent support.", accept: "Accept and start sharing", saveError: "We couldn't update that choice.",
       reconfirm: {
@@ -537,6 +537,8 @@ const en = {
       title: "A quick question (optional)",
       skip: "Skip",
       thanks: "Thank you.",
+      sharing: "Shared with your clinician only if you've allowed it.",
+      sharingLink: "Sharing settings",
       ADHD: { question: "Concentration:", better: "Better", same: "The same", worse: "Worse" },
       CALM: { question: "You feel:", better: "Calmer", same: "The same", worse: "Worse" },
     },
@@ -924,7 +926,7 @@ const ar: PatientCopy = {
     privacy: {
       title: "الخصوصية وفريق الرعاية", body: "اختر ما يمكن لكل معالج رؤيته. تُطبَّق التغييرات فورًا وتُسجَّل.",
       empty: "لستَ مرتبطًا بفريق رعاية. كل ما تكتبه يبقى خاصًا بك.",
-      clinician: "{name}", pending: "بانتظار موافقتك", categories: { mood: "المزاج", sleep: "النوم", medication: "الدواء", exercises: "التمارين", diagnostics: "نتائج التوجيه" },
+      clinician: "{name}", pending: "بانتظار موافقتك", categories: { mood: "المزاج", sleep: "النوم", medication: "الدواء", exercises: "التمارين", ambiences: "أصوات الراحة", diagnostics: "نتائج التوجيه" },
       journal: "مشاركة المفكرة", journalOptions: { NONE: "لا شيء", FLAGGED_EXCERPTS: "مقاطع أختارها", FULL: "كل ما لم أجعله خاصًا" },
       alerts: "تنبيهات السلامة", alertsBody: "دع معالجي يعلم إذا أوحت فحوصاتي أو مفكرتي بأنني قد أحتاج دعمًا عاجلًا.", accept: "قبول وبدء المشاركة", saveError: "تعذّر تحديث هذا الخيار.",
       reconfirm: {
@@ -1088,6 +1090,8 @@ const ar: PatientCopy = {
       title: "سؤال سريع (اختياري)",
       skip: "تخطَّ",
       thanks: "شكرًا لك.",
+      sharing: "تُشارَك مع معالجك فقط إذا سمحتَ بذلك.",
+      sharingLink: "إعدادات المشاركة",
       ADHD: { question: "التركيز:", better: "أفضل", same: "كما هو", worse: "أسوأ" },
       CALM: { question: "تشعر بأنك:", better: "أكثر هدوءًا", same: "كما أنت", worse: "أسوأ" },
     },

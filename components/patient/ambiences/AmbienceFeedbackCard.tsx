@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { GlassCard } from "@/components/patient/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,12 @@ export function AmbienceFeedbackCard({ track, onAnswer, onClose }: { track: Pati
         <>
           <p className="text-sm font-medium text-ink-soft">{copy.feedback.title}</p>
           <p id={questionId} className="font-medium text-ink">{words.question}</p>
+          <p className="text-[0.8125rem] leading-5 text-ink-muted">
+            {copy.feedback.sharing}{" "}
+            <Link href="/dashboard/settings" className="rounded-sm font-medium text-ink underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              {copy.feedback.sharingLink}
+            </Link>
+          </p>
           <div role="group" aria-labelledby={questionId} className="flex flex-wrap gap-2">
             {options.map(({ answer, label }) => (
               <Button key={answer} type="button" variant="outline" size="lg" aria-disabled={state === "sending"} onClick={() => state !== "sending" && void choose(answer)} className="min-h-11 rounded-full">
