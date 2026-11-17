@@ -193,12 +193,18 @@ export function MiraChatExperience({
   // A completed orientation lives on its own route — never fall back into the chat flow. When it has just been
   // finished, the hand-over takes a proper beat (the finishing screen); a restored one opens straight away.
   const reduceMotion = useReducedMotion();
+  const resultHref = sessionId ? `${ROUTES.orientation}/result/${encodeURIComponent(sessionId)}` : null;
+  const finishedAt = useRef<number | null>(null);
   useEffect(() => {
-    if (!result || !sessionId) return;
-    const wait = finishedLive ? (reduceMotion ? 1400 : FINISH_STEP_MS * 3 + 1100) : 0;
-    const timer = window.setTimeout(() => router.replace(`${ROUTES.orientation}/result/${encodeURIComponent(sessionId)}`), wait);
+    if (!result || !resultHref) return;
+    // The route's code loads during the finishing beat; the hand-off is timed from the moment the result arrived,
+    // so a re-run of this effect (re-render, hot refresh) never restarts it.
+    router.prefetch(resultHref);
+    finishedAt.current ??= Date.now();
+    const beat = finishedLive ? (reduceMotion ? 1400 : FINISH_STEP_MS * 3 + 1100) : 0;
+    const timer = window.setTimeout(() => router.replace(resultHref), Math.max(0, finishedAt.current + beat - Date.now()));
     return () => window.clearTimeout(timer);
-  }, [result, sessionId, finishedLive, reduceMotion, router]);
+  }, [result, resultHref, finishedLive, reduceMotion, router]);
 
   const showNameIntake = !blocked && !completed && !result && !name && !nameSkipped;
   const conversationLanguage = language;
@@ -402,7 +408,7 @@ export function MiraChatExperience({
         </div>
       ) : result ? (
         finishedLive ? (
-          <FinishingScreen total={position.total} />
+          <FinishingScreen total={position.total} href={resultHref} />
         ) : (
           <div className="relative flex min-h-[24rem] flex-1 items-center justify-center px-4" role="status">
             <span className="orientation-glass inline-flex items-center gap-3 rounded-full px-5 py-3 text-sm font-medium text-ink">

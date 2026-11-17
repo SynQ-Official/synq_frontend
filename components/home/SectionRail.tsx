@@ -3,6 +3,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { healthcareCopy } from "@/lib/i18n/healthcare";
 import { homeStoryCopy } from "@/lib/i18n/homeStory";
+import { teamCopy } from "@/lib/i18n/team";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -20,6 +21,7 @@ export function SectionRail() {
         { id: "home", label: copy.nav.home },
         { id: "what", label: story.what.rail },
         { id: "healthcare", label: healthcareCopy[language].rail },
+        { id: "team", label: teamCopy[language].rail },
         { id: "cta", label: copy.nav.getStarted },
     ];
 

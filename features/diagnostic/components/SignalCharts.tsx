@@ -9,6 +9,7 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
+import { FIRST_MEASURE } from "@/components/patient/ui/TrendChart";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +49,7 @@ export function SignalRadar({ data, label }: { data: SignalDatum[]; label: strin
 
   return (
     <div className="h-72 w-full sm:h-80 xl:h-[22rem]" role="img" aria-label={label}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" initialDimension={FIRST_MEASURE}>
         <RadarChart data={chartData} margin={{ top: 24, right: 36, bottom: 24, left: 36 }} outerRadius="76%">
           <PolarGrid stroke="var(--color-line-strong)" strokeOpacity={0.7} />
           <PolarAngleAxis dataKey="subject" tick={(props) => <AxisTick {...props} />} />

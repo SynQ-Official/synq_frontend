@@ -6,6 +6,7 @@ import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MiraAvatar } from "./MiraMessage";
 import { ESTIMATED_QUESTIONS } from "../lib/chapters";
@@ -17,7 +18,7 @@ export const FINISH_STEP_MS = 950;
  * The last beat of the conversation. The last answer does not drop the visitor onto a loading pill: a ring
  * closes to all of them, three quiet steps tick off what Mira is doing, and only then does the result open.
  */
-export function FinishingScreen({ total = ESTIMATED_QUESTIONS }: { total?: number }) {
+export function FinishingScreen({ total = ESTIMATED_QUESTIONS, href }: { total?: number; /** The result page: its link is the way on if the automatic hand-off ever stalls. */ href?: string | null }) {
   const { dictionary } = useLanguage();
   const copy = dictionary.diagnostic.finishing;
   const reduce = useReducedMotion();
@@ -103,7 +104,15 @@ export function FinishingScreen({ total = ESTIMATED_QUESTIONS }: { total?: numbe
           })}
         </ul>
 
-        <p className={cn("mt-7 text-[0.8125rem] text-ink-muted transition-opacity duration-500", ready ? "opacity-100" : "opacity-0")}>{copy.opening}</p>
+        <p className={cn("mt-7 text-[0.8125rem] text-ink-muted transition-opacity duration-500", ready ? "opacity-100" : "opacity-0")}>
+          {href && ready ? (
+            <Link href={href} replace className="font-medium text-teal-700 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
+              {copy.opening}
+            </Link>
+          ) : (
+            copy.opening
+          )}
+        </p>
       </motion.div>
     </div>
   );

@@ -64,6 +64,7 @@ const nextConfig: NextConfig = {
       // "/" is the home page; /home would be a duplicate URL for search engines.
       { source: "/home", destination: "/", permanent: true },
       { source: "/psy", destination: "/clinician", permanent: true },
+      { source: "/trust", destination: "/privacy", permanent: true },
       { source: "/diagnostic", destination: "/orientation", permanent: true },
       { source: "/diagnostic/:path*", destination: "/orientation/:path*", permanent: true },
     ];

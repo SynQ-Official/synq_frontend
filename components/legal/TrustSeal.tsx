@@ -16,7 +16,7 @@ function place(index: number, total: number) {
 }
 
 /**
- * The six pillars as a seal: each one a node on a ring around a shield, joined to it by a line that draws in. The pillar
+ * The pillars as a seal: each one a node on a ring around a shield, joined to it by a line that draws in. The pillar
  * being read lights up in gold, a pulse leaves the shield towards it, and its name rests under the shield. Reading the page
  * is how it moves, so the picture and the index always agree. Decorative: the sections carry the words.
  */

@@ -25,7 +25,7 @@ function Cell({ index, className, children }: { index: number; className: string
       className={className}
       initial={reduce ? false : calm ? { opacity: 0 } : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.5 + index * 0.07 }}
+      transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.15 + index * 0.06 }}
     >
       {children}
     </motion.div>

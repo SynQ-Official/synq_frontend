@@ -280,7 +280,7 @@ export function SupportScreen() {
                             </motion.ul>
 
                             <motion.p variants={fadeUp(0, 14)} className="mt-5">
-                                <Link href={ROUTES.trust} className="inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
+                                <Link href={ROUTES.privacy} className="inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
                                     <span className="home-link-line">{copy.faqMore}</span>
                                     <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                                 </Link>

@@ -7,6 +7,13 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 export type TrendPoint = { label: string; value: number | null };
 
 /**
+ * A chart's size is unknown until its container has been laid out and measured; Recharts starts from -1 and warns about it
+ * on every mount. A minimal positive size for that first render keeps the console clean without drawing anything at a
+ * wrong size: the real one arrives with the first measurement.
+ */
+export const FIRST_MEASURE = { width: 1, height: 1 } as const;
+
+/**
  * Soft area chart for a series (0–10 by default; pass `domain`/`ticks` for another scale). Gaps stay gaps (no invented values). The time axis is
  * always left-to-right, also in Arabic, so "later" never flips meaning.
  */
@@ -30,7 +37,7 @@ export function TrendChart({
   const gradientId = useId().replace(/:/g, "");
   return (
     <div dir="ltr" style={{ height }} className={cn("w-full", className)}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" initialDimension={FIRST_MEASURE}>
         <AreaChart data={data} margin={{ top: 8, right: 12, left: -6, bottom: 0 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -71,7 +78,7 @@ export function Sparkline({ values, color = "var(--color-teal-600)", height = 40
   const data = values.map((value, index) => ({ index, value }));
   return (
     <div dir="ltr" style={{ height }} className="w-full" aria-hidden>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" initialDimension={FIRST_MEASURE}>
         <AreaChart data={data} margin={{ top: 4, right: 2, left: 2, bottom: 2 }}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
