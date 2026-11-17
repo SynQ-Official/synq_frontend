@@ -162,6 +162,7 @@ export function MiraChatExperience({
     sessionId,
     chapter,
     progress,
+    questions,
     isSending,
     isBotTyping,
     isStarting,
@@ -174,6 +175,7 @@ export function MiraChatExperience({
     phase,
     error,
     safety,
+    options,
     result,
     finishedLive,
     attempt,
@@ -254,6 +256,8 @@ export function MiraChatExperience({
   function handleSend() {
     const text = input.trim();
     if (!text || busy || result || completed) return;
+    // A choice question is open: the answer is one of the options, never typed text.
+    if (options.length > 0 && safety.level !== "urgent") return;
     // Only symbols or spaces: nothing Mira could read as an answer. Say so here instead of sending it.
     if (!hasReadableContent(text)) {
       showHint(diagnostic.unreadableHint);
@@ -342,11 +346,14 @@ export function MiraChatExperience({
     reader.readAsText(file);
   }
 
-  const position = questionPosition(progress);
+  const position = questionPosition(progress, questions);
   const showAlmostThere = !completed && !result && !error && safety.level !== "urgent" && progress >= 0.7 && position.remaining > 0;
   const unreadableDraft = input.trim().length > 0 && !hasReadableContent(input);
-  const canSend = Boolean(input.trim()) && !unreadableDraft && !busy && !completed;
-  const showSuggestions = !completed && !result && !input.trim() && messages.length <= 1 && !showNameIntake;
+  // Mira is asking a choice question (backend input_enabled = false): tapping an option is the only way to answer.
+  const choiceOnly = options.length > 0 && !completed && safety.level !== "urgent";
+  const choiceHint = conversationLanguage === "ar" ? "اختر الإجابة الأنسب" : "Tap the answer that fits best";
+  const canSend = Boolean(input.trim()) && !unreadableDraft && !busy && !completed && !choiceOnly;
+  const showSuggestions = !completed && !result && !input.trim() && messages.length <= 1 && !showNameIntake && !choiceOnly;
   const multiline = input.includes("\n") || input.length > 90;
 
   return (
@@ -395,7 +402,7 @@ export function MiraChatExperience({
         </div>
       ) : result ? (
         finishedLive ? (
-          <FinishingScreen />
+          <FinishingScreen total={position.total} />
         ) : (
           <div className="relative flex min-h-[24rem] flex-1 items-center justify-center px-4" role="status">
             <span className="orientation-glass inline-flex items-center gap-3 rounded-full px-5 py-3 text-sm font-medium text-ink">
@@ -414,10 +421,10 @@ export function MiraChatExperience({
             completed ? "max-w-4xl" : "max-w-chat lg:grid-cols-[19rem_minmax(0,1fr)] xl:grid-cols-[21.5rem_minmax(0,1fr)]",
           )}
         >
-          {!completed && <SessionRail chapter={chapter} progress={progress} language={conversationLanguage} name={name} className="hidden lg:flex" />}
+          {!completed && <SessionRail chapter={chapter} progress={progress} questions={questions} language={conversationLanguage} name={name} className="hidden lg:flex" />}
 
           <div className="flex min-h-0 min-w-0 flex-col gap-3">
-            {!completed && <CompactProgress chapter={chapter} progress={progress} language={conversationLanguage} className="max-sm:mx-3 lg:hidden" />}
+            {!completed && <CompactProgress chapter={chapter} progress={progress} questions={questions} language={conversationLanguage} className="max-sm:mx-3 lg:hidden" />}
 
             <AnimatePresence>
               {safety.level === "urgent" && (
@@ -574,7 +581,7 @@ export function MiraChatExperience({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3, ease: EASE_OUT }}
-                      className="mb-3 flex items-center gap-2 rounded-2xl border border-gold-100 bg-[linear-gradient(90deg,var(--color-gold-50),var(--color-teal-50))] px-3.5 py-2 text-[0.8125rem] font-medium text-ink-soft rtl:bg-[linear-gradient(270deg,var(--color-gold-50),var(--color-teal-50))]"
+                      className="mb-3 flex items-center gap-2 rounded-2xl border border-gold-100 [@media(max-height:44rem)]:hidden bg-[linear-gradient(90deg,var(--color-gold-50),var(--color-teal-50))] px-3.5 py-2 text-[0.8125rem] font-medium text-ink-soft rtl:bg-[linear-gradient(270deg,var(--color-gold-50),var(--color-teal-50))]"
                     >
                       <Sparkles className="h-4 w-4 shrink-0 text-gold-600" aria-hidden />
                       {fill(diagnostic.almostThere, { count: position.remaining })}
@@ -620,6 +627,30 @@ export function MiraChatExperience({
                   )}
                 </AnimatePresence>
 
+                {options.length > 0 && !busy && !completed && safety.level !== "urgent" && (
+                  <div role="group" aria-labelledby="mira-options-label" className="mb-3 rounded-[1.25rem] border border-teal-100 bg-teal-50/50 p-3 sm:p-4">
+                    <p id="mira-options-label" className={cn(LABEL, "mb-3 px-1 text-ink-soft")}>{choiceHint}</p>
+                    {/* Short answers: two per row on phones, one row from tablet up; long ones wrap inside their button. */}
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-2.5">
+                      {options.map((option) => (
+                        <motion.button
+                          key={option.id}
+                          type="button"
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => void sendMessage(`${option.emoji} ${option.text}`.trim())}
+                          className="group inline-flex min-h-12 min-w-0 cursor-pointer items-center gap-2.5 rounded-2xl border border-line bg-white py-2 ps-2 pe-4 text-start text-[0.9375rem] font-medium text-ink shadow-xs transition-[border-color,background-color,color,box-shadow] duration-200 hover:border-teal-300 hover:bg-teal-50/60 hover:text-teal-900 hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 active:border-teal-500 sm:min-w-32 sm:text-base"
+                        >
+                          <span aria-hidden className="inline-flex size-8 shrink-0 items-center justify-center rounded-xl border border-teal-100 bg-teal-50 text-sm font-semibold text-teal-800 transition-colors duration-200 group-hover:border-teal-600 group-hover:bg-teal-700 group-hover:text-white">
+                            {option.label}
+                          </span>
+                          {option.emoji ? <span aria-hidden>{option.emoji}</span> : null}
+                          <span className="min-w-0 break-words">{option.text}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <label htmlFor="mira-input" className="sr-only">
                   {diagnostic.inputLabel}
                 </label>
@@ -628,6 +659,8 @@ export function MiraChatExperience({
                     "flex items-end gap-1 border border-line-strong bg-white p-2 shadow-[var(--shadow-soft)] transition-[border-color,box-shadow,border-radius] duration-300 ease-out-soft focus-within:border-teal-300 focus-within:shadow-[0_0_0_4px_rgb(91_144_145/0.14),var(--shadow-soft)] sm:p-2.5",
                     multiline ? "rounded-[1.75rem]" : "rounded-full",
                     completed && "cursor-not-allowed bg-white/60 opacity-70",
+                    // A choice question is answered by tapping; a disabled text box beside the options only confuses.
+                    choiceOnly && "hidden",
                   )}
                   aria-disabled={completed || undefined}
                 >
@@ -645,7 +678,7 @@ export function MiraChatExperience({
                     variant="ghost"
                     size="icon"
                     onClick={handleAttachClick}
-                    disabled={completed}
+                    disabled={completed || choiceOnly}
                     aria-label={diagnostic.composerAttach}
                     title={diagnostic.composerAttach}
                     className="hidden h-11 w-11 rounded-full text-ink-muted hover:bg-teal-50 hover:text-teal-800 sm:inline-flex"
@@ -669,10 +702,11 @@ export function MiraChatExperience({
                         handleSend();
                       }
                     }}
-                    placeholder={completed ? diagnostic.completed.inputDisabled : diagnostic.placeholder}
-                    disabled={busy || completed}
+                    placeholder={completed ? diagnostic.completed.inputDisabled : choiceOnly ? choiceHint : diagnostic.placeholder}
+                    disabled={busy || completed || choiceOnly}
                     aria-describedby="mira-session-meta"
-                    className="max-h-[min(140px,22dvh)] min-h-11 min-w-0 flex-1 resize-none bg-transparent px-2 py-2.5 text-base leading-6 text-ink outline-none placeholder:text-ink-muted disabled:opacity-60 sm:text-[1.0625rem]"
+                    // `!`: the global :focus-visible outline would draw a square inside the pill; the pill's focus-within ring shows focus.
+                    className="max-h-[min(140px,22dvh)] min-h-11 min-w-0 flex-1 resize-none bg-transparent px-2 py-2.5 text-base leading-6 text-ink !outline-none placeholder:text-ink-muted disabled:opacity-60 sm:text-[1.0625rem]"
                   />
 
                   {input.trim() && (
@@ -697,7 +731,7 @@ export function MiraChatExperience({
                     variant="ghost"
                     size="icon"
                     onClick={toggleDictation}
-                    disabled={completed}
+                    disabled={completed || choiceOnly}
                     aria-label={dictating ? diagnostic.composerDictationLive : diagnostic.composerDictate}
                     title={dictating ? diagnostic.composerDictationLive : diagnostic.composerDictate}
                     aria-pressed={dictating}
@@ -742,7 +776,7 @@ export function MiraChatExperience({
                   )}
                 </div>
 
-                <div className={cn("mt-2.5 flex items-center justify-between gap-3 px-2 text-[0.8125rem] text-ink-soft", completed && "hidden")}>
+                <div className={cn("mt-2.5 flex items-center justify-between gap-3 px-2 text-[0.8125rem] text-ink-soft", (completed || choiceOnly) && "hidden")}>
                   {unreadableDraft ? (
                     <span role="status" className="inline-flex items-center gap-1.5 font-medium text-gold-700">
                       <Info className="size-3.5 shrink-0" aria-hidden />
@@ -754,7 +788,8 @@ export function MiraChatExperience({
                   <span className="hidden sm:inline">{diagnostic.enterHint}</span>
                 </div>
 
-                <ul id="mira-session-meta" className="mt-5 hidden flex-wrap items-center justify-center gap-y-2 text-[0.8125rem] text-ink-soft md:flex">
+                {/* Reassurance row: dropped on short screens, where every line belongs to the conversation. */}
+                <ul id="mira-session-meta" className="mt-5 hidden flex-wrap items-center justify-center gap-y-2 text-[0.8125rem] text-ink-soft md:flex [@media(max-height:50rem)]:!hidden">
                   {diagnostic.footerTrust.map((label, i) => {
                     const Icon = TRUST_ICONS[i] ?? ShieldCheck;
                     return (

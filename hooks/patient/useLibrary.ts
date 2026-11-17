@@ -14,34 +14,28 @@ type LibraryState = { items: LibraryItem[]; /** Backend reason code when there i
 /** Sent once per article and kind in this tab; a repeated click or a re-render never adds a second event. */
 const sent = new Set<string>();
 
-/** A refresh is asked for once per page session: if the catalog has nothing for a theme, reloading must not keep asking. */
-let refreshAsked = false;
-
 const newEventId = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`);
 
 /**
- * The articles the Smart Library recommends to this patient.
+ * The articles the Smart Library recommends from this patient's own Smart Journal.
  *
- * It first reads what was already recommended (read-only, so reloading the page does not use up the catalog)
- * and only asks for new articles when there are none. An empty answer (no articles yet, no pathway, nothing
- * eligible) is a normal state, not an error: `items` is empty and `reason` says why. Everything is the signed-in
- * patient's own; nothing here sends an id or any free text.
+ * It reads what still applies (read-only, so reloading the page does not use up the catalog) and only asks for new
+ * articles when the backend says a theme in the Journal has one waiting. An empty answer (too few entries, no recurring
+ * theme, nothing relevant) is a normal state, not an error: `items` is empty and `reason` says why. Everything is the
+ * signed-in patient's own; nothing here sends an id or any free text.
+ *
+ * The key sits under "journal" so that every change to the Journal, or a finished analysis, recalculates it.
  */
 export function useLibrary(enabled = true) {
   const resource = usePatientResource<LibraryState>(
-    enabled ? "library:recommendations" : null,
+    enabled ? "journal:library" : null,
     async () => {
       let current = await libraryApi.current();
-      if (current.reason) return { items: [], reason: current.reason };
-      // The patient's own check-ins/journal point to a theme nothing has answered yet (e.g. short sleep): ask for it.
-      if (current.refresh && !refreshAsked) {
-        refreshAsked = true;
-        const fresh = await libraryApi.recommend({ limit: 3 });
-        if (fresh.type === "RECOMMENDATION") current = await libraryApi.current();
+      if (current.refresh) {
+        await libraryApi.recommend({ limit: 3 });
+        current = await libraryApi.current();
       }
-      if (current.items.length) return { items: current.items };
-      const fresh = await libraryApi.recommend({ limit: BATCH });
-      return fresh.type === "RECOMMENDATION" ? { items: fresh.items } : { items: [], reason: fresh.reason };
+      return { items: current.items, reason: current.reason };
     },
     { staleMs: 5 * 60_000 },
   );
@@ -87,7 +81,7 @@ export function useLibrary(enabled = true) {
 
   return {
     items: resource.data?.items ?? [],
-    /** Why there is nothing to show (`NO_ELIGIBLE_CONTENT`, `ADHD_PATHWAY`, …), when the answer was empty. */
+    /** Why there is nothing to show (`NO_JOURNAL_ENTRIES`, `LIMITED_JOURNAL`, …), when the answer was empty. */
     reason: resource.data?.reason,
     isLoading: resource.isLoading,
     error: resource.error,

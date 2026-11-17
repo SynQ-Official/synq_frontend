@@ -4,9 +4,10 @@ import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { AuthBrandPanel } from "@/components/auth/AuthBrandPanel";
+import { AuthBackdrop } from "@/components/auth/AuthBackdrop";
 import { homeSerif } from "@/components/home/fonts";
+import { SERIF } from "@/components/home/typography";
 import { SiteHeader } from "@/components/layout/site-header";
-import { GridBackdrop } from "@/components/shared/GridBackdrop";
 import { LogoLoader } from "@/components/shared/LogoLoader";
 import { Toaster } from "@/components/ui/sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Shell for /auth/*: the same capsule header as every public page (it adapts — here it offers the other
- * auth page), a still hairline-grid canvas, and the form first with the brand story beside it on desktop.
+ * auth page), the home hero's light behind everything, and the form first with the brand story beside it on desktop.
  * Mobile/tablet: the form is the whole experience; the layout mirrors by reading direction via grid order.
  */
 export function AuthLayout({ children }: { children: ReactNode }) {
@@ -25,7 +26,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
 
   return (
     <div dir={direction} className={cn(homeSerif.variable, "relative isolate flex min-h-dvh flex-col overflow-x-clip bg-canvas text-ink")}>
-      <GridBackdrop />
+      <AuthBackdrop />
       {/* Validation and sign-in failures surface here as well as inline, so they are never missed. */}
       <Toaster position="top-center" richColors closeButton dir={direction} />
 
@@ -51,6 +52,13 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
+/** The frosted card every auth form sits on, the same glass as the home page's surfaces. */
+export const AUTH_CARD =
+  "relative w-full rounded-[1.75rem] border border-white/80 bg-white/80 p-6 shadow-[inset_0_1px_0_#fff,0_2px_6px_rgb(17_76_97/0.05),0_30px_60px_-30px_rgb(17_76_97/0.35)] backdrop-blur-xl sm:p-9 lg:p-10";
+
+/** Auth headings in the home page's display serif (Arabic keeps the sans, a little heavier). */
+export const AUTH_TITLE = `${SERIF} text-[clamp(2rem,1.4vw+1.5rem,2.75rem)] font-light leading-[1.08] tracking-[-0.03em] text-ink rtl:font-semibold rtl:tracking-normal`;
 
 /**
  * Shown while the page works out whether the visitor already has a session (and while it redirects them). It covers

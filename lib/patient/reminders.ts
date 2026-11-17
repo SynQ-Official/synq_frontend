@@ -1,30 +1,36 @@
 "use client";
 
 /**
- * Daily check-in reminder preferences. They live on the device on purpose: browser
- * notification permission is per browser, and the reminder only fires while SynQ
- * is open (no push service yet).
+ * Device-side reminder state. The check-in time and reminders themselves are saved on the server
+ * (`checkinsApi.schedule`) and sent by it; what stays here is per device: whether this browser may show
+ * system notifications, the notification read state, and the time picked before reminders moved to the
+ * server (only used as the first setup's default).
  */
+import { patientKey } from "@/lib/api/tokens";
+
 export type ReminderPrefs = { enabled: boolean; time: string; browser: boolean };
 
 const PREFS_KEY = "vitamind_reminder_prefs";
-const FIRED_KEY = "vitamind_reminder_fired";
 const READ_KEY = "vitamind_notifications_read";
 const CHANGE_EVENT = "vitamind-reminders-change";
 
 export const DEFAULT_REMINDER: ReminderPrefs = { enabled: true, time: "20:00", browser: false };
 
-function read(key: string): string | null {
+// Both keys are stored per patient (`key:<userId>`): a shared device never hands one patient's reminder time or
+// read notifications to the next, yet they are harmless preferences, so they stay with their owner across sign-outs.
+function read(base: string): string | null {
   try {
-    return window.localStorage.getItem(key);
+    const key = patientKey(base);
+    return key ? window.localStorage.getItem(key) : null;
   } catch {
     return null;
   }
 }
 
-function write(key: string, value: string) {
+function write(base: string, value: string) {
   try {
-    window.localStorage.setItem(key, value);
+    const key = patientKey(base);
+    if (key) window.localStorage.setItem(key, value);
   } catch {
     /* storage unavailable — the preference just won't persist */
   }
@@ -63,14 +69,6 @@ export function subscribeReminders(onChange: () => void) {
   };
 }
 
-export function reminderAlreadyFired(day: string): boolean {
-  return read(FIRED_KEY) === day;
-}
-
-export function markReminderFired(day: string) {
-  write(FIRED_KEY, day);
-}
-
 /** Raw snapshot of the read ids (a stable string) for useSyncExternalStore. */
 export function readNotificationSnapshot(): string {
   return read(READ_KEY) ?? "";
@@ -88,10 +86,4 @@ export function saveNotificationIds(ids: Set<string>) {
   // Only the most recent ids matter; keep the list from growing forever.
   write(READ_KEY, JSON.stringify([...ids].slice(-60)));
   window.dispatchEvent(new Event(CHANGE_EVENT));
-}
-
-/** minutes since midnight of an "HH:MM" string */
-export function minutesOf(time: string): number {
-  const [h, m] = time.split(":").map(Number);
-  return (h || 0) * 60 + (m || 0);
 }

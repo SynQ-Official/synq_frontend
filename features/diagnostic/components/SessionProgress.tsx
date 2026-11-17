@@ -8,7 +8,7 @@ import { fill } from "@/lib/i18n/format";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { ACCENT_LIGHT, LABEL, SERIF } from "@/components/home/typography";
-import { CHAPTER_SEQUENCE, questionPosition } from "../lib/chapters";
+import { CHAPTER_SEQUENCE, questionPosition, type QuestionCount } from "../lib/chapters";
 import type { MiraChapter } from "../types";
 import { ChapterIcon } from "./ChapterIcon";
 import { MiraAvatar } from "./MiraMessage";
@@ -16,17 +16,19 @@ import { MiraAvatar } from "./MiraMessage";
 type ProgressProps = {
   chapter: MiraChapter;
   progress: number;
+  /** The agent's own count; the total grows past 16 when Mira asks a clarification. */
+  questions?: QuestionCount | null;
   language: Lang;
   className?: string;
   /** Visitor's first name (kept for API compatibility; greeting lives in the conversation). */
   name?: string;
 };
 
-function useProgressModel({ chapter, progress, language }: ProgressProps) {
+function useProgressModel({ chapter, progress, questions, language }: ProgressProps) {
   const diagnostic = copy[language].diagnostic;
   const clamped = Math.max(0, Math.min(1, progress));
   const percent = Math.round(clamped * 100);
-  const position = questionPosition(clamped);
+  const position = questionPosition(clamped, questions);
   const activeIndex = chapter === "COMPLETE" ? CHAPTER_SEQUENCE.length : CHAPTER_SEQUENCE.indexOf(chapter);
   // Encouragement follows the journey: start → rhythm → past halfway → almost → done.
   const stageIndex = clamped >= 1 ? 4 : clamped >= 0.7 ? 3 : clamped >= 0.5 ? 2 : position.answered > 0 ? 1 : 0;

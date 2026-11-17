@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { ApiError } from "@/lib/api/client";
-import { checkinsApi, type CheckinInput } from "@/lib/api/patient";
+import { checkinsApi, type CheckinInput, type CheckinSchedule, type CheckinScheduleInput } from "@/lib/api/patient";
 import type { Checkin, DailyReport, GoalStatus } from "@/lib/api/patient-types";
 import { currentStreak, localDay } from "@/lib/patient/format";
 import { invalidatePatientData, usePatientResource } from "@/hooks/usePatientResource";
@@ -11,6 +11,17 @@ import { invalidatePatientData, usePatientResource } from "@/hooks/usePatientRes
 export function useTodayCheckin() {
   const day = localDay();
   return usePatientResource<Checkin | null>(`checkins:today:${day}`, async () => (await checkinsApi.today(day)).data);
+}
+
+/** The patient's check-in schedule from the server (null until set). Under "checkins", so a submitted check-in refreshes `today`. */
+export function useCheckinSchedule() {
+  return usePatientResource<CheckinSchedule | null>("checkins:schedule", async () => (await checkinsApi.schedule()).data);
+}
+
+export async function saveCheckinSchedule(input: CheckinScheduleInput): Promise<CheckinSchedule> {
+  const { data } = await checkinsApi.setSchedule(input);
+  invalidatePatientData("checkins:schedule");
+  return data;
 }
 
 /** The last `days` check-ins, oldest first, plus the streak they imply. */

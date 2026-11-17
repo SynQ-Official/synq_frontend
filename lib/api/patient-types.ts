@@ -175,7 +175,7 @@ export type Consent = {
   consentedAt: string | null;
   clinician: { firstName: string; lastName: string; role: string };
   monitoring: { clinicName: string | null; emergencyNumber: string | null };
-  categories: { diagnostics: boolean; mood: boolean; sleep: boolean; medication: boolean; exercises: boolean; journal: "NONE" | "FLAGGED_EXCERPTS" | "FULL" };
+  categories: { diagnostics: boolean; mood: boolean; sleep: boolean; medication: boolean; exercises: boolean; ambiences: boolean; journal: "NONE" | "FLAGGED_EXCERPTS" | "FULL" };
   safetyAlertsConsentAt: string | null;
   monitoringNoticeAckAt: string | null;
   /** Relationships created while sharing was pre-ticked: confirm what is shared (`required` once the 30 days have passed). */
@@ -238,7 +238,10 @@ export type LibraryContent = {
 };
 
 /** What in the patient's own check-ins or journal made an article relevant now. Shown as a gentle line, never a diagnosis. */
-export type LibraryBecause = "HIGH_ENERGY_LOW_SLEEP" | "SLEEP_SHORT" | "HIGH_ENERGY" | "SLEEP_LONG" | "LOW_MOOD" | "LOW_ENERGY" | "LOW_MOTIVATION" | "SOCIAL_WITHDRAWAL" | "LOW_FOCUS" | "HIGH_STRESS" | "SLEEP_IRREGULAR";
+export type LibraryBecause = "HIGH_STRESS" | "SLEEP" | "GOAL_DIFFICULTY" | "LOW_MOOD" | "LOW_ENERGY" | "LOW_MOTIVATION" | "HIGH_ENERGY" | "SOCIAL_WITHDRAWAL" | "LOW_FOCUS" | "WORK_STUDY" | "RELATIONSHIPS" | "ROUTINE" | "HEALTH" | "IMPROVING";
+
+/** Why the library has nothing to recommend. Anything else (a track without a library) reads as `NO_RELEVANT_CONTENT`. */
+export type LibraryEmptyReason = "NO_JOURNAL_ENTRIES" | "LIMITED_JOURNAL" | "NO_JOURNAL_PATTERN" | "SUPPORT_HOLD" | "NO_RELEVANT_CONTENT";
 
 export type LibraryItem = { recommendationId: string; content: LibraryContent; reasons: string[]; because?: LibraryBecause[] };
 
@@ -247,7 +250,7 @@ export type LibraryCurrent = {
   mode: string;
   items: LibraryItem[];
   reason?: string;
-  /** Recent check-ins or journal point to a theme no recommendation has answered yet: ask for new articles. */
+  /** The Journal points to a theme with an article not recommended yet: ask for new articles. */
   refresh?: boolean;
 };
 
@@ -290,3 +293,57 @@ export type SparkView = {
   /** How many tasks the last piece of text became. */
   added: number;
 };
+
+/** Comfort sounds (`/me/ambiences`): the sounds this patient may see, with their settings. */
+export type AmbienceCategory = "NOISE" | "LOFI" | "SOFT_MUSIC" | "NATURE";
+
+export type AmbienceSound = {
+  id: string;
+  category: AmbienceCategory;
+  label: { en: string; ar: string };
+  /** Path in the media bucket without extension; the player adds ".opus" / ".m4a". */
+  url: string;
+  licence: string;
+  author: string;
+  source: string;
+  isDefault: boolean;
+};
+
+export type AmbiencePreferences = {
+  enabled: boolean;
+  /** Always one of `sounds` (the default when the patient has not chosen), or null when there is none. */
+  favoriteSoundId: string | null;
+  /** Percent, 0 to 70. */
+  volume: number;
+  /** Regular bedtime "HH:MM" in `timezone`. */
+  eveningTime: string | null;
+  timezone: string | null;
+  /** An in-app notification at the bedtime. Off by default; needs a bedtime; never an e-mail. */
+  eveningReminder: boolean;
+};
+
+export type Ambiences = {
+  track: PatientTrack;
+  /** False when there is nothing to offer: no track, or the psychosis track before the clinician has switched it on. */
+  available: boolean;
+  preferences: AmbiencePreferences;
+  sounds: AmbienceSound[];
+  /** For the help button, always one tap away while a sound plays. */
+  emergencyResources: string[];
+};
+
+export type AmbiencePreferencesInput = {
+  enabled?: boolean;
+  favoriteSoundId?: string | null;
+  volume?: number;
+  /** null clears the bedtime and its time zone. */
+  eveningTime?: string | null;
+  timezone?: string;
+  eveningReminder?: boolean;
+};
+
+/** A listening session, recorded when playback ends. `canAnswer`: long enough (5 minutes or more) to ask how the patient feels. */
+/** `id` is chosen by the app when playback starts: sending the same session twice (a retry, the page-close request) records it once. */
+export type AmbienceSessionInput = { id: string; soundId: string; startedAt: string; durationSec: number };
+export type AmbienceSessionResult = { id: string; canAnswer: boolean };
+export type AmbienceAnswer = "BETTER" | "SAME" | "WORSE";

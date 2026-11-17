@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Activity, BatteryMedium, Brain, Check, ChevronRight, Clock, Flame, HeartPulse,
@@ -44,8 +45,7 @@ export function WellbeingCard() {
 
   return (
     <GlassCard data-tour="wellbeing" aria-labelledby="wellbeing-title">
-      <SectionTitle title={copy.home.wellbeing.title} subtitle={copy.home.wellbeing.subtitle} />
-      <h2 id="wellbeing-title" className="sr-only">{copy.home.wellbeing.title}</h2>
+      <SectionTitle id="wellbeing-title" title={copy.home.wellbeing.title} subtitle={copy.home.wellbeing.subtitle} />
       {today.error ? (
         <ErrorState onRetry={() => void today.refresh()} />
       ) : (
@@ -63,7 +63,11 @@ export function WellbeingCard() {
                 <div>
                   <p className="text-sm font-semibold text-ink">{copy.dimensions[key]}</p>
                   <p className="text-sm tabular-nums text-ink-soft">{reading.display}</p>
-                  <p className="text-xs" style={{ color: scaleColor(reading.value) }}>{bandLabel(reading, copy)}</p>
+                  {/* The mood colour sits in the dot; the words stay in a readable ink (the light tints fail contrast as text). */}
+                  <p className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-ink-muted">
+                    <span aria-hidden className="size-1.5 shrink-0 rounded-full" style={{ background: scaleColor(reading.value) }} />
+                    {bandLabel(reading, copy)}
+                  </p>
                 </div>
               </div>
             );
@@ -71,7 +75,13 @@ export function WellbeingCard() {
         </div>
       )}
       {!today.isLoading && today.data === null && (
-        <p className="mt-4 rounded-xl bg-teal-50/80 px-3 py-2 text-center text-xs text-teal-800">{copy.home.wellbeing.checkinFirst}</p>
+        <Link
+          href="/dashboard/check-in"
+          className="mt-4 flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-teal-50/80 px-3 py-2 text-center text-sm font-medium text-teal-800 transition-colors hover:bg-teal-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+        >
+          {copy.home.wellbeing.checkinFirst}
+          <ChevronRight className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
+        </Link>
       )}
     </GlassCard>
   );
@@ -106,6 +116,7 @@ export function TrendCard() {
   return (
     <GlassCard data-tour="trend" aria-labelledby="trend-title">
       <SectionTitle
+        id="trend-title"
         title={copy.home.trend.title}
         subtitle={copy.home.trend.subtitle}
         action={
@@ -117,7 +128,6 @@ export function TrendCard() {
           )
         }
       />
-      <h2 id="trend-title" className="sr-only">{copy.home.trend.title}</h2>
       {history.error ? (
         <ErrorState onRetry={() => void history.refresh()} />
       ) : history.isLoading ? (
@@ -139,9 +149,10 @@ export function SignalsCard() {
 
   return (
     <GlassCard aria-labelledby="signals-title">
-      <SectionTitle title={copy.home.signals.title} />
-      <h2 id="signals-title" className="sr-only">{copy.home.signals.title}</h2>
-      {loading ? (
+      <SectionTitle id="signals-title" title={copy.home.signals.title} />
+      {history.error ? (
+        <ErrorState onRetry={() => void history.refresh()} />
+      ) : loading ? (
         <div className="space-y-3"><Skeleton className="h-12" /><Skeleton className="h-12" /><Skeleton className="h-12" /></div>
       ) : signals.length ? (
         <ul className="lm-soft space-y-2 p-2.5">
@@ -196,8 +207,7 @@ export function PlanCard() {
 
   return (
     <GlassCard data-tour="plan" aria-labelledby="plan-title">
-      <SectionTitle title={copy.home.plan.title} subtitle={copy.home.plan.subtitle} />
-      <h2 id="plan-title" className="sr-only">{copy.home.plan.title}</h2>
+      <SectionTitle id="plan-title" title={copy.home.plan.title} subtitle={copy.home.plan.subtitle} />
       {loading ? (
         <div className="space-y-3"><Skeleton className="h-16" /><Skeleton className="h-16" /><Skeleton className="h-16" /></div>
       ) : rows.length ? (
@@ -265,8 +275,9 @@ export function ProgressStrip() {
       <span className="stat-tile stat-tile-sage shrink-0"><Flame className="size-5" aria-hidden /></span>
       <div className="min-w-0 flex-1">
         <h2 id="progress-title" className="text-base font-semibold text-ink">{copy.home.progress.title}</h2>
-        {history.isLoading ? <Skeleton className="mt-2 h-4 w-72 max-w-full" /> : (
-          <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{fill(copy.home.progress.body, { n: days })}</p>
+        {/* A failed load must never read as "0 of 7 days": that would tell the patient they had not shown up. */}
+        {history.error ? <ErrorState onRetry={() => void history.refresh()} /> : history.isLoading ? <Skeleton className="mt-2 h-4 w-72 max-w-full" /> : (
+          <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{days ? fill(copy.home.progress.body, { n: days }) : copy.home.progress.bodyZero}</p>
         )}
       </div>
       <div className="w-full sm:w-48 2xl:w-full">

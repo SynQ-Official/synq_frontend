@@ -14,7 +14,7 @@ import { formatDay } from "@/lib/patient/format";
 import type { Consent } from "@/lib/api/patient-types";
 
 const SETTINGS_PATH = "/dashboard/settings";
-const CATEGORIES = ["mood", "sleep", "medication", "exercises", "diagnostics"] as const;
+const CATEGORIES = ["mood", "sleep", "medication", "exercises", "ambiences", "diagnostics"] as const;
 
 /** Relationships whose sharing the patient still has to confirm. Not blocking until `required`. */
 function usePendingReconfirm() {

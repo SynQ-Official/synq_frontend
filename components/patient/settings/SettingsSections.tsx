@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useConsents, useOrientationConsent } from "@/hooks/patient/useCare";
+import { CheckinScheduleForm } from "@/components/patient/home/CheckinScheduleCard";
+import { useCheckinSchedule } from "@/hooks/patient/useCheckin";
 import { useReminderPrefs } from "@/hooks/patient/useNotifications";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
@@ -106,6 +108,8 @@ export function ReminderSection() {
   const copy = usePatientCopy();
   const r = copy.settings.reminders;
   const prefs = useReminderPrefs();
+  const schedule = useCheckinSchedule();
+  const remindersOn = schedule.data?.remindersEnabled ?? false;
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">(() =>
     typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported",
   );
@@ -123,21 +127,14 @@ export function ReminderSection() {
 
   return (
     <Section icon={<Bell className="size-[1.125rem]" aria-hidden />} title={r.title} body={r.body}>
-      <div className="divide-y divide-line">
-        <Row id="reminder-enabled" label={r.enable}>
-          <Switch id="reminder-enabled" checked={prefs.enabled} onCheckedChange={(enabled) => saveReminderPrefs({ ...prefs, enabled })} />
-        </Row>
-        <Row id="reminder-time" label={r.time}>
-          <input
-            id="reminder-time"
-            type="time"
-            value={prefs.time}
-            disabled={!prefs.enabled}
-            onChange={(event) => event.target.value && saveReminderPrefs({ ...prefs, time: event.target.value })}
-            className="field-soft px-3 text-sm tabular-nums disabled:opacity-50"
-            dir="ltr"
-          />
-        </Row>
+      <div id="checkin-reminders" className="divide-y divide-line">
+        {/* Time, reminders and email live on the server (they reach the patient even with SynQ closed). */}
+        <div className="py-4">
+          {schedule.isLoading ? null : (
+            <CheckinScheduleForm key={schedule.data?.updatedAt ?? "new"} schedule={schedule.data ?? null} showRemindersSwitch />
+          )}
+        </div>
+        {/* Browser permission is per device, so this one choice stays on the device. */}
         <Row
           id="reminder-browser"
           label={r.browser}
@@ -146,7 +143,7 @@ export function ReminderSection() {
           <Switch
             id="reminder-browser"
             checked={prefs.browser && permission === "granted"}
-            disabled={!prefs.enabled || permission === "denied" || permission === "unsupported"}
+            disabled={!remindersOn || permission === "denied" || permission === "unsupported"}
             onCheckedChange={(on) => void toggleBrowser(on)}
           />
         </Row>
@@ -179,11 +176,12 @@ function ConsentCard({ consent }: { consent: Consent }) {
     }
   }
 
-  const toggles: { key: keyof typeof s.categories; field: "shareMoodData" | "shareSleepData" | "shareMedication" | "shareExercises" | "shareDiagnostics"; value: boolean }[] = [
+  const toggles: { key: keyof typeof s.categories; field: "shareMoodData" | "shareSleepData" | "shareMedication" | "shareExercises" | "shareAmbiences" | "shareDiagnostics"; value: boolean }[] = [
     { key: "mood", field: "shareMoodData", value: consent.categories.mood },
     { key: "sleep", field: "shareSleepData", value: consent.categories.sleep },
     { key: "medication", field: "shareMedication", value: consent.categories.medication },
     { key: "exercises", field: "shareExercises", value: consent.categories.exercises },
+    { key: "ambiences", field: "shareAmbiences", value: consent.categories.ambiences },
     { key: "diagnostics", field: "shareDiagnostics", value: consent.categories.diagnostics },
   ];
 
@@ -329,7 +327,7 @@ export function SessionSection() {
   const [busy, setBusy] = useState(false);
   return (
     <Section icon={<LogOut className="size-[1.125rem] rtl:-scale-x-100" aria-hidden />} title={copy.settings.session.title}>
-      <Button variant="outline" disabled={busy} onClick={() => { setBusy(true); void signOut(); }}>
+      <Button variant="outline" disabled={busy} onClick={() => { setBusy(true); void signOut().then((done) => { if (!done) setBusy(false); }); }}>
         {busy && <LogoSpinner size={18} />}{copy.settings.session.signOut}
       </Button>
     </Section>

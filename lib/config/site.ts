@@ -6,7 +6,7 @@ import { ROUTES } from "@/lib/config/routes";
  * Public origin used for canonical URLs, the sitemap and social previews.
  * Set NEXT_PUBLIC_SITE_URL in Vercel (no trailing slash); the fallback is the production domain.
  */
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.vitamindspace.com").replace(/\/+$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.synqae.com/").replace(/\/+$/, "");
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
@@ -19,6 +19,36 @@ export const SITE = {
 } as const;
 
 export const NO_INDEX: Metadata["robots"] = { index: false, follow: false };
+
+/** Indexable pages: also allow full-size image previews and unrestricted snippets in results. */
+export const INDEX_ROBOTS: Metadata["robots"] = {
+  index: true,
+  follow: true,
+  googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+};
+
+/**
+ * schema.org nodes shared by every page's JSON-LD, so each page's graph stands on its own (a crawler reads one
+ * page at a time and cannot follow an @id that is only defined on the home page).
+ */
+export const ORGANIZATION_NODE = {
+  "@type": "Organization",
+  "@id": `${SITE.url}/#organization`,
+  name: BRAND.name,
+  url: SITE.url,
+  description: BRAND.description,
+  logo: { "@type": "ImageObject", url: `${SITE.url}/assets/icon-512.png`, width: 512, height: 512 },
+} as const;
+
+export const WEBSITE_NODE = {
+  "@type": "WebSite",
+  "@id": `${SITE.url}/#website`,
+  url: SITE.url,
+  name: BRAND.name,
+  description: SITE.description,
+  inLanguage: ["en", "ar"],
+  publisher: { "@id": ORGANIZATION_NODE["@id"] },
+} as const;
 
 /** Next replaces (does not merge) `openGraph`/`twitter` when a page sets them, so each page restates the shared parts. */
 const OG_IMAGE = { url: "/og", ...OG_SIZE, alt: SITE.title };
@@ -58,7 +88,7 @@ export function pageMetadata({ title, description, path, noindex = false }: Page
     description,
     alternates: { canonical: path },
     ...social(`${title} | ${BRAND.name}`, description, path),
-    ...(noindex ? { robots: NO_INDEX } : {}),
+    robots: noindex ? NO_INDEX : INDEX_ROBOTS,
   };
 }
 

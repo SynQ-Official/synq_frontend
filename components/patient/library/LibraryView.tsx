@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import { useLibrary } from "@/hooks/patient/useLibrary";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
+import type { LibraryEmptyReason } from "@/lib/api/patient-types";
 import { fill } from "@/lib/i18n/patient";
 import { showsReads } from "@/lib/patient/content";
 
-/** The library: the articles the Smart Library recommends for the patient's track, each opening at its public source. */
+/** The library: the articles the Smart Library matches to the patient's own Journal, each opening at its public source. */
 export function LibraryView() {
   const copy = usePatientCopy().library;
   const { profile } = usePatient();
@@ -46,6 +47,8 @@ export function LibraryView() {
   }
 
   const topic = copy.topics[profile.track === "BIPOLAR" ? "BIPOLAR" : "SCHIZOPHRENIA"];
+  const empty = copy.empty[library.reason as LibraryEmptyReason] ?? copy.empty.NO_RELEVANT_CONTENT;
+  const needsEntries = library.reason === "NO_JOURNAL_ENTRIES" || library.reason === "LIMITED_JOURNAL";
 
   return (
     <div className="lm-rise">
@@ -62,7 +65,18 @@ export function LibraryView() {
           ))}
         </ul>
       ) : library.items.length === 0 ? (
-        <EmptyState icon={BookHeart} title={copy.emptyTitle} body={copy.emptyBody} />
+        <EmptyState
+          icon={BookHeart}
+          title={empty.title}
+          body={empty.body}
+          action={
+            needsEntries && (
+              <Button asChild size="lg">
+                <Link href="/dashboard/journal">{copy.writeEntry}</Link>
+              </Button>
+            )
+          }
+        />
       ) : (
         <>
           <p className="mb-4 text-[0.8125rem] font-medium text-muted-foreground">

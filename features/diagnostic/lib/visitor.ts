@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { getSessionUser } from "@/lib/api/tokens";
+import { getSessionUser, patientKey, subscribeSession } from "@/lib/api/tokens";
 
 /**
  * The visitor's first name, collected gently at the start of the conversation so Mira's
@@ -10,7 +10,8 @@ import { getSessionUser } from "@/lib/api/tokens";
  * Mira's generated messages, which would require changing her reasoning.
  *
  * Stored under a single key (the same visitor across the flow), so the chat page and the
- * decoupled result route both address the person by name.
+ * decoupled result route both address the person by name. It lives in sessionStorage: a name typed by an
+ * anonymous visitor must not outlast their tab and greet whoever uses this device next.
  */
 const NAME_KEY = "vitamind-visitor-name";
 
@@ -21,7 +22,9 @@ export function readVisitorName(): string {
   const nickname = sanitizeName(getSessionUser()?.nickname ?? "");
   if (nickname) return nickname;
   try {
-    return window.localStorage.getItem(NAME_KEY) ?? "";
+    // Scoped to the signed-in user: a name typed under one account is never read under another.
+    const key = patientKey(NAME_KEY);
+    return key ? (window.sessionStorage.getItem(key) ?? "") : "";
   } catch {
     return "";
   }
@@ -35,10 +38,13 @@ export function sanitizeName(raw: string): string {
 const CHANGE_EVENT = "vitamind-visitor-name-change";
 
 function subscribe(onChange: () => void) {
-  const onStorage = (event: StorageEvent) => event.key === NAME_KEY && onChange();
+  const onStorage = (event: StorageEvent) => event.key?.startsWith(NAME_KEY) && onChange();
   window.addEventListener("storage", onStorage);
   window.addEventListener(CHANGE_EVENT, onChange);
+  // The signed-in user changing (sign-out, another account) re-reads the name at once.
+  const unsubscribeSession = subscribeSession(onChange);
   return () => {
+    unsubscribeSession();
     window.removeEventListener("storage", onStorage);
     window.removeEventListener(CHANGE_EVENT, onChange);
   };
@@ -51,8 +57,11 @@ export function useVisitorName() {
   const setName = useCallback((raw: string) => {
     const clean = sanitizeName(raw);
     try {
-      if (clean) window.localStorage.setItem(NAME_KEY, clean);
-      else window.localStorage.removeItem(NAME_KEY);
+      const key = patientKey(NAME_KEY); // nobody signed in: nothing personal is stored
+      if (key) {
+        if (clean) window.sessionStorage.setItem(key, clean);
+        else window.sessionStorage.removeItem(key);
+      }
     } catch {
       /* storage unavailable — the name simply won't persist */
     }

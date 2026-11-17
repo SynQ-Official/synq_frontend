@@ -10,7 +10,7 @@ import { HOME_INTRO_COOKIE } from "@/lib/config/home";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AgentsSection, AudienceSection, CTASection, FooterSection, Header, HealthcareSection, HeroSection, WhatSection } from "@/components/home";
+import { CTASection, FooterSection, Header, HealthcareSection, HeroSection, WhatSection } from "@/components/home";
 
 type Phase = "loading" | "intro" | "main";
 
@@ -70,8 +70,6 @@ export function HomeExperience({ introSeen }: { introSeen: boolean }) {
               <div ref={contentRef}>
                 <HeroSection />
                 <WhatSection />
-                <AudienceSection />
-                <AgentsSection />
                 <HealthcareSection />
                 <CTASection />
                 <FooterSection />

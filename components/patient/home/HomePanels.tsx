@@ -10,7 +10,7 @@ import { useTodayCheckin } from "@/hooks/patient/useCheckin";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import { fill } from "@/lib/i18n/patient";
 
-/** Home's right column: today's goals from the check-in. (The reading band sits under the welcome — see `ReadsBand`.) */
+/** Home's right column: today's goals from the check-in. (The reading band sits under the overview — see `ReadsBand`.) */
 export function HomeSidePanel() {
   return <GoalsPanel />;
 }

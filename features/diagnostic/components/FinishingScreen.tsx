@@ -14,10 +14,10 @@ import { ESTIMATED_QUESTIONS } from "../lib/chapters";
 export const FINISH_STEP_MS = 950;
 
 /**
- * The last beat of the conversation. The tenth answer does not drop the visitor onto a loading pill: a ring
- * closes to ten of ten, three quiet steps tick off what Mira is doing, and only then does the result open.
+ * The last beat of the conversation. The last answer does not drop the visitor onto a loading pill: a ring
+ * closes to all of them, three quiet steps tick off what Mira is doing, and only then does the result open.
  */
-export function FinishingScreen() {
+export function FinishingScreen({ total = ESTIMATED_QUESTIONS }: { total?: number }) {
   const { dictionary } = useLanguage();
   const copy = dictionary.diagnostic.finishing;
   const reduce = useReducedMotion();
@@ -71,8 +71,8 @@ export function FinishingScreen() {
         </div>
 
         <p dir="ltr" className={cn(SERIF, "mt-6 text-[2.25rem] font-light leading-none tracking-[-0.03em] text-ink tabular-nums")}>
-          {ESTIMATED_QUESTIONS}
-          <span className="text-ink-subtle"> / {ESTIMATED_QUESTIONS}</span>
+          {total}
+          <span className="text-ink-subtle"> / {total}</span>
         </p>
         <p className="mt-2 text-[0.8125rem] font-semibold uppercase tracking-[0.16em] text-teal-700 rtl:normal-case rtl:tracking-normal">{copy.eyebrow}</p>
         <h2 className={cn(SERIF, "mt-4 text-[1.625rem] font-light leading-tight tracking-[-0.02em] text-ink rtl:font-normal rtl:tracking-normal")}>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
+import { patientKey } from "@/lib/api/tokens";
 import { fill } from "@/lib/i18n/patient";
 import { formatDay } from "@/lib/patient/format";
 import { EMOTION_KEYS, moodFor, type EmotionKey } from "@/lib/patient/moods";
@@ -26,18 +27,24 @@ export const EMPTY_ENTRY: EntryValues = { content: "", moodScore: null, goalScor
 
 const DRAFT_KEY = "vitamind_journal_draft";
 
-/** A half-written entry survives a refresh or a dropped connection (text only, on this device). */
+/**
+ * A half-written entry survives a refresh or a dropped connection (text only, on this device). It is stored under
+ * the signed-in patient's id and wiped on sign-out, so another patient on a shared device never sees it.
+ */
 export function loadDraft(): string {
   try {
-    return window.localStorage.getItem(DRAFT_KEY) ?? "";
+    const key = patientKey(DRAFT_KEY);
+    return key ? window.localStorage.getItem(key) ?? "" : "";
   } catch {
     return "";
   }
 }
 export function saveDraft(text: string) {
   try {
-    if (text) window.localStorage.setItem(DRAFT_KEY, text);
-    else window.localStorage.removeItem(DRAFT_KEY);
+    const key = patientKey(DRAFT_KEY);
+    if (!key) return;
+    if (text) window.localStorage.setItem(key, text);
+    else window.localStorage.removeItem(key);
   } catch {
     /* draft protection is best-effort */
   }

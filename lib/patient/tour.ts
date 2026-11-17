@@ -23,11 +23,11 @@ const READING_TRACKS: readonly PatientTrack[] = ["BIPOLAR", "SCHIZOPHRENIA"];
 export const TOUR_STEPS: readonly TourStep[] = [
   { id: "welcome" },
   { id: "spark", tracks: ["ADHD"] },
-  { id: "reads", tracks: READING_TRACKS },
   { id: "wellbeing" },
   { id: "trend" },
   { id: "plan" },
   { id: "goals" },
+  { id: "reads", tracks: READING_TRACKS },
   { id: "nav-checkin" },
   { id: "nav-journal" },
   { id: "nav-spark", tracks: ["ADHD"] },

@@ -13,7 +13,7 @@ import { HOME_ARTICLE_COUNT, showsReads } from "@/lib/patient/content";
 import { cn } from "@/lib/utils";
 
 /**
- * A warm band of reading right under the welcome: a few kind words and the way into the library on one side, two recommended articles
+ * A warm band of reading under the day's overview: a few kind words and the way into the library on one side, two recommended articles
  * on the other, each opening at its public source. It appears for the tracks that have a library.
  */
 export function ReadsBand() {
@@ -26,7 +26,7 @@ export function ReadsBand() {
   if (!reads || library.error || (!library.isLoading && library.items.length === 0)) return null;
 
   return (
-    <section data-tour="reads" aria-labelledby="reads-band-title" className="lm-glass mb-6 overflow-hidden">
+    <section data-tour="reads" aria-labelledby="reads-band-title" className="lm-glass mt-5 overflow-hidden lg:mt-6">
       <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.6fr)] lg:items-center lg:gap-10 lg:p-10">
         <div className="min-w-0">
           <p className="lm-eyebrow flex items-center gap-2.5">

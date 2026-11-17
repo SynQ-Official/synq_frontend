@@ -75,9 +75,14 @@ export async function POST(request: Request, context: { params: Promise<{ action
     }
 
     if (action === "logout") {
-      const authorization = request.headers.get("authorization");
-      // Best effort: the cookie is cleared even if the API cannot be reached.
-      await call(request, "/auth/logout", {}, authorization ? { Authorization: authorization } : undefined).catch(() => undefined);
+      const token = readRefreshCookie(request);
+      if (token) {
+        // The refresh token itself authenticates the logout, so it works after the access token has expired.
+        const { res } = await call(request, "/auth/logout", { refresh_token: token });
+        // The cookie is only dropped once the API has revoked the session. Otherwise the visitor would look signed
+        // out while a valid refresh session lives on; the cookie stays so the sign-out can simply be retried.
+        if (!res.ok) return json({ message: "Could not sign out. Please try again." }, res.status >= 500 ? 502 : res.status);
+      }
       return json({ message: "Logged out" }, 200, clearedCookie());
     }
   } catch {
