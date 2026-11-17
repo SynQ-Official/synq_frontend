@@ -56,7 +56,7 @@ type IconInputProps = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 export const IconInput = forwardRef<HTMLInputElement, IconInputProps>(function IconInput(
-  { icon: Icon, trailing, invalid, className, id, ...props },
+  { icon: Icon, trailing, invalid, className, id, "aria-describedby": describedBy, ...props },
   ref,
 ) {
   return (
@@ -71,7 +71,7 @@ export const IconInput = forwardRef<HTMLInputElement, IconInputProps>(function I
         ref={ref}
         id={id}
         aria-invalid={invalid || undefined}
-        aria-describedby={invalid ? `${id}-error` : undefined}
+        aria-describedby={[invalid ? `${id}-error` : null, describedBy].filter(Boolean).join(" ") || undefined}
         className={cn(
           "h-12 w-full min-w-0 rounded-control border border-line-strong bg-white text-[0.9375rem] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-200",
           "placeholder:text-ink-subtle hover:border-teal-300 focus:border-teal-500 focus:shadow-focus",

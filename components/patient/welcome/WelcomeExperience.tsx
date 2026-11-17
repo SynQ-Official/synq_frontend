@@ -8,6 +8,7 @@ import { homeSerif } from "@/components/home/fonts";
 import { BODY, LABEL, SERIF } from "@/components/home/typography";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { PatientLoading } from "@/components/patient/shell/PatientShell";
 import { LuminaHero3D } from "@/components/patient/welcome/LuminaHero3D";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -15,8 +16,9 @@ import { usePatient } from "@/hooks/patient/usePatient";
 import { useCalmTrack } from "@/hooks/useCalmTrack";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import { profileApi } from "@/lib/api/patient";
+import { ROUTES } from "@/lib/config/routes";
 import { fill } from "@/lib/i18n/patient";
-import { markWelcomeSeen } from "@/lib/patient/onboarding";
+import { hasSeenWelcome, markWelcomeSeen } from "@/lib/patient/onboarding";
 import { canSpeak, speakWelcome, type SpeakHandle } from "@/lib/patient/voice";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -29,6 +31,8 @@ type Phase = "intro" | "playing" | "done";
 /** How long a caption stays before the next one, from its length (reading/speaking pace). */
 const holdFor = (text: string, arabic: boolean) => Math.max(1800, text.length * (arabic ? 78 : 64));
 const REDIRECT_MS = 3200;
+/** The intro block takes this long to leave (0.5s): the captions start once it has gone, so the two never overlap. */
+const CAPTIONS_START_MS = 700;
 
 /**
  * The first thing a new patient sees after signing up: a 3D presence, a spoken welcome (with
@@ -64,14 +68,36 @@ export function WelcomeExperience() {
     setSpeaking(false);
   }, []);
 
+  // Where this welcome leads is decided once, when it opens: completing the onboarding refreshes the profile,
+  // and that must neither re-arm the hand-off nor turn the first check-in into the dashboard.
+  const [firstTime] = useState(() => !profile.hasCompletedOnboarding);
+  const next = firstTime ? ROUTES.checkIn : ROUTES.dashboard;
+  const leaving = useRef(false);
+
   const go = useCallback(() => {
+    if (leaving.current) return;
+    leaving.current = true;
     clear();
     stopVoice();
     markWelcomeSeen(profile.id);
     // The welcome is the whole onboarding now: finish it, then start with the first check-in.
-    void (profile.hasCompletedOnboarding ? Promise.resolve() : profileApi.completeOnboarding().then(refreshProfile)).catch(() => undefined);
-    router.replace(profile.hasCompletedOnboarding ? "/dashboard" : "/dashboard/check-in");
-  }, [clear, stopVoice, profile.id, profile.hasCompletedOnboarding, refreshProfile, router]);
+    if (firstTime) void profileApi.completeOnboarding().then(refreshProfile).catch(() => undefined);
+    router.replace(next);
+  }, [clear, stopVoice, profile.id, firstTime, next, refreshProfile, router]);
+
+  // The welcome plays once. Anyone who has already been through it goes straight to the dashboard
+  // (`/welcome?force=1` replays it, for demos and QA). Decided at mount, so finishing it cannot re-trigger this.
+  const [seen] = useState(
+    () => (profile.hasCompletedOnboarding || hasSeenWelcome(profile.id)) && !new URLSearchParams(window.location.search).has("force"),
+  );
+  useEffect(() => {
+    if (seen) router.replace(ROUTES.dashboard);
+  }, [seen, router]);
+
+  // The next screen's code loads while the welcome plays, so the hand-off is instant.
+  useEffect(() => {
+    router.prefetch(next);
+  }, [router, next]);
 
   useEffect(() => () => {
     clear();
@@ -87,7 +113,7 @@ export function WelcomeExperience() {
       setVisible(0);
 
       // Captions follow the speech pace whether or not it is audible.
-      let at = 250;
+      let at = CAPTIONS_START_MS;
       lines.forEach((line, index) => {
         timers.current.push(window.setTimeout(() => setVisible(index + 1), at));
         at += holdFor(line, language === "ar");
@@ -119,6 +145,8 @@ export function WelcomeExperience() {
     const timer = window.setTimeout(go, REDIRECT_MS);
     return () => window.clearTimeout(timer);
   }, [phase, go]);
+
+  if (seen) return <PatientLoading />;
 
   return (
     <div className={cn(homeSerif.variable, "lm-canvas relative flex min-h-dvh flex-col overflow-hidden")}>
@@ -213,8 +241,8 @@ export function WelcomeExperience() {
                   {lines.slice(0, visible).map((line, index) => (
                     <motion.p
                       key={line}
-                      initial={{ opacity: 0, y: 10, filter: reduce ? "none" : "blur(6px)" }}
-                      animate={{ opacity: index === visible - 1 || phase === "done" ? 1 : 0.7, y: 0, filter: "blur(0px)" }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: index === visible - 1 || phase === "done" ? 1 : 0.7, y: 0 }}
                       transition={{ duration: 0.7, ease: EASE_OUT }}
                       className={index === 0 ? cn(SERIF, "text-[clamp(1.875rem,1.8vw+1.3rem,2.75rem)] font-light leading-[1.1] text-ink rtl:font-semibold") : cn(BODY, "max-w-xl")}
                       dir="auto"

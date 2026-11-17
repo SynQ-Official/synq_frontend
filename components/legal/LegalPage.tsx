@@ -5,7 +5,8 @@ import { homeSerif } from "@/components/home/fonts";
 import { BODY, BODY_SM, DISPLAY_L, DISPLAY_S, LABEL } from "@/components/home/typography";
 import { MinimalFooter } from "@/components/layout/MinimalFooter";
 import { SiteHeader } from "@/components/layout/site-header";
-import { ContactDetails } from "@/components/trust/TrustPage";
+import { ContactDetails } from "@/components/legal/PrivacyPage";
+import { TodoBlock } from "@/components/legal/TodoBlock";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CONTACT } from "@/lib/config/brand";
@@ -13,21 +14,8 @@ import { ROUTES } from "@/lib/config/routes";
 import { legalCopy, legalUi, type LegalSection } from "@/lib/i18n/legal";
 import { trustCopy } from "@/lib/i18n/trust";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Check, Construction } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
-
-/** A section whose approved text has not been supplied yet: visible on purpose, so nothing is mistaken for final wording. */
-function TodoBlock({ label, detail }: { label: string; detail: string }) {
-  return (
-    <div role="note" data-legal-todo className="mt-6 flex items-start gap-3 rounded-2xl border-2 border-dashed border-gold-700 bg-gold-50 p-4 text-[0.9375rem] leading-6 text-ink">
-      <Construction className="mt-0.5 size-5 shrink-0 text-gold-700" strokeWidth={1.5} aria-hidden />
-      <p>
-        <strong className="block font-semibold">{label}</strong>
-        <span className="text-ink-soft">{detail}</span>
-      </p>
-    </div>
-  );
-}
 
 function SectionCard({ section }: { section: LegalSection }) {
   const { language } = useLanguage();
@@ -77,10 +65,10 @@ function SectionCard({ section }: { section: LegalSection }) {
   );
 }
 
-/** /privacy and /terms: the same layout as /trust, with the text /trust already publishes and a visible TODO wherever the legal text is still missing. */
-export function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
+/** /terms: the text the trust copy already publishes, and a visible TODO wherever the legal text is still missing. */
+export function LegalPage() {
   const { language, direction } = useLanguage();
-  const copy = legalCopy[kind][language];
+  const copy = legalCopy.terms[language];
   const trust = trustCopy[language];
 
   return (

@@ -2,7 +2,7 @@ import type { Lang } from "@/lib/i18n/config";
 
 /**
  * Copy for the home page's "What SynQ is" section: one statement, then short films for each audience.
- * How professionals are involved lives in `healthcare.ts`; the detail lives on /mira, /lumina, /tracks, /trust and /support.
+ * How professionals are involved lives in `healthcare.ts`; the detail lives on /mira, /lumina, /tracks, /privacy and /support.
  * `ar` is typed against the same shape as `en`, so a missing key fails the build.
  */
 

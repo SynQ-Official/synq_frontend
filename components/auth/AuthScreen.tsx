@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { authApi } from "@/lib/api/auth";
-import { ApiError, api } from "@/lib/api/client";
+import { ApiError } from "@/lib/api/client";
 import { useSessionState } from "@/hooks/useSessionState";
 import { clearTokens, hasValidSession } from "@/lib/api/tokens";
 import { AUTH_CARD, AUTH_TITLE, AuthLoading } from "@/components/auth/AuthLayout";
@@ -84,28 +84,13 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   // Already signed in with a live session: skip the form and go straight to the patient space.
   const signedIn = useSessionState();
 
-  // A token in storage is not proof of a session: the API confirms it before the form is skipped. A rejected
-  // (stale) token is dropped and the form is shown, so the visitor is never sent on without a real sign-in.
-  const [staleSession, setStaleSession] = useState(false);
+  // The access token lives in memory only, so `signedIn` is already the API's own answer (login or refresh accepted):
+  // no extra `/me` round trip before skipping the form. A session the API later rejects falls back to the sign-in gate.
   useEffect(() => {
     if (!signedIn) return;
-    let cancelled = false;
-    api
-      .get("/me")
-      .then(() => {
-        if (cancelled) return;
-        const target = safeRedirect(searchParams.get("redirect"), mode);
-        if (target.startsWith("/dashboard")) prefetchPatientHome();
-        router.replace(target);
-      })
-      .catch((reason: unknown) => {
-        if (cancelled) return;
-        if (!(reason instanceof ApiError) || reason.status !== 0) clearTokens();
-        setStaleSession(true);
-      });
-    return () => {
-      cancelled = true;
-    };
+    const target = safeRedirect(searchParams.get("redirect"), mode);
+    if (target.startsWith("/dashboard")) prefetchPatientHome();
+    router.replace(target);
   }, [signedIn, router, searchParams, mode]);
 
   // Both ends of the funnel are one tap away: fetch their code while the patient types.
@@ -227,7 +212,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const switchPrompt = isSignUp ? auth.switchToSignIn : auth.subtitleSignIn;
   const switchLink = isSignUp ? auth.switchSignInLink : auth.subtitleSignInLink;
 
-  if (signedIn === null || (signedIn && !staleSession)) return <AuthLoading />;
+  if (signedIn === null || signedIn) return <AuthLoading />;
 
   return (
     <motion.section

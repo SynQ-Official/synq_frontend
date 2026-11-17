@@ -7,7 +7,7 @@ import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { ACCENT_LIGHT, DISPLAY_M, LABEL } from "@/components/home/typography";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/lib/config/routes";
+import { useLuminaEntry } from "../hooks/useLuminaEntry";
 import { EASE_OUT, REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +20,7 @@ const NEXT_STEPS_ID = "next-steps";
 export function ResultNextSteps() {
   const { dictionary, direction } = useLanguage();
   const t = dictionary.diagnostic.resultPage.nextSteps;
+  const luminaHref = useLuminaEntry();
 
   // Title: the last word carries the olive-gold accent, as on the home page.
   const titleWords = t.title.split(" ");
@@ -55,7 +56,7 @@ export function ResultNextSteps() {
 
           <motion.div variants={fadeUp(0, 12)} className="mt-7">
             <Button asChild size="lg" className="group min-h-14 w-full px-8 shadow-brand sm:w-auto">
-              <Link href={ROUTES.dashboard}>
+              <Link href={luminaHref}>
                 {t.cta}
                 <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
               </Link>
@@ -94,6 +95,7 @@ export function ResultNextSteps() {
 export function ResultStickyCta() {
   const { dictionary, direction } = useLanguage();
   const resultPage = dictionary.diagnostic.resultPage;
+  const luminaHref = useLuminaEntry();
   const [cardInView, setCardInView] = useState(false);
 
   useEffect(() => {
@@ -116,7 +118,7 @@ export function ResultStickyCta() {
       <div className="mx-auto flex max-w-xl items-center gap-3 rounded-full border border-white/70 bg-white/90 py-2 ps-5 pe-2 shadow-float ring-1 ring-line/50 backdrop-blur-xl">
         <p className="min-w-0 flex-1 truncate text-[0.9375rem] font-semibold text-ink">{resultPage.sticky.title}</p>
         <Button asChild size="lg" className="shrink-0 shadow-brand" tabIndex={cardInView ? -1 : undefined}>
-          <Link href={ROUTES.dashboard}>{resultPage.sticky.cta}</Link>
+          <Link href={luminaHref}>{resultPage.sticky.cta}</Link>
         </Button>
       </div>
     </motion.div>

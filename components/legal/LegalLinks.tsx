@@ -23,7 +23,7 @@ export function LinkedText({ template, links }: { template: string; links: Recor
   );
 }
 
-/** Privacy · Terms · Trust & safety, and the contact email once the company has provided one. Shown in every footer. */
+/** Privacy · Terms, and the contact email once the company has provided one. Shown in every footer. */
 export function LegalLinks({ className }: { className?: string }) {
   const { language } = useLanguage();
   const ui = legalUi[language];
@@ -34,9 +34,6 @@ export function LegalLinks({ className }: { className?: string }) {
       </Link>
       <Link href={ROUTES.terms} className={LINK_CLASS}>
         <span className="home-link-line">{ui.terms}</span>
-      </Link>
-      <Link href={ROUTES.trust} className={LINK_CLASS}>
-        <span className="home-link-line">{ui.trust}</span>
       </Link>
       {CONTACT.email ? (
         <a href={`mailto:${CONTACT.email}`} className={LINK_CLASS} dir="ltr">

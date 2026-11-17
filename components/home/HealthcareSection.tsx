@@ -17,7 +17,7 @@ const ICONS = [Stethoscope, Lock, ShieldAlert] as const;
 
 /**
  * How healthcare professionals are involved: the professional decides, patient information is governed by consent, and
- * a serious case always reaches a human. The full trust pillars live on /trust.
+ * a serious case always reaches a human. The full trust pillars live on /privacy.
  */
 export const HealthcareSection = () => {
   const { language } = useLanguage();
@@ -42,7 +42,7 @@ export const HealthcareSection = () => {
         })}
       </motion.ul>
 
-      <Link href={ROUTES.trust} className="mt-8 inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
+      <Link href={ROUTES.privacy} className="mt-8 inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
         <span className="home-link-line">{copy.link}</span>
         <ArrowRight className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
       </Link>

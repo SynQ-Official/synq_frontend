@@ -2,17 +2,17 @@ import type { Lang } from "@/lib/i18n/config";
 import { trustCopy } from "@/lib/i18n/trust";
 
 /**
- * Copy for /privacy, /terms, the legal links and the 404 page.
+ * Copy for /terms, the legal part of /privacy, the legal links and the 404 page.
  *
- * Legal text is never written here. Whatever /trust already says is reused by reference (so it can never drift from
- * /trust), and every section without an approved text is a `todo`: a visible block telling the legal advisor what is
+ * Legal text is never written here. Whatever the trust copy already says is reused by reference (so it can never drift from
+ * it), and every section without an approved text is a `todo`: a visible block telling the legal advisor what is
  * missing. Titles and the short `todo` descriptions are interface labels, not legal wording.
  */
 
 export type LegalSection = {
   id: string;
   title: string;
-  /** Statements reused verbatim from /trust (lib/i18n/trust.ts). */
+  /** Statements reused verbatim from lib/i18n/trust.ts. */
   points: readonly string[];
   /** What the legal advisor must provide. Present = the section has no approved text yet. */
   todo?: string;
@@ -25,7 +25,7 @@ export type LegalPageCopy = {
   seoDescription: string;
   eyebrow: string;
   title: string;
-  /** One line under the title, reused from /trust. */
+  /** One line under the title, reused from the trust copy. */
   intro: string;
   sections: readonly LegalSection[];
 };
@@ -34,7 +34,6 @@ type LegalUi = {
   todoLabel: string;
   privacy: string;
   terms: string;
-  trust: string;
   privacyPolicy: string;
   legalNav: string;
   contactEmail: string;
@@ -51,53 +50,28 @@ type LegalUi = {
 
 const sectionOf = (lang: Lang, id: string) => trustCopy[lang].sections.find((section) => section.id === id)!;
 
-function privacyCopy(lang: Lang): LegalPageCopy {
-  const trust = trustCopy[lang];
-  const data = sectionOf(lang, "data-handling").points;
-  const sharing = sectionOf(lang, "privacy");
-  const contact = sectionOf(lang, "contact");
-
-  if (lang === "ar") {
-    return {
-      seoTitle: "سياسة الخصوصية",
-      seoDescription: "معلومات الخصوصية في SynQ: ما يُجمع من بيانات، وكيف يُستخدم، والمشاركة مع المختصين بموافقتك فقط، وسبل التواصل معنا.",
-      eyebrow: trust.eyebrow,
-      title: "سياسة الخصوصية",
-      intro: sharing.summary,
-      sections: [
-        { id: "controller", title: "المسؤول عن معالجة البيانات", points: [], todo: "اسم المسؤول عن معالجة البيانات وعنوانه المسجّل وبيانات التواصل معه." },
-        { id: "collected", title: "البيانات التي نجمعها", points: [data[0]] },
-        { id: "purposes", title: "أغراض المعالجة", points: [data[1], data[2]] },
-        { id: "legal-basis", title: "الأساس القانوني", points: [], todo: "الأساس القانوني لكل غرض من أغراض المعالجة." },
-        { id: "hosting", title: "الاستضافة والدول", points: [], todo: "مكان استضافة البيانات والدول التي تُعالَج فيها." },
-        { id: "retention", title: "مدة الاحتفاظ", points: [], todo: "مدة الاحتفاظ بكل فئة من البيانات." },
-        { id: "clinician-sharing", title: "المشاركة مع المختصين", points: sharing.points },
-        { id: "rights", title: "حقوقك", points: [data[3]], todo: "الصياغة الرسمية لحقوق الاطلاع والتصحيح والحذف وكيفية ممارستها." },
-        { id: "contact", title: contact.title, points: [], contact: true },
-        { id: "updated", title: "آخر تحديث", points: [], todo: "تاريخ آخر تحديث." },
-      ],
-    };
-  }
-  return {
-    seoTitle: "Privacy policy",
-    seoDescription: "SynQ privacy information: what is collected, how it is used, sharing with clinicians only with your consent, and how to reach us.",
-    eyebrow: trust.eyebrow,
-    title: "Privacy policy",
-    intro: sharing.summary,
-    sections: [
-      { id: "controller", title: "Data controller", points: [], todo: "Name, registered address and contact details of the data controller." },
-      { id: "collected", title: "Data we collect", points: [data[0]] },
-      { id: "purposes", title: "Purposes", points: [data[1], data[2]] },
-      { id: "legal-basis", title: "Legal basis", points: [], todo: "Legal basis for each purpose of processing." },
-      { id: "hosting", title: "Hosting and countries", points: [], todo: "Where the data is hosted and in which countries it is processed." },
-      { id: "retention", title: "Retention", points: [], todo: "Retention period for each category of data." },
-      { id: "clinician-sharing", title: "Sharing with clinicians", points: sharing.points },
-      { id: "rights", title: "Your rights", points: [data[3]], todo: "Formal wording of the rights of access, rectification and deletion, and how to exercise them." },
-      { id: "contact", title: contact.title, points: [], contact: true },
-      { id: "updated", title: "Last updated", points: [], todo: "Date of the last update." },
-    ],
-  };
-}
+/**
+ * The parts of the privacy policy only the legal advisor can write, shown on /privacy as visible blocks so nothing is
+ * mistaken for final wording. Everything already approved lives in the trust copy.
+ */
+export const privacyLegalDetails: Record<Lang, readonly { id: string; title: string; todo: string }[]> = {
+  en: [
+    { id: "controller", title: "Data controller", todo: "Name, registered address and contact details of the data controller." },
+    { id: "legal-basis", title: "Legal basis", todo: "Legal basis for each purpose of processing." },
+    { id: "hosting", title: "Hosting and countries", todo: "Where the data is hosted and in which countries it is processed." },
+    { id: "retention", title: "Retention", todo: "Retention period for each category of data." },
+    { id: "rights", title: "Your rights", todo: "Formal wording of the rights of access, rectification and deletion, and how to exercise them." },
+    { id: "updated", title: "Last updated", todo: "Date of the last update." },
+  ],
+  ar: [
+    { id: "controller", title: "المسؤول عن معالجة البيانات", todo: "اسم المسؤول عن معالجة البيانات وعنوانه المسجّل وبيانات التواصل معه." },
+    { id: "legal-basis", title: "الأساس القانوني", todo: "الأساس القانوني لكل غرض من أغراض المعالجة." },
+    { id: "hosting", title: "الاستضافة والدول", todo: "مكان استضافة البيانات والدول التي تُعالَج فيها." },
+    { id: "retention", title: "مدة الاحتفاظ", todo: "مدة الاحتفاظ بكل فئة من البيانات." },
+    { id: "rights", title: "حقوقك", todo: "الصياغة الرسمية لحقوق الاطلاع والتصحيح والحذف وكيفية ممارستها." },
+    { id: "updated", title: "آخر تحديث", todo: "تاريخ آخر تحديث." },
+  ],
+};
 
 function termsCopy(lang: Lang): LegalPageCopy {
   const trust = trustCopy[lang];
@@ -108,7 +82,7 @@ function termsCopy(lang: Lang): LegalPageCopy {
     return {
       seoTitle: terms.title,
       seoDescription: "شروط استخدام SynQ: ما هي الخدمة وما ليست، وحسابك، والمسؤوليات، وسبل التواصل معنا.",
-      eyebrow: trust.eyebrow,
+      eyebrow: "قانوني",
       title: terms.title,
       intro: terms.summary,
       sections: [
@@ -124,8 +98,8 @@ function termsCopy(lang: Lang): LegalPageCopy {
   }
   return {
     seoTitle: terms.title,
-    seoDescription: "SynQ terms of use: what the service is and is not, your account, responsibilities and how to reach us.",
-    eyebrow: trust.eyebrow,
+    seoDescription: "SynQ terms of use: what the service is and is not (not a diagnosis or an emergency service), your account, responsibilities and how to reach us.",
+    eyebrow: "Legal",
     title: terms.title,
     intro: terms.summary,
     sections: [
@@ -140,8 +114,7 @@ function termsCopy(lang: Lang): LegalPageCopy {
   };
 }
 
-export const legalCopy: Record<"privacy" | "terms", Record<Lang, LegalPageCopy>> = {
-  privacy: { en: privacyCopy("en"), ar: privacyCopy("ar") },
+export const legalCopy: Record<"terms", Record<Lang, LegalPageCopy>> = {
   terms: { en: termsCopy("en"), ar: termsCopy("ar") },
 };
 
@@ -150,7 +123,6 @@ export const legalUi: Record<Lang, LegalUi> = {
     todoLabel: "TODO — text to be provided by the legal advisor",
     privacy: "Privacy",
     terms: "Terms",
-    trust: "Trust & safety",
     privacyPolicy: "Privacy Policy",
     legalNav: "Legal",
     contactEmail: "Email",
@@ -172,7 +144,6 @@ export const legalUi: Record<Lang, LegalUi> = {
     todoLabel: "TODO — النص يقدّمه المستشار القانوني",
     privacy: "الخصوصية",
     terms: "الشروط",
-    trust: "الثقة والأمان",
     privacyPolicy: "سياسة الخصوصية",
     legalNav: "قانوني",
     contactEmail: "البريد الإلكتروني",

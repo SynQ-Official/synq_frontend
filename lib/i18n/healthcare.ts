@@ -2,7 +2,7 @@ import type { Lang } from "@/lib/i18n/config";
 
 /**
  * Copy for the home page's section for clinicians and health authorities: who decides, how patient information is
- * governed, and what happens with a serious case, one line each. The full trust pillars live on /trust.
+ * governed, and what happens with a serious case, one line each. The full trust pillars live on /privacy.
  * `ar` is typed against the same shape as `en`. Every claim describes behaviour that exists in the product; AI guides
  * and flags, a licensed professional decides.
  */

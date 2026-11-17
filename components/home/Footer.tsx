@@ -19,7 +19,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 /** Route for each label in `footer.links` / `footer.companyLinks` (same order). */
-const PRODUCT_HREFS = [ROUTES.mira, ROUTES.lumina, ROUTES.tracks, `${ROUTES.home}#healthcare`, ROUTES.trust] as const;
+const PRODUCT_HREFS = [ROUTES.mira, ROUTES.lumina, ROUTES.tracks, `${ROUTES.home}#healthcare`, ROUTES.privacy] as const;
 const ACCOUNT_HREFS = [ROUTES.support, ROUTES.signIn, ROUTES.signUp] as const;
 const LINK_CLASS = "inline-flex min-h-10 items-center rounded-md text-[1rem] text-ink-soft transition-colors duration-200 hover:text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500";
 

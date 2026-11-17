@@ -6,7 +6,6 @@ export const ROUTES = {
   lumina: "/lumina",
   psy: "/clinician",
   tracks: "/tracks",
-  trust: "/trust",
   privacy: "/privacy",
   terms: "/terms",
   support: "/support",
@@ -15,6 +14,8 @@ export const ROUTES = {
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
   dashboard: "/dashboard",
+  checkIn: "/dashboard/check-in",
+  welcome: "/welcome",
 } as const;
 
 /**

@@ -45,7 +45,7 @@ const en: TracksCopy = {
   seo: {
     title: "The three tracks: ADHD, bipolar disorder, psychosis",
     description:
-      "What ADHD, bipolar disorder and psychosis or schizophrenia are, how each can show up in daily life, and how SynQ adapts your daily space to the track you follow.",
+      "What ADHD, bipolar disorder and psychosis or schizophrenia are, how each can show up in daily life, and how SynQ adapts your space to the track you follow.",
   },
   hero: {
     eyebrow: "The three tracks",

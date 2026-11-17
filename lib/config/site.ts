@@ -13,9 +13,9 @@ export const OG_SIZE = { width: 1200, height: 630 } as const;
 export const SITE = {
   url: SITE_URL,
   title: `${BRAND.name} — Guided mental wellbeing`,
-  /** Plain, claim-free summary: orientation is never a diagnosis. */
+  /** Plain, claim-free definition (<= 160 chars so it is not cut in results): orientation is never a diagnosis. */
   description:
-    "A mental health support platform for people living with ADHD, bipolar disorder or psychosis: Mira orients you, Lumina keeps your days between consultations, and a licensed clinician follows your care through what you choose to share.",
+    "SynQ is a guided mental wellbeing platform for people living with ADHD, bipolar disorder or psychosis: orientation, daily follow-up and clinician support.",
 } as const;
 
 export const NO_INDEX: Metadata["robots"] = { index: false, follow: false };
@@ -49,6 +49,21 @@ export const WEBSITE_NODE = {
   inLanguage: ["en", "ar"],
   publisher: { "@id": ORGANIZATION_NODE["@id"] },
 } as const;
+
+/** A SynQ agent as a web application, for its own page. No price or rating: only what the page states. */
+export function softwareApplicationNode({ path, name, description }: { path: string; name: string; description: string }) {
+  return {
+    "@type": "SoftwareApplication",
+    "@id": `${SITE.url}${path}#app`,
+    name,
+    description,
+    url: `${SITE.url}${path}`,
+    applicationCategory: "HealthApplication",
+    operatingSystem: "Web",
+    inLanguage: ["en", "ar"],
+    publisher: { "@id": ORGANIZATION_NODE["@id"] },
+  };
+}
 
 /** Next replaces (does not merge) `openGraph`/`twitter` when a page sets them, so each page restates the shared parts. */
 const OG_IMAGE = { url: "/og", ...OG_SIZE, alt: SITE.title };
@@ -99,15 +114,18 @@ export const SITEMAP_ROUTES: ReadonlyArray<{ path: string; priority: number; cha
   { path: ROUTES.lumina, priority: 0.8, changeFrequency: "monthly" },
   { path: ROUTES.psy, priority: 0.7, changeFrequency: "monthly" },
   { path: ROUTES.tracks, priority: 0.8, changeFrequency: "monthly" },
-  { path: ROUTES.trust, priority: 0.7, changeFrequency: "monthly" },
-  { path: ROUTES.privacy, priority: 0.4, changeFrequency: "monthly" },
+  { path: ROUTES.privacy, priority: 0.7, changeFrequency: "monthly" },
   { path: ROUTES.terms, priority: 0.4, changeFrequency: "monthly" },
   { path: ROUTES.support, priority: 0.6, changeFrequency: "monthly" },
-  { path: ROUTES.signUp, priority: 0.5, changeFrequency: "monthly" },
 ];
 
-/**
- * Paths crawlers must not fetch (API + signed-in app). Pages that only need to stay out of
- * results (sign in, personal results) use a noindex tag instead: a robots block would hide that tag.
- */
-export const DISALLOWED_PATHS = ["/api/", "/dashboard", "/welcome"] as const;
+/** Paths crawlers must not fetch: API, signed-in app, auth flows and personal orientation results. */
+export const DISALLOWED_PATHS = [
+  "/api/",
+  "/dashboard",
+  "/welcome",
+  "/auth/",
+  ROUTES.forgotPassword,
+  ROUTES.resetPassword,
+  "/orientation/result/",
+] as const;

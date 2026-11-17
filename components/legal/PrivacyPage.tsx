@@ -11,13 +11,15 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CONTACT } from "@/lib/config/brand";
 import { ROUTES } from "@/lib/config/routes";
+import { legalUi, privacyLegalDetails } from "@/lib/i18n/legal";
 import { trustCopy, type TrustId } from "@/lib/i18n/trust";
 import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { ArrowRight, BadgeCheck, Check, Database, LifeBuoy, Lock, Mail, MapPin, Phone, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Database, LifeBuoy, Lock, Mail, MapPin, Phone, Scale, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
 import { MotionConfig, motion, useScroll, useSpring } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { TodoBlock } from "./TodoBlock";
 import { TrustSeal } from "./TrustSeal";
 
 const ICONS: Record<TrustId, LucideIcon> = {
@@ -25,6 +27,7 @@ const ICONS: Record<TrustId, LucideIcon> = {
   security: ShieldCheck,
   "responsible-ai": BadgeCheck,
   "data-handling": Database,
+  legal: Scale,
   terms: ScrollText,
   contact: Mail,
 };
@@ -87,10 +90,14 @@ function useActiveSection(ids: readonly string[]) {
   return active;
 }
 
-/** /trust — how patient information is protected, in plain words. Trust is part of the product, so it has its own page. */
-export function TrustPage() {
+/**
+ * /privacy — the privacy policy and how patient information is protected, on one page: the plain-words commitments
+ * first, then the formal legal details (a visible TODO until the legal advisor supplies them).
+ */
+export function PrivacyPage() {
   const { language, direction } = useLanguage();
   const copy = trustCopy[language];
+  const ui = legalUi[language];
   const lead = copy.titleA;
   const sectionIds = useMemo(() => copy.sections.map((section) => section.id), [copy.sections]);
   const active = useActiveSection(sectionIds);
@@ -202,9 +209,28 @@ export function TrustPage() {
 
                     {section.id === "security" ? <EmergencyNote className="mt-6" /> : null}
 
+                    {section.id === "legal" ? (
+                      <div className="mt-7 space-y-6 border-t border-line pt-6">
+                        {privacyLegalDetails[language].map((detail) => (
+                          <div key={detail.id} id={detail.id} className="scroll-mt-28">
+                            <h3 className="text-[1rem] font-semibold text-ink">{detail.title}</h3>
+                            <TodoBlock label={ui.todoLabel} detail={detail.todo} className="mt-3" />
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {section.id === "terms" ? (
+                      <Link href={ROUTES.terms} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
+                        <span className="home-link-line">{copy.readMore}</span>
+                        <ArrowRight className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
+                      </Link>
+                    ) : null}
+
                     {section.id === "contact" ? (
                       <>
                         <ContactDetails labels={copy.contact} />
+                        {CONTACT.email ? null : <TodoBlock label={ui.todoLabel} detail={ui.contactMissing} />}
                         <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                           <Button asChild size="lg" className="group min-h-12 px-7 shadow-brand">
                             <Link href={ROUTES.support}>

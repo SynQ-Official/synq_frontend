@@ -1,13 +1,19 @@
 import { BRAND } from "@/lib/config/brand";
 import { ORGANIZATION_NODE, SITE, WEBSITE_NODE } from "@/lib/config/site";
 
-type AgentJsonLdProps = { path: string; name: string; description: string };
+type AgentJsonLdProps = {
+  path: string;
+  name: string;
+  description: string;
+  /** Page-specific schema.org nodes (SoftwareApplication, FAQPage…) added to the graph; they must match what the page shows. */
+  extra?: ReadonlyArray<Record<string, unknown>>;
+};
 
 /**
  * Structured data for a public page (agent, trust, support): the page itself, inside the site and the organisation,
  * with a breadcrumb back to the home page.
  */
-export function AgentJsonLd({ path, name, description }: AgentJsonLdProps) {
+export function AgentJsonLd({ path, name, description, extra = [] }: AgentJsonLdProps) {
   const url = `${SITE.url}${path}`;
   const data = {
     "@context": "https://schema.org",
@@ -32,6 +38,7 @@ export function AgentJsonLd({ path, name, description }: AgentJsonLdProps) {
           { "@type": "ListItem", position: 2, name, item: url },
         ],
       },
+      ...extra,
     ],
   };
 

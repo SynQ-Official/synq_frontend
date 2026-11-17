@@ -2,6 +2,7 @@ export { CinematicIntro } from "./CinematicIntro";
 export { CTASection } from "./CTASection";
 export { Footer as FooterSection } from "./Footer";
 export { HealthcareSection } from "./HealthcareSection";
+export { TeamSection } from "./TeamSection";
 export { Hero as HeroSection } from "./Hero";
 export { WhatSection } from "./WhatSection";
 export { MarketingHeader as Header } from "@/components/layout/site-header";
