@@ -14,7 +14,8 @@ import { Magnetic, WordReveal } from "./AnimationUtilities";
 import { Grain, Motes, Swash } from "./Atmosphere";
 import dynamic from "next/dynamic";
 import { Marquee } from "./Interactions";
-import { ACCENT_LIGHT, BODY, DISPLAY_XL } from "./typography";
+import { PartnerLogos } from "./PartnerLogos";
+import { ACCENT_LIGHT, BODY, DISPLAY_XL, LABEL } from "./typography";
 
 /** three.js is the heaviest part of the page and sits behind the headline: it loads after first paint. */
 const GLSLHills = dynamic(() => import("./GLSLHills").then((m) => m.GLSLHills), { ssr: false });
@@ -160,7 +161,7 @@ export const Hero = () => {
                     </div>
                 </motion.div>
 
-                {/* Bottom of the first screen: a cue to keep going, and the screening references drifting by */}
+                {/* Bottom of the first screen: a cue to keep going, and our partners drifting by */}
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 2 }} className="pb-7">
                     <a href="#what" className="group mx-auto mb-6 flex w-fit flex-col items-center gap-3 rounded-md text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-ink-soft transition-colors hover:text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500 rtl:tracking-normal">
                         {copy.discover}
@@ -172,13 +173,14 @@ export const Hero = () => {
                             />
                         </span>
                     </a>
-                    <div role="group" aria-label="Screening references" className="border-y border-line/80 bg-white/40 py-3.5 backdrop-blur-sm">
-                        <Marquee seconds={36}>
-                            {home.chips.map((chip) => (
-                                <span key={chip} className="inline-flex items-center gap-3 whitespace-nowrap px-5 text-[0.875rem] font-medium text-ink-soft" dir="auto">
-                                    <span aria-hidden className="size-1.5 rounded-full bg-gold" />
-                                    {chip}
-                                </span>
+                    <div role="group" aria-labelledby="partners-label" className="flex flex-col items-center gap-2.5 border-y border-line/80 bg-white/40 py-3.5 backdrop-blur-sm sm:flex-row sm:gap-0">
+                        <p id="partners-label" className={cn(LABEL, "shrink-0 px-4 text-ink-soft sm:ps-8 lg:ps-12")}>
+                            {home.partners}
+                        </p>
+                        <Marquee seconds={70} className="w-full min-w-0 flex-1">
+                            {/* Two partners don't fill a wide screen: the ticker repeats them, and a reader announces them once. */}
+                            {Array.from({ length: reduce ? 1 : 8 }, (_, index) => (
+                                <PartnerLogos key={index} hidden={index > 0} />
                             ))}
                         </Marquee>
                     </div>

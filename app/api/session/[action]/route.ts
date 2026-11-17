@@ -11,13 +11,39 @@ export const dynamic = "force-dynamic";
  */
 type Tokens = { access_token?: string; refresh_token?: string; [key: string]: unknown };
 
-const json = (body: unknown, status: number, cookie?: string) =>
-  Response.json(body, { status, headers: { "Cache-Control": "no-store", ...(cookie ? { "Set-Cookie": cookie } : {}) } });
+const json = (body: unknown, status: number, cookies: string[] = []) => {
+  const headers = new Headers({ "Cache-Control": "no-store" });
+  cookies.forEach((cookie) => headers.append("Set-Cookie", cookie));
+  return Response.json(body, { status, headers });
+};
 
-/** A browser POST from another site must not drive the session: the Origin has to be ours. */
+/** A browser POST from another site must not drive the session: browsers always send Origin on POST, and it has to be ours. */
 function sameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  return !origin || origin === new URL(request.url).origin;
+  if (origin) return origin === new URL(request.url).origin;
+  return request.headers.get("sec-fetch-site") === "same-origin";
+}
+
+/**
+ * Per-IP throttle in front of the API's own (it answers 429 too). shortcut: in-memory, so per server instance and
+ * keyed on x-forwarded-for, which is only trustworthy behind a proxy that overwrites it; move to a shared store
+ * (Redis/edge KV) if the app runs on several instances.
+ */
+const WINDOW_MS = 5 * 60_000;
+const LIMITS: Record<string, number> = { login: 10, register: 10, refresh: 60 };
+const hits = new Map<string, { count: number; resetAt: number }>();
+
+function retryAfter(request: Request, action: string): number {
+  const limit = LIMITS[action];
+  if (!limit) return 0;
+  const now = Date.now();
+  for (const [key, hit] of hits) if (hit.resetAt <= now) hits.delete(key);
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const key = `${action}:${ip}`;
+  const hit = hits.get(key) ?? { count: 0, resetAt: now + WINDOW_MS };
+  hit.count += 1;
+  hits.set(key, hit);
+  return hit.count > limit ? Math.ceil((hit.resetAt - now) / 1000) : 0;
 }
 
 function forwardHeaders(request: Request, extra: Record<string, string> = {}) {
@@ -54,6 +80,8 @@ function session(payload: unknown) {
 export async function POST(request: Request, context: { params: Promise<{ action: string }> }) {
   const { action } = await context.params;
   if (!sameOrigin(request)) return json({ message: "Forbidden" }, 403);
+  const wait = retryAfter(request, action);
+  if (wait) return Response.json({ message: "Too many requests. Please wait a moment and retry." }, { status: 429, headers: { "Cache-Control": "no-store", "Retry-After": String(wait) } });
 
   try {
     if (action === "login" || action === "register") {
@@ -81,7 +109,9 @@ export async function POST(request: Request, context: { params: Promise<{ action
         const { res } = await call(request, "/auth/logout", { refresh_token: token });
         // The cookie is only dropped once the API has revoked the session. Otherwise the visitor would look signed
         // out while a valid refresh session lives on; the cookie stays so the sign-out can simply be retried.
-        if (!res.ok) return json({ message: "Could not sign out. Please try again." }, res.status >= 500 ? 502 : res.status);
+        // 401/403 means the API already treats this session as dead (expired, rotated, revoked): nothing left to revoke,
+        // so the cookie goes too instead of leaving the patient unable to sign out.
+        if (!res.ok && res.status !== 401 && res.status !== 403) return json({ message: "Could not sign out. Please try again." }, res.status >= 500 ? 502 : res.status);
       }
       return json({ message: "Logged out" }, 200, clearedCookie());
     }

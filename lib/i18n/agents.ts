@@ -165,7 +165,7 @@ const en: AgentPagesCopy = {
     seo: {
       title: "Mira — guided orientation and structured screening",
       description:
-        "Meet Mira, SynQ's orientation agent: a private, guided conversation built on established screening tools for ADHD, bipolar disorder and psychotic symptoms, and a clear summary to bring to a clinician. Included with your SynQ account.",
+        "Mira is SynQ's orientation agent: a private, guided conversation based on established screening tools for ADHD, bipolar disorder and psychosis. Not a diagnosis.",
     },
     hero: {
       eyebrow: "Mira · Orientation agent",
@@ -254,7 +254,7 @@ const en: AgentPagesCopy = {
     seo: {
       title: "Lumina — daily check-ins, journal and reports",
       description:
-        "Meet Lumina, SynQ's daily companion: a quick check-in, a private bilingual journal, simple goals, your own baseline and a monthly clinician report you share only with your consent.",
+        "Lumina is SynQ's daily companion: a quick check-in, a private bilingual journal, simple goals and a monthly clinician report shared only with your consent.",
     },
     hero: {
       eyebrow: "Lumina · Your daily space",
@@ -400,7 +400,7 @@ const en: AgentPagesCopy = {
     seo: {
       title: "Clinician Workspace — care between sessions",
       description:
-        "Meet the Clinician Workspace, where a licensed clinician follows the patients who choose to share: requests, alerts, sessions, notes and monthly reports. It supports clinical judgment and never replaces it.",
+        "SynQ's Clinician Workspace lets a licensed clinician follow patients who choose to share: alerts, sessions, notes and reports. It never replaces judgment.",
     },
     hero: {
       eyebrow: "Clinician Workspace · Consent-based care",

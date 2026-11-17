@@ -85,7 +85,7 @@ export const AGENTS: ReadonlyArray<{
 export const PRIMARY_LINKS = [
   { id: "product", href: null },
   { id: "tracks", href: ROUTES.tracks },
-  { id: "trust", href: ROUTES.trust },
+  { id: "trust", href: ROUTES.privacy },
   { id: "support", href: ROUTES.support },
 ] as const;
 

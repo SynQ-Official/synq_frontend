@@ -121,9 +121,9 @@ export const WhatSection = () => {
       </motion.dl>
 
       <StageRise className="mt-12 md:mt-16">
-        {/* The frame never grows taller than the screen: on a short or wide window it narrows, so the film stays whole. */}
-        <div className="mx-auto flex w-full max-w-[calc(70svh*16/9)] flex-col items-center gap-5 md:gap-6">
-          <div role="group" aria-label={copy.filmsLabel} className="grid w-full max-w-2xl grid-cols-3 gap-1 rounded-[1.25rem] border border-line-strong bg-white p-1 sm:rounded-full">
+        {/* The stage breaks out of the page column, up to the screen's edges; it stays shorter than the screen so the film stays whole. */}
+        <div className="ms-[calc((100%-var(--stage))/2)] flex w-[var(--stage)] flex-col items-center gap-5 [--stage:min(100vw_-_1rem,92svh_*_16/9)] md:gap-6 md:[--stage:min(100vw_-_3rem,92svh_*_16/9)]">
+          <div role="group" aria-label={copy.filmsLabel} className="grid w-full max-w-2xl grid-cols-3 gap-1 rounded-[1.25rem] border border-line-strong bg-white p-1 shadow-[var(--shadow-soft)] sm:rounded-full">
             {copy.films.map(({ title }, index) => {
               const current = active === index;
               return (
@@ -133,10 +133,18 @@ export const WhatSection = () => {
                   aria-pressed={current}
                   onClick={() => choose(index)}
                   className={cn(
-                    "flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-2 text-center text-[0.8125rem] font-semibold leading-tight transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 sm:flex-row sm:gap-2 sm:rounded-full sm:px-4 sm:text-[0.9375rem]",
-                    current ? "bg-ink text-white" : "text-ink-soft hover:bg-canvas hover:text-ink",
+                    "relative isolate flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-2 text-center text-[0.8125rem] font-semibold leading-tight transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 sm:flex-row sm:gap-2 sm:rounded-full sm:px-4 sm:text-[0.9375rem]",
+                    current ? "text-white" : "text-ink-soft hover:bg-canvas hover:text-ink",
                   )}
                 >
+                  {current ? (
+                    <motion.span
+                      layoutId="what-film-tab"
+                      aria-hidden
+                      transition={reduce ? { duration: 0 } : { duration: 0.45, ease: EASE_OUT }}
+                      className="absolute inset-0 -z-10 rounded-2xl bg-ink sm:rounded-full"
+                    />
+                  ) : null}
                   <span dir="ltr" className={cn("font-mono tabular-nums", current ? "text-gold-300" : "text-gold-700")}>{index + 1}</span>
                   <span>{title}</span>
                 </button>
@@ -144,7 +152,7 @@ export const WhatSection = () => {
             })}
           </div>
 
-          <div ref={stage} className="relative isolate aspect-video w-full overflow-hidden rounded-2xl border border-line md:rounded-3xl">
+          <div ref={stage} className="relative isolate aspect-video w-full overflow-hidden rounded-2xl border border-line shadow-float md:rounded-3xl">
             {FILMS.map((src, index) => (
               <Film
                 key={src}

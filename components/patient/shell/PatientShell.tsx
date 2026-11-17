@@ -104,7 +104,7 @@ function PatientLoadError({ retry, error }: { retry: () => void; error: Error | 
  */
 export function PatientGate({ children, pending }: { children: ReactNode; pending?: ReactNode }) {
   return (
-    <PatientProvider pending={pending ?? <PatientLoading />} errorFallback={(retry, error) => <PatientLoadError retry={retry} error={error} />}>
+    <PatientProvider pending={pending ?? <PatientLoading />} redirecting={<PatientLoading />} errorFallback={(retry, error) => <PatientLoadError retry={retry} error={error} />}>
       {children}
     </PatientProvider>
   );

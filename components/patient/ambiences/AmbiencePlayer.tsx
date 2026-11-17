@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { HeartHandshake, Pause, Play } from "lucide-react";
+import { Clock, HeartHandshake, Moon, Pause, Play, Volume1, Volume2 } from "lucide-react";
+import { SERIF } from "@/components/home/typography";
 import { deviceTimeZone } from "@/components/patient/home/CheckinScheduleCard";
-import { GlassCard } from "@/components/patient/ui/primitives";
+import { GlassCard, LuminaOrb } from "@/components/patient/ui/primitives";
 import { AmbienceFeedbackCard } from "@/components/patient/ambiences/AmbienceFeedbackCard";
 import { SupportCard } from "@/components/patient/ui/SupportCard";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,10 @@ import {
 } from "@/lib/patient/ambiences";
 import { cn } from "@/lib/utils";
 
-const OPTION = "flex min-h-12 items-center gap-3 rounded-2xl border px-4 py-2.5 text-[0.9375rem] text-ink transition-colors";
+const OPTION = "flex min-h-12 items-center gap-3 rounded-2xl border px-4 py-2.5 text-[0.9375rem] text-ink transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring";
+const OPTION_ON = "border-teal-400 bg-teal-50 shadow-soft";
+const OPTION_OFF = "border-white/60 bg-white/60 hover:bg-white/80";
+const SECTION_LABEL = "mb-3 flex items-center gap-2 text-sm font-medium text-ink-soft";
 
 /**
  * The comfort-sound player. Nothing plays until the patient taps Play; it fades in and out over three seconds, never goes
@@ -135,7 +139,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
   );
 
   const switchRow = (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-4 sm:px-8">
       <label htmlFor={ids.toggle} className="text-base font-medium text-ink">{copy.switchLabel}</label>
       <Switch
         id={ids.toggle}
@@ -152,11 +156,13 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
     return (
       <div className="space-y-5">
         {helpBar}
-        <GlassCard className="space-y-3 p-5 sm:p-6">
+        <GlassCard className="overflow-hidden p-0">
           {switchRow}
-          <p className="font-medium text-ink">{copy.offTitle}</p>
-          <p className="text-sm leading-6 text-ink-soft">{copy.offBody}</p>
-          {saveFailed && <p role="alert" className="text-sm text-rose-700">{copy.errors.save}</p>}
+          <div className="space-y-2 px-5 py-6 sm:px-8">
+            <p className={cn(SERIF, "text-lg font-normal text-ink rtl:font-semibold")}>{copy.offTitle}</p>
+            <p className="max-w-prose text-sm leading-6 text-ink-soft">{copy.offBody}</p>
+            {saveFailed && <p role="alert" className="text-sm text-rose-700">{copy.errors.save}</p>}
+          </div>
         </GlassCard>
       </div>
     );
@@ -165,11 +171,31 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
   return (
     <div className="space-y-5">
       {helpBar}
-      <GlassCard className="space-y-6 p-5 sm:p-6">
+      <GlassCard className="overflow-hidden p-0">
         {switchRow}
 
+        <div className="flex flex-col items-center gap-5 px-5 py-8 text-center sm:px-8 sm:py-10">
+          <LuminaOrb size={96} breathe={running} />
+          <h2 className={cn(SERIF, "text-[clamp(1.25rem,1.05rem+0.8vw,1.625rem)] font-normal leading-tight text-ink rtl:font-semibold")}>{sound.label[language]}</h2>
+          <Button
+            type="button"
+            size="lg"
+            onClick={toggle}
+            // Never `disabled`: a disabled button loses the keyboard focus, and the next Enter would go nowhere.
+            // While loading, another press cancels; while fading out it is ignored.
+            aria-busy={player.status === "loading" || player.status === "stopping"}
+            aria-disabled={player.status === "stopping"}
+            className="min-h-14 min-w-44 rounded-full px-9 text-base shadow-soft aria-disabled:opacity-60"
+          >
+            {running ? <Pause aria-hidden /> : <Play className="rtl:-scale-x-100" aria-hidden />}
+            {running ? copy.pause : player.status === "loading" ? copy.loading : player.status === "stopping" ? copy.statusFading : copy.play}
+          </Button>
+          {player.error && <p role="alert" className="text-sm text-rose-700">{copy.errors[player.error]}</p>}
+        </div>
+
+        <div className="space-y-7 border-t border-ink/10 px-5 py-6 sm:px-8">
         <div>
-          <p id={ids.sound} className="mb-2 text-sm font-medium text-ink-soft">{copy.soundLegend}</p>
+          <p id={ids.sound} className={SECTION_LABEL}>{copy.soundLegend}</p>
           <RadioGroup
             aria-labelledby={ids.sound}
             value={sound.id}
@@ -182,7 +208,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
             className="grid gap-2 sm:grid-cols-2"
           >
             {sounds.map((s) => (
-              <label key={s.id} className={cn(OPTION, s.id === sound.id ? "border-teal-300 bg-teal-50/70" : "border-white/60 bg-white/60", busy ? "cursor-not-allowed opacity-60" : "cursor-pointer")}>
+              <label key={s.id} className={cn(OPTION, s.id === sound.id ? OPTION_ON : OPTION_OFF, busy ? "cursor-not-allowed opacity-60" : "cursor-pointer")}>
                 <RadioGroupItem value={s.id} />
                 <span>{s.label[language]}</span>
               </label>
@@ -190,27 +216,10 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
           </RadioGroup>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <Button
-            type="button"
-            size="lg"
-            onClick={toggle}
-            // Never `disabled`: a disabled button loses the keyboard focus, and the next Enter would go nowhere.
-            // While loading, another press cancels; while fading out it is ignored.
-            aria-busy={player.status === "loading" || player.status === "stopping"}
-            aria-disabled={player.status === "stopping"}
-            className="min-h-14 min-w-40 rounded-full px-8 text-base aria-disabled:opacity-60"
-          >
-            {running ? <Pause aria-hidden /> : <Play aria-hidden />}
-            {running ? copy.pause : player.status === "loading" ? copy.loading : player.status === "stopping" ? copy.statusFading : copy.play}
-          </Button>
-          {player.error && <p role="alert" className="text-sm text-rose-700">{copy.errors[player.error]}</p>}
-        </div>
-
         <div>
-          <div className="mb-1 flex items-baseline justify-between gap-3">
-            <span className="text-sm font-medium text-ink-soft" aria-hidden>{copy.volume}</span>
-            <span className="tabular-nums text-sm text-ink" aria-hidden>{fill(copy.volumeValue, { n: volume })}</span>
+          <div className={cn(SECTION_LABEL, "justify-between")}>
+            <span className="flex items-center gap-2" aria-hidden><Volume1 className="size-4" />{copy.volume}</span>
+            <span className="flex items-center gap-2 tabular-nums text-ink" aria-hidden>{fill(copy.volumeValue, { n: volume })}<Volume2 className="size-4 text-ink-muted" /></span>
           </div>
           <Slider
             aria-label={`${copy.volume} ${fill(copy.volumeValue, { n: volume })}`}
@@ -227,7 +236,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
         </div>
 
         <div>
-          <p id={ids.timer} className="mb-2 text-sm font-medium text-ink-soft">{copy.timerLegend}</p>
+          <p id={ids.timer} className={SECTION_LABEL}><Clock className="size-4" aria-hidden />{copy.timerLegend}</p>
           <RadioGroup
             aria-labelledby={ids.timer}
             value={String(timer)}
@@ -237,7 +246,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
             className="flex flex-wrap gap-2"
           >
             {choices.map((choice) => (
-              <label key={choice} className={cn(OPTION, choice === timer ? "border-teal-300 bg-teal-50/70" : "border-white/60 bg-white/60", busy ? "cursor-not-allowed opacity-60" : "cursor-pointer")}>
+              <label key={choice} className={cn(OPTION, "rounded-full", choice === timer ? OPTION_ON : OPTION_OFF, busy ? "cursor-not-allowed opacity-60" : "cursor-pointer")}>
                 <RadioGroupItem value={String(choice)} />
                 <span>{choice === "bedtime" ? fill(copy.timerBedtime, { time: bedtime?.time ?? "" }) : fill(copy.timerMinutes, { n: choice })}</span>
               </label>
@@ -246,8 +255,8 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
         </div>
 
         {track === "BIPOLAR" && (
-          <div className="rounded-2xl bg-white/60 p-4">
-            <p className="font-medium text-ink">{copy.bedtimeTitle}</p>
+          <div className="rounded-2xl border border-white/60 bg-white/60 p-4 sm:p-5">
+            <p className="flex items-center gap-2 font-medium text-ink"><Moon className="size-4 text-ink-soft" aria-hidden />{copy.bedtimeTitle}</p>
             <p className="mt-0.5 text-sm leading-6 text-ink-soft">{copy.bedtimeBody}</p>
             <div className="mt-3 flex flex-wrap items-end gap-3">
               <div>
@@ -294,6 +303,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
         <div className="border-t border-ink/10 pt-4">
           <p className="text-sm font-medium leading-6 text-ink">{copy.disclaimer}</p>
           <p className="mt-1 text-xs text-ink-muted">{fill(copy.credit, { author: sound.author, licence: sound.licence })}</p>
+        </div>
         </div>
       </GlassCard>
 

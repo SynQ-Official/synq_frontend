@@ -16,7 +16,7 @@ type SectionHeaderProps = {
   align?: "start" | "center";
   /** `split` places the intro in the end column on large screens (editorial). */
   layout?: "stack" | "split";
-  /** `h1` when the header opens a page (e.g. /trust) rather than a home section. */
+  /** `h1` when the header opens a page (e.g. /privacy) rather than a home section. */
   as?: "h1" | "h2";
   /** `editorial` is the home-page treatment: serif display, quiet label. Other pages keep `classic`. */
   variant?: "classic" | "editorial";

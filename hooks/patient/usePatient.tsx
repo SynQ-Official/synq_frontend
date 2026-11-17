@@ -49,11 +49,14 @@ if (typeof window !== "undefined") {
 export function PatientProvider({
   children,
   pending,
+  redirecting,
   errorFallback,
 }: {
   children: ReactNode;
-  /** Shown while the profile is still on its way (and while a redirect to the welcome is under way). */
+  /** Shown while the profile is still on its way. */
   pending: ReactNode;
+  /** Shown while a redirect (to the welcome, or back to the orientation) is under way: never the dashboard's frame. Defaults to `pending`. */
+  redirecting?: ReactNode;
   errorFallback: (retry: () => void, error: Error | null) => ReactNode;
 }) {
   const router = useRouter();
@@ -108,22 +111,20 @@ export function PatientProvider({
     router.replace(`${ROUTES.signIn}?from=lumina&redirect=${encodeURIComponent(pathname || ROUTES.dashboard)}`);
   }, [unauthorized, signingOut, router, pathname]);
 
-  // Only the first arrival is forced through the welcome; it marks onboarding complete when it ends.
-  const needsWelcome = Boolean(profile && !profile.hasCompletedOnboarding && !hasSeenWelcome(profile.id));
+  // No orientation, no dashboard (and no welcome): a patient with neither a finished Mira orientation nor a
+  // clinician's diagnosis is sent to /orientation first. The welcome comes once, when the orientation hands over.
+  const lacksOrientation = Boolean(profile && profile.orientationCompleted === false && profile.track === "UNSPECIFIED");
+  const needsWelcome = Boolean(profile && !lacksOrientation && !profile.hasCompletedOnboarding && !hasSeenWelcome(profile.id));
   const onWelcomeFlow = pathname === WELCOME_ROUTE;
 
   useEffect(() => {
     if (needsWelcome && !onWelcomeFlow) router.replace(WELCOME_ROUTE);
   }, [needsWelcome, onWelcomeFlow, router]);
 
-  // No orientation, no dashboard: a patient with neither a finished Mira orientation nor a clinician's
-  // diagnosis is sent to /orientation. The (possibly cached) profile is re-read from the server first, so
-  // someone who has just finished is never bounced back. A finished orientation with no clear pattern still
-  // enters: the orientation page would only answer "already completed".
+  // The (possibly cached) profile is re-read from the server first, so someone who has just finished the
+  // orientation is never bounced back. A finished orientation with no clear pattern still enters: the
+  // orientation page would only answer "already completed".
   const inDashboard = Boolean(pathname?.startsWith(ROUTES.dashboard));
-  const lacksOrientation = Boolean(
-    profile && !needsWelcome && profile.orientationCompleted === false && profile.track === "UNSPECIFIED",
-  );
   const [orientationChecked, setOrientationChecked] = useState(false);
   const checking = useRef(false);
   useEffect(() => {
@@ -172,8 +173,7 @@ export function PatientProvider({
 
   if (gate === "checking") return <>{pending}</>;
   if (gate === "error" || !value) return <>{errorFallback(() => void refresh(), error)}</>;
-  if (needsWelcome && !onWelcomeFlow) return <>{pending}</>;
-  if (holdForOrientation) return <>{pending}</>;
+  if ((needsWelcome && !onWelcomeFlow) || holdForOrientation) return <>{redirecting ?? pending}</>;
   return (
     <PatientContext.Provider value={value}>
       {!signingOut && <LiveUpdates />}

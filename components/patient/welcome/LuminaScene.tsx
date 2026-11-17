@@ -40,7 +40,7 @@ function Orb({ speaking, still }: { speaking: boolean; still: boolean }) {
   return (
     <Float speed={still ? 0 : 1.3} rotationIntensity={still ? 0 : 0.25} floatIntensity={still ? 0 : 0.7}>
       <mesh ref={body}>
-        <sphereGeometry args={[1.25, 96, 96]} />
+        <sphereGeometry args={[1.25, 64, 64]} />
         <MeshDistortMaterial
           ref={material as never}
           color="#5b98a3"
@@ -53,16 +53,16 @@ function Orb({ speaking, still }: { speaking: boolean; still: boolean }) {
         />
       </mesh>
       <mesh ref={halo} scale={1.32}>
-        <sphereGeometry args={[1.25, 48, 48]} />
+        <sphereGeometry args={[1.25, 32, 32]} />
         <meshBasicMaterial color="#a9c7cb" transparent opacity={0.16} side={THREE.BackSide} blending={THREE.AdditiveBlending} depthWrite={false} />
       </mesh>
     </Float>
   );
 }
 
-export default function LuminaScene({ speaking, still }: { speaking: boolean; still: boolean }) {
+export default function LuminaScene({ speaking, still, onDrawn }: { speaking: boolean; still: boolean; onDrawn?: () => void }) {
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 5.2], fov: 42 }} gl={{ antialias: true, alpha: true }} aria-hidden>
+    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5.2], fov: 42 }} gl={{ antialias: true, alpha: true }} onCreated={() => requestAnimationFrame(() => onDrawn?.())} aria-hidden>
       <ambientLight intensity={0.9} />
       <pointLight position={[3, 3, 4]} intensity={38} color="#e9f4f4" />
       <pointLight position={[-4, -1.5, 3]} intensity={26} color="#e3b01c" />

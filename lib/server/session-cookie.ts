@@ -21,19 +21,24 @@ function ttlSeconds(token: string): number {
   return FALLBACK_TTL_S;
 }
 
-export function refreshCookie(token: string): string {
-  return [
-    `${REFRESH_COOKIE}=${token}`,
-    `Path=${COOKIE_PATH}`,
-    `Max-Age=${ttlSeconds(token)}`,
-    "HttpOnly",
-    "SameSite=Strict",
-    secure() ? "Secure" : "",
-  ].filter(Boolean).join("; ");
+/**
+ * A presence-only hint that a session exists, readable by `proxy.ts` on /dashboard and /welcome (the refresh cookie's
+ * narrow Path never reaches those routes). It carries no token and grants nothing: the API still decides.
+ */
+export const SESSION_HINT_COOKIE = "vitamind_s";
+
+const attrs = (path: string, maxAge: number, sameSite: "Strict" | "Lax") =>
+  [`Path=${path}`, `Max-Age=${maxAge}`, "HttpOnly", `SameSite=${sameSite}`, secure() ? "Secure" : ""].filter(Boolean).join("; ");
+
+/** `Set-Cookie` values that open a session: the refresh token and the presence hint (same lifetime). */
+export function refreshCookie(token: string): string[] {
+  const ttl = ttlSeconds(token);
+  return [`${REFRESH_COOKIE}=${token}; ${attrs(COOKIE_PATH, ttl, "Strict")}`, `${SESSION_HINT_COOKIE}=1; ${attrs("/", ttl, "Lax")}`];
 }
 
-export function clearedCookie(): string {
-  return [`${REFRESH_COOKIE}=`, `Path=${COOKIE_PATH}`, "Max-Age=0", "HttpOnly", "SameSite=Strict", secure() ? "Secure" : ""].filter(Boolean).join("; ");
+/** `Set-Cookie` values that end it. */
+export function clearedCookie(): string[] {
+  return [`${REFRESH_COOKIE}=; ${attrs(COOKIE_PATH, 0, "Strict")}`, `${SESSION_HINT_COOKIE}=; ${attrs("/", 0, "Lax")}`];
 }
 
 export function readRefreshCookie(request: Request): string | null {

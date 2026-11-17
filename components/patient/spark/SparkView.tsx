@@ -48,7 +48,8 @@ export function SparkView() {
     if (!value || spark.busy) return;
     const next = await spark.add(value);
     if (!next) return;
-    setText("");
+    // nothing found: keep the words, so they can be rephrased instead of retyped
+    if (next.safety || next.added > 0) setText("");
     setNotice(next.safety ? null : next.added > 0 ? fill(copy.capture.added, { n: next.added }) : copy.capture.nothing);
   }
 

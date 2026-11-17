@@ -1,14 +1,14 @@
 import type { Lang } from "@/lib/i18n/config";
 
 /**
- * Trust is part of the product, so it is written once, here, and shown in full on /trust (the home page only links to
+ * Trust is part of the product, so it is written once, here, and shown in full on /privacy (the home page only links to
  * it). Every statement describes behaviour that exists in the product today (consent
  * by category, a pseudonymous patient code, access logs, two-factor for clinician and admin accounts, encrypted
  * clinician notes). Retention periods, hosting location and the full legal text are NOT claimed here: they
  * belong to SynQ's legal owner and must be added by them. `ar` is typed against the same shape as `en`.
  */
 
-export const TRUST_IDS = ["privacy", "security", "responsible-ai", "data-handling", "terms", "contact"] as const;
+export const TRUST_IDS = ["privacy", "security", "responsible-ai", "data-handling", "legal", "terms", "contact"] as const;
 export type TrustId = (typeof TRUST_IDS)[number];
 
 export type TrustSection = {
@@ -16,7 +16,7 @@ export type TrustSection = {
   title: string;
   /** One line, shown under the title. */
   summary: string;
-  /** The full statements, shown on /trust. Empty when the summary says it all (contact). */
+  /** The full statements, shown on /privacy. Empty when the summary says it all (contact). */
   points: readonly string[];
 };
 
@@ -43,10 +43,10 @@ export type TrustCopy = {
 };
 
 const en: TrustCopy = {
-  seoTitle: "Trust and safety",
+  seoTitle: "Privacy policy and trust",
   seoDescription:
-    "How SynQ protects patient information: privacy, security, responsible AI, data handling, terms of use and how to reach us.",
-  eyebrow: "Trust and safety",
+    "How SynQ protects patient information: privacy, security, responsible AI, data handling, what you choose to share, terms of use and how to reach us.",
+  eyebrow: "Privacy policy and trust",
   titleA: "Trust is part of",
   titleB: "the product.",
   intro:
@@ -99,6 +99,12 @@ const en: TrustCopy = {
       ],
     },
     {
+      id: "legal",
+      title: "Legal information",
+      summary: "The formal details of this policy.",
+      points: [],
+    },
+    {
       id: "terms",
       title: "Terms of use",
       summary: "What SynQ is, what it is not, and what we ask of those who use it.",
@@ -127,9 +133,9 @@ const en: TrustCopy = {
 };
 
 const ar: TrustCopy = {
-  seoTitle: "الثقة والأمان",
+  seoTitle: "سياسة الخصوصية والثقة",
   seoDescription: "كيف تحمي SynQ معلومات المرضى: الخصوصية والأمان والذكاء الاصطناعي المسؤول ومعالجة البيانات وشروط الاستخدام وسبل التواصل.",
-  eyebrow: "الثقة والأمان",
+  eyebrow: "سياسة الخصوصية والثقة",
   titleA: "الثقة جزء",
   titleB: "من المنتج.",
   intro:
@@ -180,6 +186,12 @@ const ar: TrustCopy = {
         "يعالج النص الذي تكتبه خدمات الذكاء الاصطناعي في SynQ لإنتاج المواضيع والإشارات والملخصات التي تراها.",
         "يمكن إرسال أسئلتك عن بياناتك، ومنها كيفية الاطلاع عليها أو إزالتها، عبر بيانات التواصل أدناه.",
       ],
+    },
+    {
+      id: "legal",
+      title: "المعلومات القانونية",
+      summary: "التفاصيل الرسمية لهذه السياسة.",
+      points: [],
     },
     {
       id: "terms",
