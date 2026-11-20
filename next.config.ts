@@ -54,6 +54,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Date of this build (YYYY-MM-DD): the sitemap <lastmod> and the JSON-LD dateModified both report it.
+  env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString().slice(0, 10) },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
@@ -67,6 +69,9 @@ const nextConfig: NextConfig = {
       { source: "/trust", destination: "/privacy", permanent: true },
       { source: "/diagnostic", destination: "/orientation", permanent: true },
       { source: "/diagnostic/:path*", destination: "/orientation/:path*", permanent: true },
+      // The e-mail the API sends to a clinician-created account links to `/login`; the sign-in page is /auth/signin.
+      // Not permanent: the API's link may change to the real path later.
+      { source: "/login", destination: "/auth/signin", permanent: false },
     ];
   },
   images: {

@@ -126,7 +126,8 @@ function PageHeader({ eyebrow, title, description, actions }: { eyebrow?: string
     <div className="flex items-end justify-between gap-4">
       <div className="min-w-0">
         {eyebrow && <p className="text-xs font-medium text-[#0f766e]">{eyebrow}</p>}
-        <h1 className="mt-1 text-[1.625rem] font-semibold leading-tight tracking-tight text-slate-900">{title}</h1>
+        {/* A screen inside the product mockup, not the page's own heading (that is the hero <h1>). */}
+        <h3 className="mt-1 text-[1.625rem] font-semibold leading-tight tracking-tight text-slate-900">{title}</h3>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}

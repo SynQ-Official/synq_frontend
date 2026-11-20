@@ -185,7 +185,7 @@ const en: AgentPagesCopy = {
       titleA: "Careful,",
       titleB: "and human-first.",
       items: [
-        ["Gentle intake", "Five everyday situations, about two minutes.", "Intake"],
+        ["Gentle intake", "Everyday situations and quick questions, at your own pace.", "Intake"],
         ["Established screening tools", "ASRS · MDQ · PQ-B, asked in a natural conversation.", "Screening"],
         ["Structured triage", "Signals become a match level and a next step.", "Triage"],
         ["Risk detection", "A safety check runs the whole time.", "Safety"],
@@ -590,7 +590,7 @@ const ar: AgentPagesCopy = {
       titleA: "حذرة،",
       titleB: "والإنسان أولاً.",
       items: [
-        ["استقبال هادئ", "خمسة مواقف يومية في نحو دقيقتين.", "استقبال"],
+        ["استقبال هادئ", "مواقف يومية وأسئلة سريعة، على مهلك.", "استقبال"],
         ["أدوات فحص معروفة", "ASRS · MDQ · PQ-B، تُطرح ضمن محادثة طبيعية.", "فحص"],
         ["فرز منظَّم", "تتحول الإشارات إلى مستوى تطابق وخطوة تالية.", "فرز"],
         ["رصد المخاطر", "فحص أمان يعمل طوال الوقت.", "أمان"],

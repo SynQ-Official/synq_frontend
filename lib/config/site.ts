@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BRAND } from "@/lib/config/brand";
+import { BRAND, CONTACT, SOCIAL_PROFILES } from "@/lib/config/brand";
 import { ROUTES } from "@/lib/config/routes";
 
 /**
@@ -7,6 +7,9 @@ import { ROUTES } from "@/lib/config/routes";
  * Set NEXT_PUBLIC_SITE_URL in Vercel (no trailing slash); the fallback is the production domain.
  */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.synqae.com/").replace(/\/+$/, "");
+
+/** Build date (YYYY-MM-DD, set in next.config.ts): when this version of the site shipped. Used as lastmod / dateModified. */
+export const SITE_MODIFIED = process.env.NEXT_PUBLIC_BUILD_DATE ?? new Date().toISOString().slice(0, 10);
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
@@ -38,6 +41,15 @@ export const ORGANIZATION_NODE = {
   url: SITE.url,
   description: BRAND.description,
   logo: { "@type": "ImageObject", url: `${SITE.url}/assets/icon-512.png`, width: 512, height: 512 },
+  // The support page is the real contact channel; the email is added only once the owner provides it.
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    url: `${SITE.url}${ROUTES.support}`,
+    availableLanguage: ["English", "Arabic"],
+    ...(CONTACT.email ? { email: CONTACT.email } : {}),
+  },
+  ...(SOCIAL_PROFILES.length ? { sameAs: [...SOCIAL_PROFILES] } : {}),
 } as const;
 
 export const WEBSITE_NODE = {
@@ -47,6 +59,7 @@ export const WEBSITE_NODE = {
   name: BRAND.name,
   description: SITE.description,
   inLanguage: ["en", "ar"],
+  dateModified: SITE_MODIFIED,
   publisher: { "@id": ORGANIZATION_NODE["@id"] },
 } as const;
 
@@ -61,6 +74,7 @@ export function softwareApplicationNode({ path, name, description }: { path: str
     applicationCategory: "HealthApplication",
     operatingSystem: "Web",
     inLanguage: ["en", "ar"],
+    dateModified: SITE_MODIFIED,
     publisher: { "@id": ORGANIZATION_NODE["@id"] },
   };
 }

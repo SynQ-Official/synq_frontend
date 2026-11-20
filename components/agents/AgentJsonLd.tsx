@@ -1,5 +1,5 @@
 import { BRAND } from "@/lib/config/brand";
-import { ORGANIZATION_NODE, SITE, WEBSITE_NODE } from "@/lib/config/site";
+import { ORGANIZATION_NODE, SITE, SITE_MODIFIED, WEBSITE_NODE } from "@/lib/config/site";
 
 type AgentJsonLdProps = {
   path: string;
@@ -27,6 +27,7 @@ export function AgentJsonLd({ path, name, description, extra = [] }: AgentJsonLd
         name: `${name} | ${BRAND.name}`,
         description,
         inLanguage: ["en", "ar"],
+        dateModified: SITE_MODIFIED,
         isPartOf: { "@id": WEBSITE_NODE["@id"] },
         breadcrumb: { "@id": `${url}#breadcrumb` },
       },

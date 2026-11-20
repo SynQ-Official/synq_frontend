@@ -15,7 +15,13 @@ export const CONTACT: { email: string | null; phone: string | null; address: str
 };
 
 /**
+ * Official profiles (LinkedIn, X, Instagram…), emitted as `sameAs` in the Organization JSON-LD.
+ * TODO(owner): add the real profile URLs. Empty on purpose: none is guessed, and `sameAs` is omitted until then.
+ */
+export const SOCIAL_PROFILES: readonly string[] = [];
+
+/**
  * Emergency line shown in footers and on /privacy. TODO(owner): confirm the number and add a local helpline.
  * Only the number given by the owner is used here; nothing is looked up or invented.
  */
-export const EMERGENCY = { number: "999" } as const;
+export const EMERGENCY = { number: "197" } as const;
