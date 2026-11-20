@@ -20,9 +20,9 @@ export function NameIntake({ onSubmit, onSkip }: { onSubmit: (name: string) => v
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: EASE_OUT }}
-      className="flex items-start gap-3.5 rounded-[1.375rem] border border-teal-100 bg-teal-50/70 p-4 sm:gap-4 sm:p-6"
+      className="flex items-start gap-3 rounded-[1.25rem] border border-sage-100 bg-sage-50/60 p-4 sm:gap-3.5 sm:p-5"
     >
-      <MiraAvatar size="lg" />
+      <MiraAvatar size="md" />
       <div className="min-w-0 flex-1">
         <p className="text-[1rem] font-semibold text-ink">{t.prompt}</p>
         <p className="mt-1 text-[0.9375rem] leading-6 text-ink-soft">{t.hint}</p>
@@ -44,7 +44,7 @@ export function NameIntake({ onSubmit, onSkip }: { onSubmit: (name: string) => v
             placeholder={t.placeholder}
             maxLength={40}
             autoComplete="given-name"
-            className="min-h-12 min-w-0 flex-1 rounded-full border border-line-strong bg-white px-5 text-base text-ink outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-ink-subtle focus:border-teal-500 focus:shadow-focus"
+            className="min-h-12 min-w-0 flex-1 rounded-full border border-line bg-white px-5 text-base text-ink outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-ink-subtle focus:border-teal-500 focus:shadow-focus"
           />
           <div className="flex shrink-0 gap-2">
             <Button type="submit" variant="default" className="group min-h-12 rounded-full px-5">

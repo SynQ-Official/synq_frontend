@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Check, CircleHelp, CircleSlash, Copy, Info, MessageCircleQuestion, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { AlertCircle, Check, CircleHelp, CircleSlash, Copy, Info, MessageCircleQuestion, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { MIRA_MARK_SRC } from "@/components/layout/site-header/AgentAvatar";
@@ -32,12 +32,14 @@ interface MiraMessageProps {
   notice?: "unreadable";
   /** The visitor's message that Mira did not count. */
   notCounted?: boolean;
+  /** The visitor's latest message while it is on its way, or once it could not be delivered; none = delivered. */
+  status?: "sending" | "failed";
 }
 
 /** Rendered size (px) of Mira's mark per avatar size. */
 const AVATAR_SIZES = {
   sm: "size-9",
-  md: "size-11",
+  md: "size-9 sm:size-11",
   lg: "size-10 sm:size-12 lg:size-[3.25rem]",
   xl: "size-14",
 } as const;
@@ -83,7 +85,7 @@ function Waveform() {
 }
 
 const ACTION_CLASS =
-  "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full px-3 text-sm font-medium text-ink-soft transition-[background-color,color] duration-200 hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:h-4 [&_svg]:w-4";
+  "inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-[0.8125rem] font-medium text-ink-muted transition-[background-color,color] duration-200 hover:bg-sage-50 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:size-3.5";
 
 /**
  * Conversation message.
@@ -99,7 +101,7 @@ function StreamingDots() {
         <motion.span
           key={dot}
           aria-hidden
-          className="size-1 rounded-full bg-teal-500/80"
+          className="size-1 rounded-full bg-sage-700/80"
           animate={reduce ? { opacity: 0.7 } : { opacity: [0.25, 1, 0.25] }}
           transition={reduce ? undefined : { duration: 1.2, repeat: Infinity, delay: dot * 0.18 }}
         />
@@ -108,7 +110,7 @@ function StreamingDots() {
   );
 }
 
-export function MiraMessage({ content, role, createdAt, index, language, streaming = false, partial, onRetry, notice, notCounted }: MiraMessageProps) {
+export function MiraMessage({ content, role, createdAt, index, language, streaming = false, partial, onRetry, notice, notCounted, status }: MiraMessageProps) {
   const { dictionary } = useLanguage();
   const streamCopy = MIRA_STREAM_COPY[language];
   const diagnostic = dictionary.diagnostic;
@@ -145,26 +147,45 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
   if (isUser) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.35, ease: EASE_OUT }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: EASE_OUT }}
         className="flex w-full justify-end"
       >
-        <div className="flex max-w-[92%] flex-col items-end gap-1 sm:max-w-[84%]">
-          <span className="px-1 text-[0.75rem] font-medium text-ink-soft">
-            {diagnostic.youLabel}
-            {time && <time className="ms-1.5 tabular-nums text-ink-muted">{time}</time>}
-          </span>
-          <div className="max-w-full rounded-[1.375rem] rounded-se-md bg-[linear-gradient(135deg,var(--color-teal-700),var(--color-teal-900))] px-5 py-3.5 text-white shadow-[0_14px_30px_-16px_rgb(17_76_97/0.7)]">
+        <div className="flex max-w-[88%] flex-col items-end gap-1.5 sm:max-w-[min(78%,36rem)]">
+          <div
+            className={cn(
+              "max-w-full rounded-[1.25rem] rounded-se-md px-4 py-3 text-white transition-opacity duration-300 sm:px-5",
+              status === "failed" ? "bg-teal-800/85 ring-2 ring-rose-100" : "bg-teal-800",
+              status === "sending" && "opacity-80",
+            )}
+          >
             {/* The visitor's own words, line breaks kept; each line takes its own direction (Arabic and English mixed). */}
             <p className="whitespace-pre-line text-[0.9375rem] leading-7 [overflow-wrap:anywhere] [unicode-bidi:plaintext] sm:text-base">{content}</p>
           </div>
-          {notCounted && (
-            <span className="inline-flex items-center gap-1.5 px-1 text-[0.75rem] font-medium text-gold-700">
-              <CircleSlash className="size-3.5" aria-hidden />
-              {diagnostic.notCounted}
-            </span>
-          )}
+          <p className="flex flex-wrap items-center justify-end gap-x-2 gap-y-1 px-1 text-[0.75rem] text-ink-muted">
+            <span className="font-medium text-ink-soft">{diagnostic.youLabel}</span>
+            {time && <time className="tabular-nums">{time}</time>}
+            {status === "sending" ? (
+              <span role="status" className="inline-flex items-center gap-1">
+                <span aria-hidden className="size-1.5 rounded-full bg-sage motion-safe:animate-pulse" />
+                {streamCopy.sending}
+              </span>
+            ) : status === "failed" ? (
+              <span className="inline-flex items-center gap-1 font-medium text-rose-700">
+                <AlertCircle className="size-3.5" aria-hidden />
+                {streamCopy.notDelivered}
+              </span>
+            ) : (
+              <Check className="size-3.5 text-sage-700" aria-hidden />
+            )}
+            {notCounted && (
+              <span className="inline-flex items-center gap-1 font-medium text-gold-700">
+                <CircleSlash className="size-3.5" aria-hidden />
+                {diagnostic.notCounted}
+              </span>
+            )}
+          </p>
         </div>
       </motion.div>
     );
@@ -173,23 +194,28 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
   return (
     <motion.article
       aria-label={diagnostic.miraLabel}
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: Math.min(index * 0.04, 0.2), ease: EASE_OUT }}
-      className="flex w-full gap-3 sm:gap-4"
+      transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.2), ease: EASE_OUT }}
+      className="flex w-full gap-3 sm:gap-3.5"
     >
-      <MiraAvatar size="lg" />
-      <div className="min-w-0 max-w-[95%] flex-1 sm:max-w-[90%] lg:max-w-[min(84%,60rem)]">
-        <p className="flex flex-wrap items-baseline gap-x-2.5 px-1 pt-1">
-          <span className={cn(SERIF, "text-[1.1875rem] font-normal tracking-[-0.01em] text-ink rtl:tracking-normal sm:text-[1.3125rem]")}>{diagnostic.miraLabel}</span>
-          <span className="text-[0.8125rem] text-ink-soft">{diagnostic.aiGuide}</span>
-          {time && <time className="text-[0.8125rem] tabular-nums text-ink-muted">{time}</time>}
+      <MiraAvatar size="md" className="mt-0.5" />
+      <div className="min-w-0 flex-1 sm:max-w-[min(88%,42rem)]">
+        <p className="flex flex-wrap items-baseline gap-x-2 px-0.5">
+          <span className={cn(SERIF, "text-[1.0625rem] font-normal tracking-[-0.01em] text-ink rtl:font-semibold rtl:tracking-normal")}>{diagnostic.miraLabel}</span>
+          <span className="text-[0.75rem] text-ink-muted">{diagnostic.aiGuide}</span>
+          {time && (
+            <>
+              <span aria-hidden className="text-[0.75rem] text-ink-subtle">·</span>
+              <time className="text-[0.75rem] tabular-nums text-ink-muted">{time}</time>
+            </>
+          )}
         </p>
 
         <div
           className={cn(
-            "relative mt-2 rounded-[1.375rem] rounded-ss-md border px-5 py-4 sm:px-6",
-            notice ? "border-gold-100 bg-gold-50" : "border-teal-100 bg-teal-50/70",
+            "relative mt-1.5 rounded-[1.25rem] rounded-ss-md border px-4 py-3.5 sm:px-5 sm:py-4",
+            notice ? "border-gold-100 bg-gold-50" : "border-sage-100 bg-sage-50/60",
           )}
         >
           {notice && (
@@ -200,25 +226,25 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
           )}
           {/* Polite live region, busy while the reply is being written: assistive tech reads it once it is complete. */}
           <div aria-live="polite" aria-busy={streaming || undefined}>
-            {split.lead && <RichText content={split.lead} className="text-base leading-7 text-ink-soft break-words sm:text-[1.0625rem]" />}
+            {split.lead && <RichText content={split.lead} className="text-[0.9375rem] leading-7 text-ink-soft break-words sm:text-base sm:leading-[1.8] rtl:leading-8" />}
             {split.question && (split.label ? (
-              // Labelled question: a quiet white block; situations get a gold edge so a scenario reads as one.
+              // Labelled question: a quiet white block; situations get a champagne edge so a scenario reads as one.
               <section
                 aria-label={split.label}
                 className={cn(
-                  "rounded-2xl border bg-white px-4 py-3.5 shadow-xs sm:px-5 sm:py-4",
-                  split.lead && "mt-4",
-                  split.kind === "situation" ? "border-gold-100 border-s-[3px] border-s-gold-300" : "border-teal-100",
+                  "rounded-2xl border bg-white px-4 py-3.5 sm:px-5 sm:py-4",
+                  split.lead && "mt-3.5",
+                  split.kind === "situation" ? "border-gold-100 border-s-2 border-s-gold-300" : "border-line",
                 )}
               >
                 <p className={cn(LABEL, "mb-2 flex items-center gap-1.5", split.kind === "situation" ? "text-gold-700" : "text-teal-700")}>
                   {split.kind === "situation" ? <MessageCircleQuestion className="size-3.5" aria-hidden /> : <CircleHelp className="size-3.5" aria-hidden />}
                   {split.label}
                 </p>
-                <RichText content={split.question} className="text-base font-medium leading-7 text-ink break-words sm:text-[1.0625rem]" />
+                <RichText content={split.question} className="text-base font-medium leading-7 text-ink break-words sm:text-[1.0625rem] rtl:leading-8" />
               </section>
             ) : (
-              <RichText content={split.question} className={cn("text-base font-medium leading-7 text-ink break-words sm:text-[1.0625rem]", split.lead && "mt-3")} />
+              <RichText content={split.question} className={cn("text-base font-medium leading-7 text-ink break-words sm:text-[1.0625rem] rtl:leading-8", split.lead && "mt-3")} />
             ))}
           </div>
           {streaming && <StreamingDots />}
@@ -238,13 +264,13 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
           </p>
         )}
 
-        <div className={cn("mt-2 flex flex-wrap items-center gap-1", (streaming || partial) && "hidden")}>
+        <div className={cn("mt-1 flex flex-wrap items-center gap-0.5", (streaming || partial) && "hidden")}>
           <button
             type="button"
             onClick={toggle}
             disabled={speech === "unsupported"}
             aria-label={speaking ? diagnostic.stopListening : diagnostic.listen}
-            className={cn(ACTION_CLASS, speaking && "bg-white text-teal-800")}
+            className={cn(ACTION_CLASS, speaking && "bg-sage-50 text-teal-800")}
           >
             {speech === "loading" ? (
               <LogoSpinner size={18} />

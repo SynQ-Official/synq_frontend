@@ -7,9 +7,8 @@ import { RefreshCw } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AudioProvider } from "@/contexts/AudioContext";
 import { Button } from "@/components/ui/button";
-import { ensureSession } from "@/lib/api/client";
 import { createChatId } from "../lib/chat";
-import { fingerprintHeaders } from "../lib/fingerprint";
+import { miraApi } from "../lib/mira-api";
 import { useVisitorName } from "../lib/visitor";
 import type { MiraAssessmentResult, MiraMessage as MiraMessageData } from "../types";
 import { DiagnosticHeader } from "./DiagnosticHeader";
@@ -21,15 +20,6 @@ import { LogoSpinner } from "@/components/shared/LogoLoader";
 import { homeSerif } from "@/components/home/fonts";
 import { DISPLAY_M } from "@/components/home/typography";
 import { cn } from "@/lib/utils";
-
-type HistoryResponse = {
-  session_id: string;
-  status: string;
-  completed: boolean;
-  result: MiraAssessmentResult | null;
-  messages: Array<{ role: "user" | "assistant"; content: string; createdAt: string }>;
-  error?: string;
-};
 
 type LoadState =
   | { phase: "loading" }
@@ -58,16 +48,11 @@ export function OrientationResultPage() {
     let active = true;
     (async () => {
       try {
-        // After a reload the access token is not in memory yet: restore it first, or the proxy answers 401 and the
-        // finished report reads as "not ready".
-        await ensureSession();
-        const res = await fetch(`/api/mira?resource=history&sessionId=${encodeURIComponent(sessionId)}`, {
-          cache: "no-store",
-          headers: fingerprintHeaders(),
-        });
-        const data = (await res.json()) as HistoryResponse;
+        // The shared client restores the session after a reload and renews an expired token, so a finished report
+        // never reads as "not ready" for want of a fresh token.
+        const data = await miraApi.history(sessionId);
         if (!active) return;
-        if (!res.ok || !data.completed || !data.result) {
+        if (!data.completed || !data.result) {
           setState({ phase: "missing" });
           return;
         }
@@ -92,11 +77,7 @@ export function OrientationResultPage() {
     if (!sessionId) return;
     setIsFinalizing(true);
     try {
-      await fetch("/api/mira", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...fingerprintHeaders() },
-        body: JSON.stringify({ action: "finalize", sessionId }),
-      });
+      await miraApi.finalize(sessionId);
     } catch {
       /* the download proceeds regardless; the server stamp is best-effort from the client */
     } finally {

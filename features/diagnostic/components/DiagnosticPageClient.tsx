@@ -52,7 +52,7 @@ export function DiagnosticPageClient() {
     <div className={cn(homeSerif.variable, "relative flex h-dvh flex-col overflow-hidden")}>
       <OrientationBackdrop />
       <DiagnosticHeader chatId={chatId} onLanguageChange={(nextLanguage) => setLanguageSwitch({ id: Date.now(), language: nextLanguage })} />
-      {/* ACTIVE: Mira v5 flow (REST /api/mira → Nest /api/v1/mira/* → Mira agent /api/v1/mira/*). */}
+      {/* ACTIVE: Mira v5 flow (browser → Nest /api/v1/mira/* via miraApi → Mira agent). */}
       {/* Keyed by account: if the signed-in user ever changes under this page, the whole conversation state remounts empty. */}
       <MiraChatExperience key={userId} chatId={chatId} languageSwitch={languageSwitch} locked={false} />
     </div>

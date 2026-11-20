@@ -1,8 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Check, ChevronRight, ShieldCheck, Sparkles } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Check, ChevronRight, Info, ShieldCheck } from "lucide-react";
 import { copy, type Lang } from "@/lib/i18n/config";
 import { fill } from "@/lib/i18n/format";
 import { EASE_OUT } from "@/lib/motion";
@@ -16,7 +16,7 @@ import { MiraAvatar } from "./MiraMessage";
 type ProgressProps = {
   chapter: MiraChapter;
   progress: number;
-  /** The agent's own count; the total grows past 16 when Mira asks a clarification. */
+  /** The agent's own count: 26 questions (v2) or 16 (v1 sessions); clarifications and corrections are never counted. */
   questions?: QuestionCount | null;
   language: Lang;
   className?: string;
@@ -33,48 +33,53 @@ function useProgressModel({ chapter, progress, questions, language }: ProgressPr
   // Encouragement follows the journey: start → rhythm → past halfway → almost → done.
   const stageIndex = clamped >= 1 ? 4 : clamped >= 0.7 ? 3 : clamped >= 0.5 ? 2 : position.answered > 0 ? 1 : 0;
   const stage = diagnostic.rail.stages[stageIndex];
-  const counter = fill(diagnostic.questionCounter, { current: position.current, total: position.total });
+  // Only the agent's own total is printed: until it is known the label stays generic (never an assumed count).
+  const counter = position.known ? fill(diagnostic.questionCounter, { current: position.current, total: position.total }) : diagnostic.rail.questions;
   return { diagnostic, percent, position, activeIndex, stage, counter };
 }
 
-/** "3/10" ring: soft track, teal → sage stroke, gentle halo. */
-function QuestionRing({ answered, total, percent, size = "lg" }: { answered: number; total: number; percent: number; size?: "lg" | "sm" }) {
+/** "3/26" ring: soft track, deep teal → sage stroke. */
+function QuestionRing({ answered, total, known, percent, size = "lg" }: { answered: number; total: number; known: boolean; percent: number; size?: "lg" | "sm" }) {
   const gradientId = useId();
-  const radius = 42;
+  const reduce = useReducedMotion();
+  const radius = 44;
   const circumference = 2 * Math.PI * radius;
   const large = size === "lg";
   return (
-    <span className={cn("relative inline-flex shrink-0 items-center justify-center rounded-full bg-white shadow-[0_10px_28px_-14px_rgb(43_112_128/0.5)] ring-1 ring-teal-100", large ? "size-24" : "size-12")}>
-      <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90" aria-hidden>
+    <span className={cn("relative inline-flex shrink-0 items-center justify-center rounded-full bg-white", large ? "size-[5.5rem]" : "size-11")}>
+      {/* Mirrored in RTL so the stroke grows clockwise from the reading start. */}
+      <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90 rtl:-scale-x-100 rtl:rotate-90" aria-hidden>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--color-teal-600)" />
-            <stop offset="100%" stopColor="var(--color-gold)" />
+            <stop offset="0%" stopColor="var(--color-teal-700)" />
+            <stop offset="100%" stopColor="var(--color-sage)" />
           </linearGradient>
         </defs>
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--color-teal-100)" strokeWidth={large ? 5 : 7} />
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--color-teal-50)" strokeWidth={large ? 4 : 7} />
         <motion.circle
           cx="50"
           cy="50"
           r={radius}
           fill="none"
           stroke={`url(#${gradientId})`}
-          strokeWidth={large ? 5 : 7}
+          strokeWidth={large ? 4 : 7}
           strokeLinecap="round"
           strokeDasharray={circumference}
           initial={false}
           animate={{ strokeDashoffset: circumference * (1 - percent / 100) }}
-          transition={{ duration: 0.9, ease: EASE_OUT }}
+          transition={reduce ? { duration: 0 } : { duration: 0.9, ease: EASE_OUT }}
         />
       </svg>
-      <span className={cn("relative tabular-nums text-ink", large ? cn(SERIF, "text-[1.625rem] font-light tracking-[-0.03em]") : "text-[0.75rem] font-semibold")} dir="ltr">
-        {answered}/{total}
+      <span className={cn("relative tabular-nums text-ink", large ? cn(SERIF, "text-[1.5rem] font-light tracking-[-0.03em] rtl:font-sans rtl:text-[1.25rem]") : "text-[0.6875rem] font-semibold")} dir="ltr">
+        {answered}
+        {known && <span className={cn("text-ink-subtle", large && "text-[0.9375rem]")}>/{total}</span>}
       </span>
     </span>
   );
 }
 
 function LinearProgress({ percent, label }: { percent: number; label: string }) {
+  const reduce = useReducedMotion();
   return (
     <div
       role="progressbar"
@@ -82,25 +87,43 @@ function LinearProgress({ percent, label }: { percent: number; label: string }) 
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent}
-      className="h-1.5 w-full overflow-hidden rounded-full bg-teal-100"
+      className="h-1 w-full overflow-hidden rounded-full bg-teal-50"
     >
       <motion.span
-        className="block h-full origin-left rounded-full bg-[linear-gradient(90deg,var(--color-teal-600),var(--color-gold))] rtl:origin-right"
+        className="block h-full origin-left rounded-full bg-[linear-gradient(90deg,var(--color-teal-700),var(--color-sage))] rtl:origin-right rtl:bg-[linear-gradient(270deg,var(--color-teal-700),var(--color-sage))]"
         initial={false}
-        animate={{ scaleX: Math.max(0.04, percent / 100) }}
-        transition={{ duration: 0.8, ease: EASE_OUT }}
+        animate={{ scaleX: Math.max(0.03, percent / 100) }}
+        transition={reduce ? { duration: 0 } : { duration: 0.8, ease: EASE_OUT }}
       />
     </div>
   );
 }
 
+function Stage({ stage, className }: { stage: string; className?: string }) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.span
+        key={stage}
+        initial={{ opacity: 0, y: 3 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -3 }}
+        transition={{ duration: 0.25, ease: EASE_OUT }}
+        className={className}
+        aria-live="polite"
+      >
+        {stage}
+      </motion.span>
+    </AnimatePresence>
+  );
+}
+
 /** Desktop rail: what this session is, where the visitor is, and a calm reassurance. */
 export function SessionRail(props: ProgressProps) {
-  const { diagnostic, percent, position, activeIndex, stage } = useProgressModel(props);
+  const { diagnostic, percent, position, activeIndex, stage, counter } = useProgressModel(props);
   const rail = diagnostic.rail;
   const [journeyOpen, setJourneyOpen] = useState(false);
   const journeyId = useId();
-  // Title: the last word carries the olive-gold accent, as on the home page.
+  // Title: the last word carries the champagne-gold accent, as on the home page.
   const titleWords = rail.title.split(" ");
   const titleLead = titleWords.slice(0, -1).join(" ");
   const titleAccent = titleWords.slice(-1).join(" ");
@@ -108,65 +131,53 @@ export function SessionRail(props: ProgressProps) {
   return (
     <aside
       aria-label={diagnostic.stepsTitle}
-      className={cn("orientation-glass scrollbar-hide flex min-h-0 flex-col overflow-y-auto p-6 xl:p-7 [&>*]:shrink-0", props.className)}
+      className={cn("orientation-glass scrollbar-hide flex min-h-0 flex-col overflow-y-auto px-6 py-7 xl:px-8 xl:py-8 [&>*]:shrink-0", props.className)}
     >
-      <div className="flex items-center gap-3.5">
-        <MiraAvatar size="xl" presence />
-        <p className={cn(LABEL, "flex min-w-0 items-center gap-2.5 text-teal-700")}>
-          <span aria-hidden className="h-px w-5 shrink-0 bg-gold" />
-          {rail.eyebrow}
-        </p>
+      <div className="flex items-center gap-3">
+        <MiraAvatar size="md" presence />
+        <p className={cn(LABEL, "min-w-0 text-teal-700")}>{rail.eyebrow}</p>
       </div>
-      <h1 className={cn(SERIF, "mt-6 text-[clamp(2rem,1.4vw+1.5rem,2.75rem)] font-light leading-[1.05] tracking-[-0.035em] text-ink rtl:leading-[1.3] rtl:tracking-normal")}>
+      <h1 className={cn(SERIF, "mt-7 text-balance text-[clamp(1.875rem,1.2vw+1.4rem,2.5rem)] font-light leading-[1.08] tracking-[-0.03em] text-ink rtl:text-[clamp(1.625rem,1vw+1.25rem,2.125rem)] rtl:font-semibold rtl:leading-[1.4] rtl:tracking-normal")}>
         {titleLead ? <>{titleLead} </> : null}
         <span className={ACCENT_LIGHT}>{titleAccent}</span>
       </h1>
-      <p className="mt-5 text-[0.9375rem] leading-7 text-ink-soft">{rail.body}</p>
+      <p className="mt-4 text-[0.9375rem] leading-7 text-ink-soft rtl:leading-8">{rail.body}</p>
 
-      {/* Questions */}
-      <div className="orientation-tile mt-6 flex items-center gap-4 p-4">
-        <QuestionRing answered={position.answered} total={position.total} percent={percent} />
-        <div className="min-w-0 flex-1">
-          <p className="text-[0.9375rem] font-semibold text-ink">{rail.questions}</p>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.p
-              key={stage}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.25, ease: EASE_OUT }}
-              className="mt-0.5 text-[0.875rem] text-ink-soft"
-              aria-live="polite"
-            >
-              {stage}
-            </motion.p>
-          </AnimatePresence>
-          <div className="mt-3">
-            <LinearProgress percent={percent} label={diagnostic.progressLabel} />
+      {/* Where the visitor is */}
+      <div className="orientation-tile mt-7 p-5">
+        <div className="flex items-center gap-4">
+          <QuestionRing answered={position.answered} total={position.total} known={position.known} percent={percent} />
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.9375rem] font-semibold text-ink">{counter}</p>
+            <Stage stage={stage} className="mt-1 block text-[0.875rem] leading-6 text-ink-soft" />
           </div>
         </div>
+        <div className="mt-4">
+          <LinearProgress percent={percent} label={diagnostic.progressLabel} />
+        </div>
+        <p className="mt-4 flex items-start gap-2 text-[0.8125rem] leading-5 text-ink-muted">
+          <Info className="mt-0.5 size-3.5 shrink-0 text-sage-700" aria-hidden />
+          {diagnostic.skipHint}
+        </p>
       </div>
 
       {/* Today's focus — expands into the journey chapters */}
-      <div className="orientation-tile mt-4 overflow-hidden">
+      <div className={cn("mt-3 overflow-hidden rounded-[1.25rem] border transition-colors duration-200", journeyOpen ? "border-line" : "border-transparent")}>
         <button
           type="button"
           onClick={() => setJourneyOpen((open) => !open)}
           aria-expanded={journeyOpen}
           aria-controls={journeyId}
-          className="group flex w-full cursor-pointer items-start gap-3.5 p-4 text-start transition-colors duration-200 hover:bg-white/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-500"
+          className="group flex w-full cursor-pointer items-start gap-3 rounded-[1.25rem] px-4 py-3.5 text-start transition-colors duration-200 hover:bg-ivory focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-500"
         >
-          <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-gold-700 shadow-xs ring-1 ring-gold-100">
-            <Sparkles className="h-5 w-5" strokeWidth={1.5} />
-          </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[0.9375rem] font-semibold text-ink">{rail.focusTitle}</span>
-            <span className="mt-1 block text-[0.875rem] leading-6 text-ink-soft">{rail.focusBody}</span>
+            <span className="block text-[0.875rem] font-semibold text-ink">{rail.focusTitle}</span>
+            <span className="mt-0.5 block text-[0.8125rem] leading-5 text-ink-muted">{rail.focusBody}</span>
           </span>
           <ChevronRight
             aria-hidden
             className={cn(
-              "mt-3 h-4 w-4 shrink-0 text-ink-subtle transition-transform duration-300 ease-out-soft group-hover:text-teal-700 rtl:-scale-x-100",
+              "mt-1 h-4 w-4 shrink-0 text-ink-subtle transition-transform duration-300 ease-out-soft group-hover:text-teal-700 rtl:-scale-x-100",
               journeyOpen && "rotate-90 rtl:-rotate-90",
             )}
           />
@@ -180,10 +191,10 @@ export function SessionRail(props: ProgressProps) {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.35, ease: EASE_OUT }}
-              className="overflow-hidden border-t border-white/80 px-4"
+              transition={{ duration: 0.3, ease: EASE_OUT }}
+              className="overflow-hidden px-4"
             >
-              <li className={cn(LABEL, "pt-3 text-ink-muted")}>{rail.journeyTitle}</li>
+              <li className={cn(LABEL, "pt-1 text-ink-muted")}>{rail.journeyTitle}</li>
               {CHAPTER_SEQUENCE.map((step, i) => {
                 const done = i < activeIndex;
                 const current = i === activeIndex;
@@ -192,16 +203,16 @@ export function SessionRail(props: ProgressProps) {
                     <span
                       aria-hidden
                       className={cn(
-                        "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors duration-300",
-                        done && "border-primary bg-primary text-white",
-                        current && "border-teal-300 bg-teal-50 text-teal-700 shadow-[0_0_0_3px_var(--color-teal-100)]",
+                        "flex size-7 shrink-0 items-center justify-center rounded-full border transition-colors duration-300",
+                        done && "border-teal-700 bg-teal-700 text-white",
+                        current && "border-teal-300 bg-teal-50 text-teal-700",
                         !done && !current && "border-line bg-white text-ink-subtle",
                       )}
                     >
-                      {done ? <Check className="h-3.5 w-3.5" strokeWidth={2.5} /> : <ChapterIcon chapter={step} className="h-3.5 w-3.5" />}
+                      {done ? <Check className="size-3.5" strokeWidth={2.5} /> : <ChapterIcon chapter={step} className="size-3.5" />}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className={cn("block text-[0.9375rem]", current ? "font-semibold text-ink" : "text-ink-soft")}>
+                      <span className={cn("block text-[0.875rem]", current ? "font-semibold text-ink" : "text-ink-soft")}>
                         {diagnostic.chapters[step]}
                       </span>
                       <span className="block text-[0.8125rem] text-ink-muted">{diagnostic.chapterHints[step as keyof typeof diagnostic.chapterHints]}</span>
@@ -216,28 +227,26 @@ export function SessionRail(props: ProgressProps) {
       </div>
 
       {/* Privacy */}
-      <div className="mt-auto flex items-center gap-3.5 pt-6">
-        <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
-          <ShieldCheck className="h-5 w-5" strokeWidth={1.5} />
-        </span>
-        <p className="text-[0.875rem] leading-6 text-ink-soft">{diagnostic.privateNote}</p>
+      <div className="mt-auto flex items-start gap-3 border-t border-line pt-5">
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-sage-700" strokeWidth={1.75} aria-hidden />
+        <p className="text-[0.8125rem] leading-5 text-ink-muted">{diagnostic.privateNote}</p>
       </div>
     </aside>
   );
 }
 
-/** Compact progress for tablet/mobile, shown above the conversation. */
+/** Compact progress for tablet/mobile: one slim strip above the conversation, so the conversation keeps the screen. */
 export function CompactProgress(props: ProgressProps) {
-  const { diagnostic, percent, position, stage } = useProgressModel(props);
+  const { diagnostic, percent, position, stage, counter } = useProgressModel(props);
 
   return (
-    <div className={cn("orientation-glass flex items-center gap-3.5 !rounded-[1.25rem] px-4 py-3", props.className)}>
-      <QuestionRing answered={position.answered} total={position.total} percent={percent} size="sm" />
+    <div className={cn("orientation-glass flex items-center gap-3 !rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3", props.className)}>
+      <QuestionRing answered={position.answered} total={position.total} known={position.known} percent={percent} size="sm" />
       <div className="min-w-0 flex-1">
-        <h1 className="truncate text-sm font-semibold text-ink">
+        <h1 className="flex min-w-0 items-baseline gap-2 text-[0.875rem] text-ink">
           <span className="sr-only">{diagnostic.title} — </span>
-          {diagnostic.rail.questions}
-          <span className="font-normal text-ink-soft"> · {stage}</span>
+          <span className="shrink-0 font-semibold">{counter}</span>
+          <Stage stage={stage} className="min-w-0 truncate text-[0.8125rem] text-ink-muted" />
         </h1>
         <div className="mt-2">
           <LinearProgress percent={percent} label={diagnostic.progressLabel} />

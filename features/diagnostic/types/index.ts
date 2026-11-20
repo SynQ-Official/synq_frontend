@@ -15,11 +15,15 @@ export type MiraAttemptState = {
   blocked: boolean;
 };
 
+/**
+ * Mira's orientation as the patient app receives it. The per-track scores (`condition_scores`,
+ * `orientation_percentages`) and `model_assessment` are kept server-side for the clinician handoff and are
+ * never sent here.
+ */
 export type MiraAssessmentResult = {
   assessment_complete: boolean;
   recommended_pathway: string;
   match_strength: "LOW" | "MODERATE" | "HIGH";
-  condition_scores: Record<string, number>;
   supporting_features: string[];
   contradictory_features: string[];
   /** Attention/restlessness described only inside high or low phases: reported, but not counted for ADHD. */
@@ -28,15 +32,28 @@ export type MiraAssessmentResult = {
   missing_information: string[];
   /** Display name of each feature key above, in the session language (sent by Mira). */
   feature_labels?: Record<string, string>;
-  /** Orientation percentage per area, 0-100 (ADHD / BIPOLAR / PSYCHOSIS). */
-  orientation_percentages?: Record<string, number>;
   safety: MiraSafety;
   recommended_test?: string | null;
+  /** ADHD | BIPOLAR | PSYCHOSIS | AMBIGUOUS | OTHER | HEALTHY | UNSPECIFIED: an orientation label, not a diagnosis. */
+  orientation_label?: string;
+  /** Always null for the adaptive flow (no validated confidence score exists): `match_strength` is what to show. */
+  confidence?: number | null;
   requires_clinician_review: boolean;
   orientation: string;
   disclaimer: string;
   language: Lang;
+  /** v2 (26 questions) only: qualitative level per area. Never a probability; absent in v1 reports. */
+  orientation_levels?: Partial<Record<MiraArea, MiraSignalLevel>>;
+  /** v2: the areas that received the adaptive follow-up questions. */
+  explored_in_depth?: MiraArea[];
+  /** v2: the follow-up questions did not clearly confirm a single pattern. */
+  orientation_uncertain?: boolean;
 };
+
+export const MIRA_AREAS = ["ADHD", "BIPOLAR", "PSYCHOSIS"] as const;
+export type MiraArea = (typeof MIRA_AREAS)[number];
+export const MIRA_SIGNAL_LEVELS = ["more_prominent", "moderate", "limited", "insufficient_information"] as const;
+export type MiraSignalLevel = (typeof MIRA_SIGNAL_LEVELS)[number];
 
 export type MiraMessage = {
   id: string;
@@ -54,49 +71,4 @@ export type MiraMessage = {
   notice?: "unreadable";
   /** The visitor's message that Mira did not count. */
   notCounted?: boolean;
-};
-
-export type ChatOption = {
-  id: string;
-  label: string;
-  labelEn?: string;
-  labelFr?: string;
-  labelDerja?: string;
-  labelAr?: string;
-  value: string;
-  score: number;
-  questionId?: string;
-  testId?: string;
-};
-
-export type ChatMessage = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  options?: ChatOption[];
-  createdAt: string;
-};
-
-export type ConnectionStatus = "idle" | "connecting" | "connected" | "disconnected" | "error";
-
-export type AssessmentResult = {
-  score: number;
-  max: number;
-  prediction: string;
-  positive_items?: number;
-};
-
-export type ChatReport = {
-  primary: string;
-  confidence: string;
-  summary: string;
-  signals: string[];
-  recommendation: string;
-  reportText?: string;
-  assessments: {
-    asrs: AssessmentResult;
-    bipolar: AssessmentResult;
-    psychosis: AssessmentResult;
-  };
-  rawScores?: Record<string, number>;
 };

@@ -1,4 +1,4 @@
-// Public surface of the Mira orientation feature (REST: /api/mira → Nest /api/v1/mira/*).
+// Public surface of the Mira orientation feature (browser → Nest /api/v1/mira/*, see lib/mira-api.ts).
 export { DiagnosticPageClient } from "./components/DiagnosticPageClient";
 export { DiagnosticHeader } from "./components/DiagnosticHeader";
 export { MiraChatExperience } from "./components/MiraChatExperience";
@@ -11,7 +11,7 @@ export { ResultNextSteps, ResultStickyCta } from "./components/ResultNextSteps";
 export { TypingIndicator } from "./components/TypingIndicator";
 export { useMiraChat } from "./hooks/useMiraChat";
 export { createChatId } from "./lib/chat";
-export { FINGERPRINT_HEADER, fingerprintHeaders } from "./lib/fingerprint";
+export { miraApi } from "./lib/mira-api";
 export { readVisitorName, useVisitorName } from "./lib/visitor";
 export type {
   MiraAssessmentResult,

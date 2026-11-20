@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api/client";
 import { useSessionState, useSessionUserId } from "@/hooks/useSessionState";
+import { resolveOrientation } from "../lib/orientation-gate";
 
 /**
  * Where a visitor stands with Mira, which needs an account and runs once per account:
  * - `signed-out` — no session: sign up (or sign in) first;
- * - `done`       — the account already completed its orientation: on to the dashboard;
+ * - `done`       — nothing left for Mira to do: the care team set the track (Mira is skipped) or the account already
+ *                  completed its orientation: on to the dashboard;
  * - `open`       — signed in, orientation still to do.
+ * The API decides (`GET /me/orientation`); the app never works the state out itself.
  */
 export type OrientationGate = "checking" | "signed-out" | "done" | "open";
 
@@ -26,9 +28,8 @@ export function useOrientationGate(): OrientationGate {
     let cancelled = false;
     const settle = (value: Answer["value"]) => !cancelled && setAnswer({ userId, value });
     // 401 after a failed refresh: the session is gone. Anything else: let the chat's own error handling speak.
-    api
-      .get<{ blocked?: boolean }>("/mira/attempts")
-      .then((state) => settle(state.blocked ? "done" : "open"))
+    resolveOrientation()
+      .then(settle)
       .catch((error: { status?: number }) => settle(error?.status === 401 ? "signed-out" : "open"));
     return () => {
       cancelled = true;

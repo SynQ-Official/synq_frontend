@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Activity,
   AlertTriangle,
   CalendarDays,
   Check,
@@ -19,7 +18,7 @@ import {
 import { MotionConfig, motion } from "framer-motion";
 import { useState, type ReactNode } from "react";
 import { Grain, WaveLines } from "@/components/home/Atmosphere";
-import { BODY_SM, DISPLAY_L, DISPLAY_M, DISPLAY_S, LABEL } from "@/components/home/typography";
+import { DISPLAY_L, DISPLAY_M, DISPLAY_S, LABEL } from "@/components/home/typography";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { copy, LANGS } from "@/lib/i18n/config";
@@ -27,8 +26,8 @@ import { fill } from "@/lib/i18n/format";
 import { EASE_OUT, REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useSpeech } from "@/hooks/useSpeech";
-import type { MiraAssessmentResult } from "../types";
-import { MatchStrengthMeter, SignalList, SignalRadar, type SignalDatum } from "./SignalCharts";
+import { MIRA_AREAS, type MiraAssessmentResult } from "../types";
+import { MatchStrengthMeter } from "./SignalCharts";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
 
 interface MiraResultProps {
@@ -62,9 +61,6 @@ function displayOrientation(orientation: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-/** The engine names its scores adhd / bipolar / psychosis; the copy is keyed by the spectrum names. */
-const SCORE_KEYS: Record<string, string> = { adhd: "ADHD", bipolar: "BIPOLAR_SPECTRUM", psychosis: "PSYCHOSIS_SPECTRUM" };
-
 /** Each block of the report reveals as it reaches the reader. */
 const reveal = {
   variants: fadeUp(0, 22),
@@ -72,21 +68,6 @@ const reveal = {
   whileInView: "show",
   viewport: REVEAL_VIEWPORT,
 } as const;
-
-/** Section title with the brand icon tile and a serif heading. */
-function SectionTitle({ id, icon, title, hint }: { id?: string; icon: ReactNode; title: string; hint?: string }) {
-  return (
-    <div className="flex items-start gap-4">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 print:hidden">{icon}</span>
-      <div className="min-w-0">
-        <h2 id={id} className={cn(DISPLAY_S, "text-[clamp(1.5rem,1vw+1.2rem,2rem)] text-ink")}>
-          {title}
-        </h2>
-        {hint && <p className={cn(BODY_SM, "mt-1.5")}>{hint}</p>}
-      </div>
-    </div>
-  );
-}
 
 /** One figure of the cover's strip. Hairlines between tiles follow the layout (stacked, then side by side) and mirror in RTL. */
 function CoverMetric({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
@@ -151,21 +132,18 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
   const mira = reportDictionary.mira;
   const resultPage = reportDictionary.resultPage;
   const reportLanguage = result.language;
-  const pathways = reportDictionary.pathways as Record<string, string>;
   const [copied, setCopied] = useState(false);
 
-  const entries = Object.entries(result.condition_scores || {}).sort((a, b) => b[1] - a[1]);
   const pathwayLabel = displayOrientation(result.orientation);
   const overlapping = result.overlapping_with_mood_episodes ?? [];
   const hasObservations = result.supporting_features.length + result.contradictory_features.length + result.missing_information.length + overlapping.length > 0;
-  const hasSide = hasObservations || !!result.recommended_test;
-
-  const signals: SignalDatum[] = entries.map(([key, score]) => ({
-    key,
-    label: pathways[SCORE_KEYS[key] ?? key] ?? pathways[key.toUpperCase()] ?? humanize(key),
-    percent: Math.max(0, Math.min(100, Math.round(score * 100))),
-    raw: score,
-  }));
+  // v2 reports only: one qualitative level per area (the numbers behind them stay with the clinician).
+  const levels = result.orientation_levels ?? {};
+  const levelRows = MIRA_AREAS.flatMap((area) => {
+    const level = levels[area];
+    return level ? [{ area, level, inDepth: level === "insufficient_information" || !!result.explored_in_depth?.includes(area) }] : [];
+  });
+  const hasSide = hasObservations || !!result.recommended_test || levelRows.length > 0;
 
   const labels = result.feature_labels;
   const name = (key: string) => labels?.[key] ?? readable(key);
@@ -173,7 +151,7 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
     mira.recommendationTitle,
     pathwayLabel,
     `${mira.matchStrength}: ${result.match_strength}`,
-    ...entries.map(([name, score]) => `${name}: ${Math.round(score * 100)}%`),
+    ...levelRows.map((row) => `${mira.signalAreas[row.area]}: ${mira.signalLevels[row.level]}${row.inDepth ? "" : ` (${mira.notInDepth})`}`),
     ...(result.supporting_features.length > 0 ? [`${mira.supportingTitle}: ${result.supporting_features.map(name).join(". ")}`] : []),
     ...(result.contradictory_features.length > 0 ? [result.contradictory_features.map(name).join(". ")] : []),
     ...(result.recommended_test ? [`${mira.nextStep}: ${result.recommended_test}`] : []),
@@ -326,26 +304,10 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
           </motion.div>
         )}
 
-        {/* ── 2. The reading: the signals on the left; the next step and what Mira noticed on the right ── */}
-        {/* items-start: each column keeps its own height, so the signals card is not stretched into an empty band. */}
+        {/* ── 2. The reading: the next step and what Mira noticed (the per-track scores stay with the clinician) ── */}
         <div className="grid gap-4 lg:grid-cols-12 lg:items-start lg:gap-5 print:block print:space-y-4">
-          {signals.length > 0 && (
-            <motion.section {...reveal} aria-labelledby="signals-title" className={cn("surface-card !rounded-panel flex min-w-0 flex-col p-5 sm:p-8", hasSide ? "lg:col-span-7" : "lg:col-span-12")}>
-              <SectionTitle id="signals-title" icon={<Activity className="size-5" strokeWidth={1.5} aria-hidden />} title={mira.scoresTitle} hint={mira.scoresHint} />
-
-              <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:items-center xl:gap-8">
-                <div className="min-w-0 rounded-3xl border border-teal-100 bg-[radial-gradient(circle_at_50%_45%,var(--color-teal-50),#ffffff_78%)] p-1 sm:p-4">
-                  <SignalRadar data={signals} label={mira.scoresTitle} />
-                </div>
-                <div className="min-w-0">
-                  <SignalList data={signals} strongestLabel={mira.strongestSignal} />
-                </div>
-              </div>
-            </motion.section>
-          )}
-
           {hasSide && (
-            <div className={cn("flex min-w-0 flex-col gap-4 lg:gap-5", signals.length > 0 ? "lg:col-span-5" : "lg:col-span-12")}>
+            <div className="flex min-w-0 flex-col gap-4 lg:col-span-12 lg:gap-5">
               {result.recommended_test && (
                 <motion.section
                   {...reveal}
@@ -364,6 +326,39 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
                       <p className={cn(DISPLAY_M, "mt-2.5 text-[clamp(1.375rem,1vw+1.1rem,1.875rem)] leading-snug text-ink first-letter:uppercase")}>{result.recommended_test}</p>
                     </div>
                   </div>
+                </motion.section>
+              )}
+
+              {levelRows.length > 0 && (
+                <motion.section
+                  {...reveal}
+                  aria-labelledby="signal-levels-title"
+                  className="min-w-0 rounded-panel border border-line bg-white p-5 shadow-[var(--shadow-soft)] sm:p-7 print:shadow-none"
+                >
+                  <h2 id="signal-levels-title" className={cn(DISPLAY_S, "flex items-center gap-3 text-[1.25rem] text-ink")}>
+                    <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700">
+                      <Gauge className="size-4" />
+                    </span>
+                    {mira.scoresTitle}
+                  </h2>
+                  <p className="mt-2 text-[0.9375rem] leading-7 text-ink-soft">{mira.scoresHint}</p>
+                  <ul className="mt-3 divide-y divide-line">
+                    {levelRows.map((row) => (
+                      <li key={row.area} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                        <span className="min-w-0 text-[1rem] text-ink">{mira.signalAreas[row.area]}</span>
+                        <span className="text-[0.9375rem] font-semibold text-teal-800">
+                          {mira.signalLevels[row.level]}
+                          {!row.inDepth && <span className="font-normal text-ink-soft"> · {mira.notInDepth}</span>}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  {result.orientation_uncertain && (
+                    <p className="mt-3 flex items-start gap-2.5 rounded-2xl bg-gold-50 p-3.5 text-[0.9375rem] leading-7 text-ink-soft">
+                      <Info className="mt-1 size-4 shrink-0 text-gold-700" aria-hidden />
+                      <span className="min-w-0">{mira.uncertainNote}</span>
+                    </p>
+                  )}
                 </motion.section>
               )}
 

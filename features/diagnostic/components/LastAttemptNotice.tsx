@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Info, X } from "lucide-react";
 import { EASE_OUT } from "@/lib/motion";
@@ -8,26 +8,33 @@ import { cn } from "@/lib/utils";
 
 const storageKey = (chatId: string) => `mira:last-attempt-notice:${chatId}`;
 
+/** Closed earlier in this conversation (sessionStorage); unreadable storage counts as not closed. */
+function wasClosed(chatId: string) {
+  try {
+    return sessionStorage.getItem(storageKey(chatId)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Nothing to subscribe to: the flag only changes through `close` below, which also sets local state. */
+const subscribeNever = () => () => undefined;
+
 /**
  * "This is your final orientation": a slim gold bar over the conversation. It can be closed with one tap, so the chat gets the
  * whole screen, and stays closed for the rest of this conversation. On a phone it is a single line; the full sentence is
  * one tap away on the bar itself.
  */
 export function LastAttemptNotice({ chatId, title, body, closeLabel, show, className }: { chatId: string; title: string; body: string; closeLabel: string; show: boolean; className?: string }) {
-  const [closed, setClosed] = useState(true);
+  // Closed on the server, so the first client paint agrees; the bar then slides in unless it was closed before.
+  const closedBefore = useSyncExternalStore(subscribeNever, () => wasClosed(chatId), () => true);
+  // Keyed by conversation: closing it in one never hides it in the next.
+  const [closedFor, setClosedFor] = useState<string | null>(null);
+  const closed = closedBefore || closedFor === chatId;
   const [open, setOpen] = useState(false);
 
-  // Read after mount so the server and the first client paint agree; the bar then slides in unless it was closed before.
-  useEffect(() => {
-    try {
-      setClosed(sessionStorage.getItem(storageKey(chatId)) === "1");
-    } catch {
-      setClosed(false);
-    }
-  }, [chatId]);
-
   const close = () => {
-    setClosed(true);
+    setClosedFor(chatId);
     try {
       sessionStorage.setItem(storageKey(chatId), "1");
     } catch {

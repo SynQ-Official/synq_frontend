@@ -1,8 +1,4 @@
-"use client";
-
-import { ColorFieldBackdrop } from "@/components/shared/ColorFieldBackdrop";
-
-/** Mira's canvas (orientation + result) — a slow field of colour rather than drawn shapes. */
+/** Mira's canvas (orientation + result): warm ivory with a still sage/champagne wash, never printed. */
 export function OrientationBackdrop() {
-  return <ColorFieldBackdrop />;
+  return <div aria-hidden className="orientation-canvas pointer-events-none fixed inset-0 print:hidden" />;
 }

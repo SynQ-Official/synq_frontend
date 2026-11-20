@@ -19,7 +19,7 @@ import { prefetchPatientHome } from "@/lib/patient/prefetch";
 export function useLuminaEntry(): string {
   const router = useRouter();
   const signedIn = useSessionState();
-  const { data: profile } = usePatientResource<Profile>(signedIn ? "profile" : null, () => profileApi.get(), { staleMs: 60_000 });
+  const { data: profile } = usePatientResource<Profile>(signedIn ? "profile" : null, (signal) => profileApi.get(signal), { staleMs: 60_000 });
   const href = profile && !profile.hasCompletedOnboarding && !hasSeenWelcome(profile.id) ? ROUTES.welcome : ROUTES.dashboard;
 
   useEffect(() => {

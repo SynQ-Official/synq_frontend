@@ -3,8 +3,8 @@ import type { MiraChapter } from "../types";
 /** The four visible chapters of the guided journey, in order. */
 export const CHAPTER_SEQUENCE: MiraChapter[] = ["MORNING", "MIDDAY", "EVENING", "INNER_VOICE"];
 
-/** Mira's session length: 16 questions (5 per track, chosen by the agent among 20 topics each, + 1 general); the agent reports the live total as `questions_total`. */
-export const ESTIMATED_QUESTIONS = 16;
+/** Mira's session length: 26 questions (18 exploration, 2 context, 6 adaptive); a session started before v2 has 16. The agent reports the live total as `questions_total`, which always wins. */
+export const ESTIMATED_QUESTIONS = 26;
 
 /**
  * Present the four-chapter journey by mapping global progress (0..1) onto the sequence.
@@ -29,17 +29,20 @@ export function chapterAtTurn(answersBefore: number): MiraChapter {
   return deriveChapter(answersBefore / ESTIMATED_QUESTIONS);
 }
 
-/** What the agent reports: questions resolved and the live total (16, up to 19 with clarifications). */
+/** What the agent reports: questions resolved and the session's total (26 in v2, 16 in v1 sessions). */
 export type QuestionCount = { answered: number; total: number };
 
 /**
  * Answers given so far and the question currently being asked (1-based).
  * Uses the agent's own count when known; the progress-based estimate only covers a restore without a live session.
+ * `known` is false in that case: the total is then an estimate, and the screens never print it as a fact (the agent's
+ * own greeting states the real count, which differs for a v1 session).
  */
 export function questionPosition(progress: number, questions?: QuestionCount | null) {
   const total = Math.max(1, questions?.total ?? ESTIMATED_QUESTIONS);
   const answered = Math.max(0, Math.min(total, questions ? questions.answered : Math.round(progress * total)));
   return {
+    known: Boolean(questions),
     answered,
     current: Math.min(total, answered + 1),
     total,
