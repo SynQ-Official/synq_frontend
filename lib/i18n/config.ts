@@ -25,7 +25,7 @@ const arabicHomeLanding = {
   hero: { titleA: "عقلك لا يتوقف،", titleB: "ورعايتك تبقى معه.", subtitle: "دعم بين الاستشارات، ورؤية أوضح وأبكر للمختصين الذين يرعونك.", audiences: { clinicians: "للمختصين", parents: "للأهل", adults: "للبالغين" }, discover: "اكتشف المزيد", preview: "معاينة مباشرة", dashboard: ["لوحة التحكم", "التحليلات", "الدعم", "المذكرات", "الإعدادات"], stats: ["مؤشر العافية", "التتابع", "الجلسات"], scoreChange: "+4.2٪", days: "أيام", thisMonth: "هذا الشهر", baseline: "المسار النفسي", last30: "آخر 30 يوماً", stable: "مستقر", insight: "بين موعدين", pattern: "لا يضيع شيء مهم", encrypted: "خاص في التصميم — أنت تختار ما يُشارَك" },
   intro: { lineA: "أيامك، مفهومة", lineB: "يوماً بيوم.", tagline: "متابعة يومية · استمرارية في الرعاية", skip: "تخطّي" },
   cta: { eyebrow: "ابدأ خطوتك اليوم", titleA: "هل أنت مستعد", titleB: "للخطوة التالية؟", body: "ابدأ مع ميرا. ويشاركك مختصك متى اخترت.", primary: "ابدأ الآن", demo: "العيادات والمؤسسات: تواصل معنا", benefits: ["التوجيه ضمن حسابك", "أنت تقرر ما يُشارَك"] },
-  footer: { description: "متابعة يومية واستمرارية في الرعاية لمن يعيشون مع الاضطراب ثنائي القطب أو الفصام أو اضطراب فرط الحركة وتشتت الانتباه. لأن ما يحدث بين الموعدين مهم.", product: "المنتج", company: "المساعدة والحساب", updates: "ابقَ على اطلاع", email: "أدخل بريدك الإلكتروني", privacy: "الخصوصية", terms: "الشروط", cookies: "ملفات الارتباط", links: ["ميرا · التوجيه", "لومينا · المساحة اليومية", "مسارات الرعاية", "للمختصين", "الخصوصية والثقة"], companyLinks: ["الدعم", "تسجيل الدخول", "إنشاء حساب"], rights: "جميع الحقوق محفوظة." },
+  footer: { product: "المنتج", company: "المساعدة والحساب", updates: "ابقَ على اطلاع", email: "أدخل بريدك الإلكتروني", privacy: "الخصوصية", terms: "الشروط", cookies: "ملفات الارتباط", links: ["ميرا · التوجيه", "لومينا · المساحة اليومية", "مسارات الرعاية", "للمختصين", "الخصوصية والثقة"], companyLinks: ["الدعم", "تسجيل الدخول", "إنشاء حساب"], rights: "جميع الحقوق محفوظة." },
 } as const;
 
 const baseCopy = {
@@ -140,7 +140,7 @@ const baseCopy = {
       },
       cta: { eyebrow: "Start your next step today", titleA: "Ready to take", titleB: "the next step?", body: "Start with Mira. Your clinician joins whenever you choose.", primary: "Get started", demo: "Clinics and institutions: contact us", benefits: ["Orientation included with your account", "You decide what is shared"] },
       intro: { lineA: "Your days, understood", lineB: "one at a time.", tagline: "Daily monitoring · continuity of care", skip: "Skip" },
-      footer: { description: "Daily monitoring and continuity of care for people living with bipolar disorder, schizophrenia or ADHD. Because what happens between consultations matters.", product: "Product", company: "Help & account", updates: "Stay updated", email: "Enter your email", privacy: "Privacy", terms: "Terms", cookies: "Cookies", links: ["Mira · Orientation", "Lumina · Daily space", "Care paths", "For clinicians", "Privacy & trust"], companyLinks: ["Support", "Sign in", "Create account"], rights: "All rights reserved." },
+      footer: { product: "Product", company: "Help & account", updates: "Stay updated", email: "Enter your email", privacy: "Privacy", terms: "Terms", cookies: "Cookies", links: ["Mira · Orientation", "Lumina · Daily space", "Care paths", "For clinicians", "Privacy & trust"], companyLinks: ["Support", "Sign in", "Create account"], rights: "All rights reserved." },
     },
     auth: {
       badge: "Secure wellness access",

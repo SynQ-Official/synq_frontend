@@ -18,7 +18,7 @@ import { AlertCircle, ArrowRight, Check, Eye, EyeOff, Lock, Mail, ShieldCheck, U
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
 import { ROUTES } from "@/lib/config/routes";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
 import { LinkedText } from "@/components/legal/LegalLinks";
@@ -27,6 +27,10 @@ import { legalUi } from "@/lib/i18n/legal";
 import { prefetchPatientHome } from "@/lib/patient/prefetch";
 import { cn } from "@/lib/utils";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
+import { RoleSelector } from "@/components/auth/RoleSelector";
+import { ensureFamilySession, familySession, familySignIn } from "@/lib/family/session";
+import { FAMILY_HOME, FAMILY_REGISTER, parseRole, roleDestination, roleHome, signInHref, type AuthRole } from "@/lib/config/auth-role";
+import { authRoleCopy } from "@/lib/i18n/authRole";
 
 type AuthMode = "signin" | "signup";
 
@@ -36,10 +40,11 @@ type AuthMode = "signin" | "signup";
  * (an orientation link must not pull an existing patient back into the chat). Honour internal redirects only
  * (open-redirect safe): sign-in accepts /dashboard targets, sign-up accepts /dashboard and /orientation.
  */
-function safeRedirect(redirect: string | null, mode: AuthMode) {
-  const allowed = mode === "signup" ? /^\/(dashboard|orientation)(\/|\?|$)/ : /^\/dashboard(\/|\?|$)/;
-  if (redirect && allowed.test(redirect)) return redirect;
-  return mode === "signup" ? ROUTES.orientation : ROUTES.dashboard;
+function safeRedirect(redirect: string | null, mode: AuthMode, role: AuthRole | null) {
+  // Sign-in: only the chosen role's own area (a parent is never sent into the patient app, nor the reverse).
+  if (mode === "signin") return roleDestination(role ?? "patient", redirect) ?? roleHome(role ?? "patient");
+  if (redirect && /^\/(dashboard|orientation)(\/|\?|$)/.test(redirect)) return redirect;
+  return ROUTES.orientation;
 }
 
 type FormValues = { nickname: string; email: string; password: string; confirmPassword: string };
@@ -97,23 +102,33 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const { dictionary, direction, language } = useLanguage();
   const auth = dictionary.auth;
   const isSignUp = mode === "signup";
-  // Already signed in with a live session: skip the form and go straight to the patient space.
-  const signedIn = useSessionState();
+  // Sign-up is the patient's; sign-in serves two independent accounts and needs the visitor's explicit choice (`?role=`).
+  const role: AuthRole | null = isSignUp ? "patient" : parseRole(searchParams.get("role"));
+  const isParent = role === "parent";
+  // Each account type has its own session: only the chosen one is consulted, the other is never read as proof.
+  const patientIn = useSessionState();
+  const parentIn = useSyncExternalStore(familySession.subscribe, familySession.state, () => null);
+  useEffect(() => {
+    if (isParent) void ensureFamilySession();
+  }, [isParent]);
+  // Already signed in as the chosen account type with a live session: skip the form and go straight to its space.
+  const signedIn = role === null ? false : isParent ? parentIn : patientIn;
 
   // The access token lives in memory only, so `signedIn` is already the API's own answer (login or refresh accepted):
   // no extra `/me` round trip before skipping the form. A session the API later rejects falls back to the sign-in gate.
   useEffect(() => {
     if (!signedIn) return;
-    const target = safeRedirect(searchParams.get("redirect"), mode);
+    const target = safeRedirect(searchParams.get("redirect"), mode, role);
     if (target.startsWith("/dashboard")) prefetchPatientHome();
     router.replace(target);
-  }, [signedIn, router, searchParams, mode]);
+  }, [signedIn, router, searchParams, mode, role]);
 
-  // Both ends of the funnel are one tap away: fetch their code while the patient types.
+  // Both ends of the funnel are one tap away: fetch their code while the visitor types.
   useEffect(() => {
+    if (isParent) return void router.prefetch(FAMILY_HOME);
     router.prefetch("/dashboard");
     router.prefetch(ROUTES.orientation);
-  }, [router]);
+  }, [router, isParent]);
 
   const [values, setValues] = useState<FormValues>({ nickname: "", email: "", password: "", confirmPassword: "" });
   const [phone, setPhone] = useState<PhoneValue>(() => ({ country: defaultCountry(language), national: "" }));
@@ -179,6 +194,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); setError(""); setErrorField(null);
+    if (!role) return;
     const nickname = values.nickname.trim();
     if (isSignUp && !nickname) return fail("nickname", auth.errors.nickname);
     if (isSignUp && (nickname.length < NICKNAME_MIN || nickname.length > NICKNAME_MAX)) return fail("nickname", auth.errors.nicknameLength);
@@ -197,7 +213,13 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
       (async () => {
         const email = values.email.trim();
         try {
-          const target = safeRedirect(searchParams.get("redirect"), mode);
+          const target = safeRedirect(searchParams.get("redirect"), mode, role);
+          if (isParent) {
+            // The parent's own auth system only: never touches (nor falls back to) the patient session.
+            await familySignIn(email, values.password);
+            router.push(target);
+            return;
+          }
           // No leftover session (or half-finished password change) can ride along: only the answer to THIS request opens the space.
           clearTokens();
           cancelPasswordChange();
@@ -216,7 +238,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           if (target.startsWith("/dashboard")) prefetchPatientHome();
           router.push(target);
         } catch (err) {
-          clearTokens();
+          if (!isParent) clearTokens(); // a failed parent sign-in must not end a patient session
           const { message, field } = apiFailure(err);
           if (field) return fail(field, message);
           setError(message);
@@ -249,7 +271,15 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     const value = searchParams.get(key);
     if (value) carried.set(key, value);
   }
+  if (isSignUp) carried.set("role", "patient");
   const switchHref = `${isSignUp ? ROUTES.signIn : ROUTES.signUp}${carried.size ? `?${carried}` : ""}`;
+  const roleCopy = authRoleCopy[language];
+  // Switching account type keeps only a destination that is valid for the new type, and never a typed password.
+  const chooseRole = (next: AuthRole) => {
+    setValues((p) => ({ ...p, password: "" }));
+    setError(""); setErrorField(null);
+    router.replace(signInHref(next, searchParams.get("redirect")), { scroll: false });
+  };
   const from = searchParams.get("from");
   const notice = from === "orientation" || from === "lumina" ? auth.notice[from] : null;
   const switchPrompt = isSignUp ? auth.switchToSignIn : auth.subtitleSignIn;
@@ -281,8 +311,9 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           <span className={ACCENT_LIGHT}>{isSignUp ? auth.titleSignUpB : auth.titleSignInB}</span>
         </h1>
         <p className="mt-3 text-[1rem] leading-7 text-ink-soft">
-          {isSignUp ? auth.subtitleSignUp : auth.subtitleWelcome}
+          {isSignUp ? auth.subtitleSignUp : role === null ? roleCopy.choose : isParent ? roleCopy.parentSubtitle : auth.subtitleWelcome}
         </p>
+        {!isSignUp && <RoleSelector role={role} onChange={chooseRole} language={language} />}
       </header>
 
       {notice && (
@@ -332,8 +363,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
       )} */}
 
       {/* ── PRIMARY: CREDENTIALS ─────────────────────────────────────── */}
-      <motion.form
-        key={mode}
+      {role && <motion.form
+        key={`${mode}-${role}`}
         noValidate
         onSubmit={handleSubmit}
         variants={stagger(0.05, 0.15)}
@@ -542,9 +573,12 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               />
               {auth.rememberMe}
             </label>
-            <Link href={ROUTES.forgotPassword} className={`${LINK_CLASS} inline-flex min-h-11 items-center text-[0.9375rem] font-medium`}>
-              {auth.forgotPassword}
-            </Link>
+            {/* The parent API has no password reset: no link to a flow that would not work for a parent account. */}
+            {!isParent && (
+              <Link href={ROUTES.forgotPassword} className={`${LINK_CLASS} inline-flex min-h-11 items-center text-[0.9375rem] font-medium`}>
+                {auth.forgotPassword}
+              </Link>
+            )}
           </motion.div>
         )}
 
@@ -574,16 +608,24 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           </Button>
          
         </motion.div>
-      </motion.form>
+      </motion.form>}
 
       {/* ── SWITCH + LEGAL ───────────────────────────────────────────── */}
       <footer className="mt-7 border-t border-line pt-6 text-center">
-        <p className="text-[0.9375rem] text-ink-soft">
-          {switchPrompt}{" "}
-          <Link href={switchHref} className={LINK_CLASS}>
-            {switchLink}
-          </Link>
-        </p>
+        {role !== null && (
+          <p className="text-[0.9375rem] text-ink-soft">
+            {isParent ? roleCopy.parentNoAccount : switchPrompt}{" "}
+            <Link href={isParent ? FAMILY_REGISTER : switchHref} className={LINK_CLASS}>
+              {isParent ? roleCopy.parentRegister : switchLink}
+            </Link>
+          </p>
+        )}
+        {isSignUp && (
+          <p className="mt-3 text-[0.9375rem] text-ink-soft">
+            {roleCopy.signUpParentPrompt}{" "}
+            <Link href={FAMILY_REGISTER} className={LINK_CLASS}>{roleCopy.signUpParentLink}</Link>
+          </p>
+        )}
         <p className="mx-auto mt-3 max-w-xs text-[0.8125rem] leading-5 text-ink-soft">{auth.legal}</p>
       </footer>
     </motion.section>

@@ -148,7 +148,7 @@ export function ForgotPasswordScreen() {
             <Button type="button" variant="outline" size="lg" disabled={wait > 0 || pending} onClick={() => void send(sentTo)} className="min-h-12">
               {wait > 0 ? copy.resendIn(wait) : copy.resend}
             </Button>
-            <Link href={ROUTES.signIn} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
+            <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
               <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
               {copy.back}
             </Link>
@@ -185,7 +185,7 @@ export function ForgotPasswordScreen() {
               <SubmitLabel pending={pending} label={copy.submit} busy={dictionary.auth.processing} />
             </Button>
           </form>
-          <Link href={ROUTES.signIn} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
+          <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
             <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
             {copy.back}
           </Link>
@@ -260,7 +260,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
           {copy.doneBody}
         </p>
         <Button asChild variant="auth" size="lg" className="min-h-14">
-          <Link href={ROUTES.signIn}>{copy.goToSignIn}</Link>
+          <Link href={`${ROUTES.signIn}?role=patient`}>{copy.goToSignIn}</Link>
         </Button>
       </Card>
     );
@@ -282,7 +282,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
         <Button asChild variant="auth" size="lg" className="min-h-14">
           <Link href={ROUTES.forgotPassword}>{copy.requestNew}</Link>
         </Button>
-        <Link href={ROUTES.signIn} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
+        <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
           {copy.backToSignIn}
         </Link>
       </Card>

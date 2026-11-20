@@ -71,7 +71,9 @@ const nextConfig: NextConfig = {
       { source: "/diagnostic/:path*", destination: "/orientation/:path*", permanent: true },
       // The e-mail the API sends to a clinician-created account links to `/login`; the sign-in page is /auth/signin.
       // Not permanent: the API's link may change to the real path later.
-      { source: "/login", destination: "/auth/signin", permanent: false },
+      { source: "/login", destination: "/auth/signin?role=patient", permanent: false },
+      // Parent Pack v1 lived inside the patient dashboard on a removed API; the parent portal is /family.
+      { source: "/dashboard/parent-pack/:path*", destination: "/family", permanent: false },
     ];
   },
   images: {

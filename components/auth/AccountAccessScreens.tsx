@@ -191,7 +191,7 @@ export function ChangePasswordScreen() {
           {copy.expiredBody}
         </p>
         <Button asChild variant="auth" size="lg" className="min-h-14">
-          <Link href={ROUTES.signIn}>{copy.backToSignIn}</Link>
+          <Link href={`${ROUTES.signIn}?role=patient`}>{copy.backToSignIn}</Link>
         </Button>
       </Card>
     );
@@ -335,7 +335,7 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
         <p role="alert" className="text-[1.0625rem] leading-7 text-ink-soft">
           {copy.invalidBody}
         </p>
-        <Link href={ROUTES.signIn} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
+        <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
           {copy.goToSignIn}
         </Link>
       </Card>
@@ -353,7 +353,7 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
         }
       >
         <Button asChild variant="auth" size="lg" className="min-h-14">
-          <Link href={ROUTES.signIn}>{copy.goToSignIn}</Link>
+          <Link href={`${ROUTES.signIn}?role=patient`}>{copy.goToSignIn}</Link>
         </Button>
       </Card>
     );
