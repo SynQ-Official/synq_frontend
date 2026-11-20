@@ -17,6 +17,3 @@ export const API_PREFIX = "/api/v1";
 export function apiUrl(path: string): string {
   return `${API_BASE_URL}${API_PREFIX}${path.startsWith("/") ? path : `/${path}`}`;
 }
-
-/** Anonymous client fingerprint for Mira anti-abuse (read by Nest MiraController). */
-export const FINGERPRINT_HEADER = "x-client-fingerprint";

@@ -13,6 +13,10 @@ export type Profile = {
   /** Mira's orientation is finished. A patient with neither this nor a clinician's diagnosis cannot enter the dashboard. */
   orientationCompleted?: boolean;
   hasCompletedOnboarding: boolean;
+  /** Contact number; the patient can change or remove it (`PATCH /me`). */
+  phoneNumber: string | null;
+  /** The care team set the track: Mira's orientation is skipped and the track cannot be changed from here. */
+  trackAssignedByClinician?: boolean;
   memberSince: string;
   careTeam: { hasClinician: boolean; count: number };
 };
@@ -180,6 +184,53 @@ export type Consent = {
   monitoringNoticeAckAt: string | null;
   /** Relationships created while sharing was pre-ticked: confirm what is shared (`required` once the 30 days have passed). */
   reconfirm?: { pending: boolean; required: boolean; dueAt: string | null };
+};
+
+/**
+ * Where the patient stands with orientation (`GET /me/orientation`). The server decides, in this order: a track the care
+ * team assigned (Mira is skipped), then a finished Mira orientation, then one in progress, otherwise Mira is still to do.
+ * The app never works this out itself.
+ */
+export type OrientationState = "CLINICIAN_TRACK_ASSIGNED" | "MIRA_ORIENTATION_COMPLETED" | "MIRA_ORIENTATION_IN_PROGRESS" | "NO_TRACK_ORIENTATION_REQUIRED";
+export type OrientationStatus = {
+  state: OrientationState;
+  /** True only while the patient still has to do (or finish) Mira's orientation. */
+  miraRequired: boolean;
+  track: PatientTrack;
+  trackActive: boolean;
+  trackAssignedByClinician: boolean;
+};
+
+// ---- Care: the medication the care team prescribed and the secure conversation with them
+
+/** A prescription is the care team's: the patient only reads it and logs doses. `dosage`, `frequency` and `instructions` may be empty. */
+export type Medication = {
+  id: string;
+  name: string;
+  dosage: string | null;
+  frequency: string | null;
+  instructions: string | null;
+  startDate: string;
+  endDate: string | null;
+};
+export type IntakeStatus = "TAKEN" | "MISSED" | "SKIPPED";
+/** One dose log. A dose is identified by its medication and `scheduledAt`: logging the same time again updates it. */
+export type MedicationIntake = { id: string; medicationId: string; scheduledAt: string; status: IntakeStatus; takenAt: string | null };
+export type SecureMessage = { id: string; senderRole: "PATIENT" | "CLINICIAN" | "SYSTEM"; content: string; isUrgent: boolean; readAt: string | null; createdAt: string };
+/** The API's own reminder that messaging is not watched around the clock (its `text` is English: the app shows its own wording). */
+export type MessagingNotice = { monitored24x7: boolean; text: string; emergencyNumber: string | null };
+export type Conversation = { notice: MessagingNotice; messages: SecureMessage[] };
+
+/**
+ * What `POST /me/sos` answers. One open SOS per patient: pressing again while one is open answers the same alert with
+ * `alreadyOpen`. `emergencyResources` are lines such as "Clinic name: number" taken from the care team's clinics (or the
+ * platform's own list); they may be empty.
+ */
+export type SosResult = {
+  crisisEventId: string;
+  alreadyOpen: boolean;
+  careTeamAlerted: boolean;
+  emergencyResources: string[];
 };
 
 /** The consent to orientation and follow-up on file (`/me/orientation-consent`). */

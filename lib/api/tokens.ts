@@ -30,6 +30,8 @@ const LEGACY_KEYS = [
   "vitamind_reminder_prefs",
   "vitamind_notifications_read",
   "vitamind-visitor-name",
+  // The anonymous Mira fingerprint: Mira needs an account now and the API no longer reads it.
+  "vitamind-client-fp",
 ];
 /**
  * Everything that is one patient's own content (health, writing, conversation) and so must not outlive them on a
@@ -44,7 +46,7 @@ const PATIENT_DATA_PREFIXES = [
   "mira:last-attempt-notice:", // sessionStorage
 ];
 
-export type SessionUser = { id: string; nickname: string; tier?: string };
+export type SessionUser = { id: string; nickname: string };
 
 /** What the session routes hand to the browser: the refresh token is never part of it. */
 export type AuthTokens = {
@@ -92,7 +94,7 @@ export function patientKey(base: string): string | null {
  */
 export function purgePatientData() {
   if (typeof window === "undefined") return;
-  // Only listed prefixes: the language, theme, device fingerprint and other people's server records are untouched.
+  // Only listed prefixes: the language, theme and other people's server records are untouched.
   for (const [store, extra] of [[() => window.localStorage, [USER_KEY, OWNER_KEY]], [() => window.sessionStorage, []]] as const) {
     try {
       const storage = store();

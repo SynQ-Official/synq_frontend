@@ -1,11 +1,12 @@
 import { apiUrl } from "@/lib/api/config";
+import { unwrapEnvelope } from "@/lib/api/errors";
 import { clearedCookie, readRefreshCookie, refreshCookie } from "@/lib/server/session-cookie";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Same-origin session gateway: `/api/session/{login,register,refresh,logout}`.
+ * Same-origin session gateway: `/api/session/{login,register,refresh,logout,change-password,accept-invitation}`.
  * The browser sends credentials here; the Nest API's tokens come back split in two: the short-lived access token
  * in the JSON body (kept in memory by the client) and the refresh token in an HttpOnly cookie it cannot read.
  */
@@ -30,7 +31,7 @@ function sameOrigin(request: Request) {
  * (Redis/edge KV) if the app runs on several instances.
  */
 const WINDOW_MS = 5 * 60_000;
-const LIMITS: Record<string, number> = { login: 10, register: 10, refresh: 60 };
+const LIMITS: Record<string, number> = { login: 10, register: 10, refresh: 60, "change-password": 10, "accept-invitation": 10 };
 const hits = new Map<string, { count: number; resetAt: number }>();
 
 function retryAfter(request: Request, action: string): number {
@@ -59,14 +60,10 @@ async function call(request: Request, path: string, body: unknown, extra?: Recor
   return { res, payload };
 }
 
-/** `{ success, data }` envelope or a raw payload. */
+/** The tokens inside the `{ success, data }` envelope or a raw payload; `null` when it is not an object. */
 function unwrap(payload: unknown): Tokens | null {
-  if (payload && typeof payload === "object") {
-    const maybe = payload as { data?: unknown; success?: unknown };
-    if ("success" in maybe && maybe.data && typeof maybe.data === "object") return maybe.data as Tokens;
-    return payload as Tokens;
-  }
-  return null;
+  const body = unwrapEnvelope(payload);
+  return body && typeof body === "object" ? (body as Tokens) : null;
 }
 
 /** Keep the refresh token out of the response body; hand it to the cookie instead. */
@@ -91,6 +88,17 @@ export async function POST(request: Request, context: { params: Promise<{ action
       const issued = session(payload);
       // e.g. an account that answers with a two-factor challenge cannot open the patient app
       return issued ? json(issued.body, 200, issued.cookie) : json(unwrap(payload) ?? {}, 200);
+    }
+
+    // These two end in a real session just like login does, so the refresh token is split off into the cookie here too.
+    // (login of a clinician-created account answers a `password_change_token` instead of tokens: no cookie, no session.)
+    if (action === "change-password" || action === "accept-invitation") {
+      const input = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const { res, payload } = await call(request, action === "change-password" ? "/auth/login/change-password" : "/auth/invitations/accept", input);
+      if (!res.ok) return json(payload ?? { message: "Request failed" }, res.status);
+      const issued = session(payload);
+      // A success that carries no session is a contract break, never a quiet success.
+      return issued ? json(issued.body, 200, issued.cookie) : json({ message: "The SynQ API answered without a session." }, 502);
     }
 
     if (action === "refresh") {

@@ -114,6 +114,8 @@ export function usePatientResource<T>(
   const [refreshingKey, setRefreshingKey] = useState<string | null>(null);
   const fetcherRef = useRef(fetcher);
   const runId = useRef(0);
+  /** The request in flight: aborted when a newer run replaces it, the key changes or the screen unmounts. */
+  const controller = useRef<AbortController | null>(null);
 
   useEffect(() => {
     fetcherRef.current = fetcher;
@@ -135,7 +137,10 @@ export function usePatientResource<T>(
           const arrived = cache.get(key);
           if (arrived && Date.now() - arrived.at < staleMs) return;
         }
-        const next = await fetcherRef.current(new AbortController().signal);
+        controller.current?.abort();
+        const current = new AbortController();
+        controller.current = current;
+        const next = await fetcherRef.current(current.signal);
         if (id !== runId.current) return;
         cache.set(key, { data: next, at: Date.now() });
         setFailure(null);
@@ -155,6 +160,8 @@ export function usePatientResource<T>(
     queueMicrotask(() => void run(false));
     return () => {
       runId.current += 1;
+      controller.current?.abort();
+      controller.current = null;
     };
   }, [run]);
 

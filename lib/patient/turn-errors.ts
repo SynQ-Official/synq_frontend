@@ -1,4 +1,4 @@
-import { ApiError } from "@/lib/api/client";
+import { ApiError, resourcesOf } from "@/lib/api/errors";
 import { StreamInterrupted, StreamTurnError } from "@/lib/api/stream";
 
 /**
@@ -10,6 +10,7 @@ export type TurnFailureKind =
   | "offline"
   | "timeout"
   | "rateLimited"
+  | "busy" // 503: the engine shed the turn under load (MIRA_BUSY); sending again later is safe
   | "validation"
   | "conflict"
   | "interrupted"
@@ -23,11 +24,7 @@ export type TurnFailure = {
   partialText: string;
 };
 
-function resourcesOf(error: ApiError): string[] {
-  if (error instanceof StreamTurnError) return error.emergencyResources;
-  const list = (error.payload as { emergencyResources?: unknown } | undefined)?.emergencyResources;
-  return Array.isArray(list) ? list.filter((item): item is string => typeof item === "string") : [];
-}
+const resourcesFor = (error: ApiError): string[] => (error instanceof StreamTurnError ? error.emergencyResources : resourcesOf(error.payload));
 
 export function classifyTurnFailure(error: unknown): TurnFailure {
   if (error instanceof StreamInterrupted) {
@@ -35,7 +32,7 @@ export function classifyTurnFailure(error: unknown): TurnFailure {
   }
   if (!(error instanceof ApiError)) return { kind: "other", emergencyResources: [], partialText: "" };
 
-  const emergencyResources = resourcesOf(error);
+  const emergencyResources = resourcesFor(error);
   const partialText = error instanceof StreamTurnError ? error.partialText : "";
   const base = { code: error.code, emergencyResources, partialText };
 
@@ -43,6 +40,7 @@ export function classifyTurnFailure(error: unknown): TurnFailure {
   if (error.isTimeout) return { ...base, kind: "timeout" };
   if (error.isNetwork) return { ...base, kind: "offline" };
   if (error.status === 429) return { ...base, kind: "rateLimited" };
+  if (error.status === 503) return { ...base, kind: "busy" };
   if (error.status === 400 || error.status === 422) return { ...base, kind: "validation" };
   if (error.status === 409) return { ...base, kind: "conflict" };
   return { ...base, kind: "other" };
@@ -57,7 +55,8 @@ export function failureMessage(
   switch (kind) {
     case "offline": return copy.stream.offlineSend;
     case "timeout": return copy.stream.slow;
-    case "rateLimited": return copy.stream.rateLimited;
+    case "rateLimited":
+    case "busy": return copy.stream.rateLimited;
     case "validation": return copy.stream.validation;
     case "conflict": return copy.stream.conflict;
     case "interrupted": return copy.stream.interrupted;
