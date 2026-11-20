@@ -50,9 +50,6 @@ export const Footer = () => {
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
                     <motion.div variants={fadeUp(0, 12)} className="lg:col-span-5">
                         <BrandLogo size="lg" priority={false} />
-                        <p className={cn(SERIF, "mt-8 max-w-md text-[clamp(1.5rem,1vw+1.2rem,2.125rem)] font-light leading-[1.25] tracking-[-0.02em] text-ink rtl:tracking-normal")}>
-                            {copy.description}
-                        </p>
                     </motion.div>
 
                     {/* Two short groups sit side by side at every size — no stacked single-link columns. */}

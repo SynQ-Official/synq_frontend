@@ -39,5 +39,5 @@ export function agentEntryHref(agent: AgentEntry, signedIn: boolean) {
   if (agent === "mira") {
     return signedIn ? ROUTES.orientation : `${ROUTES.signUp}?from=orientation&redirect=${encodeURIComponent(ROUTES.orientation)}`;
   }
-  return signedIn ? ROUTES.dashboard : `${ROUTES.signIn}?from=lumina&redirect=${encodeURIComponent(ROUTES.dashboard)}`;
+  return signedIn ? ROUTES.dashboard : `${ROUTES.signIn}?role=patient&from=lumina&redirect=${encodeURIComponent(ROUTES.dashboard)}`;
 }

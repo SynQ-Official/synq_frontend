@@ -1,21 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuthSession } from "@/hooks/useAuthSession";
-import { agentEntryHref } from "@/lib/config/routes";
-import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
+import { ROUTES, agentEntryHref } from "@/lib/config/routes";
+import { EASE_OUT, SPRING_SOFT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Stethoscope, UserRound, UsersRound } from "lucide-react";
+import { LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, Stethoscope, UserRound, UsersRound, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Magnetic, WordReveal } from "./AnimationUtilities";
-import { Grain, Motes, Swash } from "./Atmosphere";
+import { WordReveal } from "./AnimationUtilities";
+import { Grain } from "./Atmosphere";
 import dynamic from "next/dynamic";
-import { Marquee } from "./Interactions";
-import { PartnerLogos } from "./PartnerLogos";
-import { ACCENT_LIGHT, BODY, DISPLAY_XL, LABEL } from "./typography";
+import { ACCENT_LIGHT, BODY, DISPLAY_XL } from "./typography";
 
 /** three.js is the heaviest part of the page and sits behind the headline: it loads after first paint. */
 const GLSLHills = dynamic(() => import("./GLSLHills").then((m) => m.GLSLHills), { ssr: false });
@@ -48,18 +45,70 @@ function FirstLight({ progress }: { progress: ReturnType<typeof useScroll>["scro
     );
 }
 
+type Audience = { label: string; href: string; Icon: LucideIcon };
+
+/**
+ * One frosted capsule split in three: a soft surface glides to whichever audience is hovered or focused, its icon lifts
+ * and the arrow slides in. Stacks into a single card with hairlines on phones, a row from `sm`.
+ */
+function AudienceChooser({ items }: { items: readonly Audience[] }) {
+    const reduce = useReducedMotion();
+    const [hot, setHot] = useState(0);
+    return (
+        <LayoutGroup id="hero-audiences">
+            <ul
+                onPointerLeave={() => setHot(0)}
+                className="grid grid-cols-1 divide-y divide-line/70 rounded-[1.75rem] border border-line-strong/70 bg-white/55 p-1.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_18px_40px_-24px_rgb(17_76_97/0.45)] backdrop-blur-md sm:grid-cols-3 sm:divide-y-0 sm:rounded-full"
+            >
+                {items.map(({ label, href, Icon }, index) => {
+                    const active = hot === index;
+                    return (
+                        <li key={label} className="relative min-w-0">
+                            <Link
+                                href={href}
+                                onPointerEnter={() => setHot(index)}
+                                onFocus={() => setHot(index)}
+                                className="group relative flex min-h-14 items-center gap-3 rounded-[1.375rem] px-3 text-start text-[0.9375rem] font-semibold text-ink outline-none focus-visible:ring-2 focus-visible:ring-teal-500 sm:rounded-full sm:px-4"
+                            >
+                                {active && (
+                                    <motion.span
+                                        layoutId="hero-audience-surface"
+                                        transition={reduce ? { duration: 0 } : SPRING_SOFT}
+                                        aria-hidden
+                                        className="absolute inset-0 rounded-[inherit] bg-white shadow-[0_10px_24px_-14px_rgb(17_76_97/0.5)]"
+                                    />
+                                )}
+                                <span
+                                    className={cn(
+                                        "relative flex size-9 shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform] duration-300 ease-out motion-reduce:transition-none",
+                                        active ? "-translate-y-0.5 bg-teal-700 text-white" : "bg-teal-50 text-teal-700",
+                                    )}
+                                >
+                                    <Icon className="size-4" aria-hidden />
+                                </span>
+                                <span className="relative min-w-0 flex-1 truncate">{label}</span>
+                                <ArrowRight
+                                    aria-hidden
+                                    className={cn(
+                                        "relative size-4 shrink-0 text-teal-700 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none rtl:-scale-x-100",
+                                        active ? "translate-x-0 opacity-100" : "-translate-x-1.5 opacity-40 rtl:translate-x-1.5",
+                                    )}
+                                />
+                            </Link>
+                        </li>
+                    );
+                })}
+            </ul>
+        </LayoutGroup>
+    );
+}
+
 export const Hero = () => {
     const { dictionary } = useLanguage();
     const copy = dictionary.homeLanding.hero;
-    const home = dictionary.home;
     const reduce = useReducedMotion();
     const { signedIn } = useAuthSession();
     const { lead, accent } = splitAccent(copy.titleB);
-    const audiences = [
-        { label: copy.audiences.clinicians, href: "#healthcare", Icon: Stethoscope },
-        { label: copy.audiences.parents, href: agentEntryHref("mira", signedIn), Icon: UsersRound },
-        { label: copy.audiences.adults, href: agentEntryHref("mira", signedIn), Icon: UserRound },
-    ];
 
     // The WebGL hills compile their shaders on the main thread: they wait until the headline has landed,
     // so the big type never stutters while it rises.
@@ -78,40 +127,22 @@ export const Hero = () => {
     const copyOpacity = useTransform(scrollYProgress, [0, 0.85], [1, reduce ? 1 : 0]);
     const hillsY = useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : 90]);
 
-    // A soft light follows the pointer across the mist.
-    const mx = useMotionValue(50);
-    const my = useMotionValue(36);
-    const sx = mx;
-    const sy = my;
-    const spotlight = useMotionTemplate`radial-gradient(38rem circle at ${sx}% ${sy}%, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.2) 45%, transparent 70%)`;
-
-    const onPointerMove = (event: React.PointerEvent<HTMLElement>) => {
-        if (reduce || event.pointerType !== "mouse" || !heroRef.current) return;
-        const rect = heroRef.current.getBoundingClientRect();
-        mx.set(((event.clientX - rect.left) / rect.width) * 100);
-        my.set(((event.clientY - rect.top) / Math.min(rect.height, 900)) * 100);
-    };
-
     return (
         <section
             ref={heroRef}
             id="home"
-            onPointerMove={onPointerMove}
-            className="relative isolate overflow-hidden pb-10 md:pb-16 bg-[radial-gradient(60%_46rem_at_0%_12%,rgb(191_221_225/0.5),transparent_70%),radial-gradient(55%_42rem_at_100%_16%,rgb(230_213_170/0.42),transparent_70%),linear-gradient(180deg,#ffffff_0%,var(--color-canvas)_100%)]"
+            className="relative isolate overflow-hidden bg-[radial-gradient(60%_46rem_at_0%_12%,rgb(191_221_225/0.5),transparent_70%),radial-gradient(55%_42rem_at_100%_16%,rgb(230_213_170/0.42),transparent_70%),linear-gradient(180deg,#ffffff_0%,var(--color-canvas)_100%)]"
         >
             <Grain tone="light" />
-            <motion.div aria-hidden style={{ background: spotlight }} className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[100svh] min-h-[44rem]" />
 
-            {/* The landscape — WebGL hills that drift with the pointer and advance as you scroll */}
+            {/* The one visual: WebGL hills that advance as you scroll */}
             <motion.div style={{ y: hillsY }} aria-hidden className="absolute inset-x-0 top-0 -z-10 h-[100svh] min-h-[44rem] [mask-image:linear-gradient(to_bottom,transparent,black_30%,black_78%,transparent)]">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: hillsReady ? 1 : 0 }} transition={{ duration: 2.2, ease: "easeOut" }} className="absolute inset-0">
                     {hillsReady && <GLSLHills progress={scrollYProgress} cameraZ={118} />}
                 </motion.div>
             </motion.div>
             <FirstLight progress={scrollYProgress} />
-            <Motes />
 
-            {/* ===== First screen ===== */}
             <div className="relative z-10 flex min-h-[100svh] flex-col">
                 <motion.div
                     style={{ y: copyY, scale: copyScale, opacity: copyOpacity }}
@@ -128,12 +159,9 @@ export const Hero = () => {
                                         <WordReveal delay={0.7} step={0.07}>{lead}</WordReveal>{" "}
                                     </>
                                 ) : null}
-                                <span className="relative inline-block">
-                                    <WordReveal className={ACCENT_LIGHT} delay={1} step={0.07}>
-                                        {accent}
-                                    </WordReveal>
-                                    <Swash />
-                                </span>
+                                <WordReveal className={ACCENT_LIGHT} delay={1} step={0.07}>
+                                    {accent}
+                                </WordReveal>
                             </span>
                         </h1>
 
@@ -142,56 +170,16 @@ export const Hero = () => {
                                 {copy.subtitle}
                             </motion.p>
 
-                            <motion.div variants={fadeUp(0, 16)} className="mx-auto mt-10 grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-                                {audiences.map(({ label, href, Icon }, index) => (
-                                    <Magnetic key={label} className="w-full" strength={index === 0 ? 0.12 : 0.18}>
-                                        <Button asChild variant="outline" size="lg" className="group min-h-14 w-full justify-between border-line-strong bg-white/75 px-4 backdrop-blur hover:border-teal-300 hover:bg-white sm:px-5">
-                                            <Link href={href}>
-                                                <span className="flex items-center gap-3">
-                                                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700 transition-transform duration-300 group-hover:scale-110">
-                                                        <Icon className="size-4" aria-hidden />
-                                                    </span>
-                                                    <span>{label}</span>
-                                                </span>
-                                                <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
-                                            </Link>
-                                        </Button>
-                                    </Magnetic>
-                                ))}
+                            <motion.div variants={fadeUp(0, 16)} className="mx-auto mt-10 w-full max-w-3xl">
+                                <AudienceChooser
+                                    items={[
+                                        { label: copy.audiences.clinicians, href: ROUTES.psy, Icon: Stethoscope },
+                                        { label: copy.audiences.parents, href: agentEntryHref("mira", signedIn), Icon: UsersRound },
+                                        { label: copy.audiences.adults, href: agentEntryHref("mira", signedIn), Icon: UserRound },
+                                    ]}
+                                />
                             </motion.div>
                         </motion.div>
-                    </div>
-                </motion.div>
-
-                {/* Bottom of the first screen: a cue to keep going, and our partners drifting by */}
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 2 }} className="pb-7">
-                    <a href="#what" className="group mx-auto mb-6 flex w-fit flex-col items-center gap-3 rounded-md text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-ink-soft transition-colors hover:text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500 rtl:tracking-normal">
-                        {copy.discover}
-                        <span aria-hidden className="relative h-10 w-px overflow-hidden bg-line-strong">
-                            <motion.span
-                                className="absolute inset-x-0 top-0 h-1/2 bg-gold"
-                                animate={reduce ? undefined : { y: ["-100%", "200%"] }}
-                                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                            />
-                        </span>
-                    </a>
-                    <div role="group" aria-labelledby="partners-label" className="flex flex-col items-center gap-2.5 border-y border-line/80 bg-white/40 py-3.5 backdrop-blur-sm sm:flex-row sm:gap-0">
-                        <p id="partners-label" className={cn(LABEL, "shrink-0 px-4 text-ink-soft sm:ps-8 lg:ps-12")}>
-                            {home.partners}
-                        </p>
-                        <Marquee seconds={70} className="w-full min-w-0 flex-1">
-                            {/* The ticker repeats the partner groups; only the first copy is announced to readers. */}
-                            {Array.from({ length: reduce ? 1 : 8 }, (_, index) => (
-                                <PartnerLogos
-                                    key={index}
-                                    hidden={index > 0}
-                                    hotLabel={home.partners}
-                                    hotNames={home.partnerHotNames}
-                                    backedLabel={home.partnerBackedLabel}
-                                    backedNames={home.partnerBackedNames}
-                                />
-                            ))}
-                        </Marquee>
                     </div>
                 </motion.div>
             </div>

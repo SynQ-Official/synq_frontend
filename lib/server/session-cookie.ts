@@ -27,6 +27,9 @@ function ttlSeconds(token: string): number {
  */
 export const SESSION_HINT_COOKIE = "vitamind_s";
 
+/** The parent portal's equivalent: set by `/api/family-session/*` beside its own refresh cookie, read by `proxy.ts` on /family. */
+export const FAMILY_HINT_COOKIE = "synq_family_s";
+
 const attrs = (path: string, maxAge: number, sameSite: "Strict" | "Lax") =>
   [`Path=${path}`, `Max-Age=${maxAge}`, "HttpOnly", `SameSite=${sameSite}`, secure() ? "Secure" : ""].filter(Boolean).join("; ");
 

@@ -108,7 +108,7 @@ export function PatientProvider({
     if (!unauthorized || signingOut) return;
     clearTokens();
     clearPatientCache();
-    router.replace(`${ROUTES.signIn}?from=lumina&redirect=${encodeURIComponent(pathname || ROUTES.dashboard)}`);
+    router.replace(`${ROUTES.signIn}?role=patient&from=lumina&redirect=${encodeURIComponent(pathname || ROUTES.dashboard)}`);
   }, [unauthorized, signingOut, router, pathname]);
 
   // No orientation, no dashboard (and no welcome): a patient with neither a finished Mira orientation nor a
@@ -158,7 +158,7 @@ export function PatientProvider({
       return false;
     }
     clearPatientCache();
-    router.replace(ROUTES.signIn);
+    router.replace(`${ROUTES.signIn}?role=patient`);
     return true;
   }, [router]);
 

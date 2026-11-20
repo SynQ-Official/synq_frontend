@@ -1,6 +1,7 @@
 "use client";
 
 import { CinematicIntro, LoadingScreen, ProgressBar } from "@/components/home";
+import { PartnerStrip } from "@/components/home/PartnerLogos";
 import { SectionRail } from "@/components/home/SectionRail";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -71,6 +72,7 @@ export function HomeExperience({ introSeen }: { introSeen: boolean }) {
           <SectionRail />
           <div ref={contentRef}>
             <HeroSection />
+            <PartnerStrip />
             <WhatSection />
             <HealthcareSection />
             <TeamSection />
