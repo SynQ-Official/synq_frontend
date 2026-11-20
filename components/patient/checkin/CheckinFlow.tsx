@@ -454,12 +454,17 @@ export function GoalList({ goals, className }: { goals: CheckinGoal[]; className
               {GOAL_STATUSES.map((status) => {
                 const active = goal.status === status;
                 return (
-                  <button
+                  <motion.button
                     key={status}
                     type="button"
                     aria-pressed={active}
                     disabled={pendingGoalId === goal.id}
                     onClick={() => void setStatus(goal.id, active ? "PENDING" : status)}
+                    // A small pop rewards the choice; the press gives way under the finger (MotionConfig stills both under reduced motion).
+                    initial={false}
+                    animate={active ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.35, ease: EASE_OUT }}
+                    whileTap={{ scale: 0.94 }}
                     className={cn(
                       "inline-flex min-h-9 items-center rounded-full border px-3.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:opacity-60",
                       active
@@ -467,8 +472,9 @@ export function GoalList({ goals, className }: { goals: CheckinGoal[]; className
                         : "border-white/80 bg-white/70 text-ink-soft hover:bg-white",
                     )}
                   >
+                    {active && status === "COMPLETED" && <Check className="-ms-0.5 me-1 size-3.5" aria-hidden />}
                     {labels[status]}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>

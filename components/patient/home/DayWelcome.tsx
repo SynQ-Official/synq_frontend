@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Flame, Moon, Sun, Sunrise, Sunset, type LucideIcon } from "lucide-react";
 import { CountUp } from "@/components/home/CountUp";
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
-import { DISPLAY_M, LABEL, SERIF } from "@/components/home/typography";
+import { DISPLAY_M, LABEL } from "@/components/home/typography";
 import { LuminaLogo } from "@/components/patient/ui/LuminaLogo";
 import { Skeleton } from "@/components/patient/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ function Stat({ value, label, loading }: { value: number | null; label: string; 
       {loading ? (
         <Skeleton className="h-8 w-12" />
       ) : (
-        <CountUp value={value === null ? "—" : String(value)} className={cn(SERIF, "block text-[clamp(1.75rem,1.2rem+1.4vw,2.5rem)] font-light leading-none tabular-nums text-ink")} />
+        <CountUp value={value === null ? "—" : String(value)} className="block text-[clamp(1.75rem,1.2rem+1.4vw,2.5rem)] font-semibold leading-none tracking-[-0.03em] tabular-nums text-ink" />
       )}
       <p className="mt-1.5 text-[0.8125rem] font-medium leading-snug text-ink">{label}</p>
     </div>
@@ -129,10 +129,10 @@ export function DayWelcome() {
             </span>
           </motion.div>
 
-          <h1 id="day-welcome-title" className={cn(DISPLAY_M, "mt-5 text-ink")}>
+          <h1 id="day-welcome-title" className={cn(DISPLAY_M, "mt-5 font-semibold tracking-[-0.03em] text-ink")}>
             {lead.trim() && reveal(lead.trim(), delay)}
             {lead.trim() ? " " : null}
-            <span dir="auto" className="italic rtl:not-italic">
+            <span dir="auto" className="text-teal-700">
               {reveal(name, delay + 0.2)}
             </span>
             {tail?.trim() ? reveal(tail.trim(), delay + 0.3) : null}

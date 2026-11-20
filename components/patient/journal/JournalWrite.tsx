@@ -42,7 +42,7 @@ export function JournalWrite({ onOpenInsights, insert }: { onOpenInsights: () =>
       saveDraft("");
       setSaved(entry);
       setFormKey((key) => key + 1);
-    } catch (caught) {
+    } catch {
       setError(copy.journal.saveError);
     }
   }

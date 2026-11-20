@@ -14,14 +14,14 @@ export function useJournalEntries(days: number, page = 1, limit = 20) {
   const range = { from: localDay(from), to: localDay(to) };
   return usePatientResource<Paginated<JournalEntry>>(
     `journal:list:${days}:${page}:${limit}:${range.to}`,
-    () => journalApi.list({ ...range, page, limit }),
+    (signal) => journalApi.list({ ...range, page, limit }, signal),
     { staleMs: 10_000 },
   );
 }
 
 /** Longitudinal reading of the journal (mood, goals, emotions, consistency). */
 export function useJournalInsights(days = 30) {
-  return usePatientResource<JournalInsights>(`journal:insights:${days}`, async () => (await journalApi.insights(days)).data, {
+  return usePatientResource<JournalInsights>(`journal:insights:${days}`, async (signal) => (await journalApi.insights(days, signal)).data, {
     staleMs: 20_000,
   });
 }

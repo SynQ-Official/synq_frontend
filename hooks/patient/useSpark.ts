@@ -23,7 +23,7 @@ function failureOf(error: unknown): SparkFailure {
  * tick a step) show at once and are confirmed by the answer.
  */
 export function useSpark(enabled = true) {
-  const resource = usePatientResource<SparkView>(enabled ? "spark:view" : null, () => sparkApi.view(), { staleMs: 60_000 });
+  const resource = usePatientResource<SparkView>(enabled ? "spark:view" : null, (signal) => sparkApi.view(signal), { staleMs: 60_000 });
   const { setData } = resource;
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<SparkFailure | null>(null);

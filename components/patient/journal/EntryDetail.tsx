@@ -36,7 +36,7 @@ function EntryBody({ entry, onClose }: { entry: JournalEntry; onClose: () => voi
   const [confirming, setConfirming] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   // The list omits shared passages; the full entry has them.
-  const detail = usePatientResource<JournalEntry>(`journal:detail:${entry.id}`, () => journalApi.get(entry.id), { staleMs: 0 });
+  const detail = usePatientResource<JournalEntry>(`journal:detail:${entry.id}`, (signal) => journalApi.get(entry.id, signal), { staleMs: 0 });
   const [localExcerpts, setLocalExcerpts] = useState<NonNullable<JournalEntry["excerpts"]> | null>(null);
   const excerpts = localExcerpts ?? detail.data?.excerpts ?? [];
   const textRef = useRef<HTMLParagraphElement>(null);

@@ -10,7 +10,7 @@ import { PlanCard, ProgressStrip, SignalsCard, TrendCard, WellbeingCard } from "
 import { RecommendedExercises } from "@/components/patient/home/RecommendedExercises";
 import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { SparkCard } from "@/components/patient/home/SparkCard";
-import { SharingReconfirmBanner } from "@/components/patient/consent/SharingReconfirm";
+import { CareTeamInvitationBanner, SharingReconfirmBanner } from "@/components/patient/consent/SharingReconfirm";
 import { HomeSidePanel } from "@/components/patient/home/HomePanels";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { useCalmTrack } from "@/hooks/useCalmTrack";
@@ -48,6 +48,7 @@ function SparkSlot() {
 export default function HomePage() {
   return (
     <div>
+      <CareTeamInvitationBanner />
       <SharingReconfirmBanner />
       <DayWelcome />
       {/* First visit: choose the check-in time; afterwards, one line with the time and today's status. */}
@@ -57,13 +58,14 @@ export default function HomePage() {
       {/* Comfort sounds: renders nothing until the server has sounds for this patient (psychosis: after the clinician's switch). */}
       <AmbiencesCard />
 
-      {/* Two columns from tablet; the goals panel joins as a third column only where there is real room (2xl). */}
+      {/* Two columns from tablet: state (wellbeing, trend, signals) first, then today's goals and plan side by side, so the
+          day's actions read as one row instead of a long stack. The goals panel becomes a third column only at 2xl. */}
       <div className="grid gap-5 md:grid-cols-2 lg:gap-6 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(21rem,25rem)] 2xl:items-start">
         <Cell index={0} className="order-1 min-w-0 md:col-span-2 2xl:order-none 2xl:col-span-1 2xl:col-start-1 2xl:row-start-1"><WellbeingCard /></Cell>
-        <Cell index={1} className="order-2 min-w-0 md:col-span-2 2xl:order-none 2xl:col-span-1 2xl:col-start-3 2xl:row-span-3 2xl:row-start-1 2xl:sticky 2xl:top-4"><HomeSidePanel /></Cell>
-        <Cell index={2} className="order-3 min-w-0 2xl:order-none 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1"><TrendCard /></Cell>
-        <Cell index={3} className="order-4 min-w-0 2xl:order-none 2xl:col-start-1 2xl:row-start-2"><PlanCard /></Cell>
-        <Cell index={4} className="order-5 min-w-0 2xl:order-none 2xl:col-start-2 2xl:row-start-2"><SignalsCard /></Cell>
+        <Cell index={1} className="order-4 min-w-0 2xl:order-none 2xl:col-span-1 2xl:col-start-3 2xl:row-span-3 2xl:row-start-1 2xl:sticky 2xl:top-4"><HomeSidePanel /></Cell>
+        <Cell index={2} className="order-2 min-w-0 2xl:order-none 2xl:col-span-1 2xl:col-start-2 2xl:row-start-1"><TrendCard /></Cell>
+        <Cell index={3} className="order-5 min-w-0 2xl:order-none 2xl:col-start-1 2xl:row-start-2"><PlanCard /></Cell>
+        <Cell index={4} className="order-3 min-w-0 2xl:order-none 2xl:col-start-2 2xl:row-start-2"><SignalsCard /></Cell>
         <Cell index={5} className="order-6 min-w-0 md:col-span-2 2xl:order-none 2xl:col-span-2 2xl:col-start-1 2xl:row-start-3"><ProgressStrip /></Cell>
       </div>
 

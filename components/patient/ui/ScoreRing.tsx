@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { scaleColor } from "@/lib/patient/moods";
 import { EASE_OUT } from "@/lib/motion";
@@ -26,6 +26,7 @@ export function ScoreRing({
   label: string;
 }) {
   const reduce = useReducedMotion();
+  const gradientId = useId().replace(/:/g, "");
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const fraction = value === null ? 0 : Math.max(0, Math.min(1, value / 10));
@@ -34,13 +35,20 @@ export function ScoreRing({
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }} role="img" aria-label={`${label}: ${value === null ? "—" : display ?? `${value}/10`}`}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90 rtl:rotate-90" aria-hidden>
+        <defs>
+          {/* The arc deepens toward its end: a lighter tint where it starts, the full colour where it lands. */}
+          <linearGradient id={gradientId} x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.45} />
+            <stop offset="100%" stopColor={color} />
+          </linearGradient>
+        </defs>
         <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={stroke} className="lm-ring-track" />
         <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={color}
+          stroke={`url(#${gradientId})`}
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={circumference}

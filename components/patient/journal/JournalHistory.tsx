@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, Lock, Target } from "lucide-react";
 import { AnalysisNote } from "@/components/patient/journal/AnalysisNote";
@@ -44,12 +44,11 @@ export function JournalHistory() {
   const h = copy.journal.history;
   const { language } = useLanguage();
   const [days, setDays] = useState<(typeof RANGES)[number]>(30);
-  const [visible, setVisible] = useState(PAGE);
-  const [openId, setOpenId] = useState<string | null>(null);
-  const entries = useJournalEntries(days, 1, 50);
-
-  const list = useMemo(() => entries.data?.data ?? [], [entries.data]);
-  const open = useMemo(() => list.find((entry) => entry.id === openId) ?? null, [list, openId]);
+  /** Pages of the API's list shown so far: "Show more" asks for the next one while `meta.totalPages` has more. */
+  const [pages, setPages] = useState(1);
+  const [open, setOpen] = useState<JournalEntry | null>(null);
+  const first = useJournalEntries(days, 1, PAGE);
+  const totalPages = first.data?.meta.totalPages ?? 1;
 
   return (
     <div className="space-y-4">
@@ -63,7 +62,7 @@ export function JournalHistory() {
               aria-pressed={days === range}
               onClick={() => {
                 setDays(range);
-                setVisible(PAGE);
+                setPages(1);
               }}
               className="lm-tab"
             >
@@ -73,31 +72,51 @@ export function JournalHistory() {
         </div>
       </div>
 
-      {entries.error && !entries.data ? (
-        <ErrorState message={h.loadError} onRetry={() => void entries.refresh()} />
-      ) : entries.isLoading ? (
+      {first.error && !first.data ? (
+        <ErrorState message={h.loadError} onRetry={() => void first.refresh()} />
+      ) : !first.data ? (
         <HistorySkeleton />
-      ) : list.length === 0 ? (
+      ) : first.data.data.length === 0 ? (
         <EmptyState icon={BookOpen} title={days === 30 ? h.empty : h.emptyFiltered} />
       ) : (
         <>
           <ul className="space-y-3">
-            {list.slice(0, visible).map((entry, index) => (
-              <motion.li key={entry.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index, 8) * 0.04, duration: 0.35 }}>
-                <EntryCard entry={entry} language={language} onOpen={() => setOpenId(entry.id)} />
-              </motion.li>
+            <EntryItems entries={first.data.data} language={language} onOpen={setOpen} />
+            {Array.from({ length: pages - 1 }, (_, index) => (
+              <HistoryPage key={index + 2} days={days} page={index + 2} language={language} onOpen={setOpen} />
             ))}
           </ul>
-          {list.length > visible && (
-            <div className="flex justify-center"><Button variant="outline" onClick={() => setVisible((value) => value + PAGE)}>{h.more}</Button></div>
+          {pages < totalPages && (
+            <div className="flex justify-center"><Button variant="outline" onClick={() => setPages((value) => value + 1)}>{h.more}</Button></div>
           )}
         </>
       )}
 
-      <EntryDetail entry={open} onClose={() => setOpenId(null)} />
+      <EntryDetail entry={open} onClose={() => setOpen(null)} />
       <span className="sr-only">{fill(copy.common.days, { n: days })}</span>
     </div>
   );
+}
+
+type EntryListProps = { language: "en" | "ar"; onOpen: (entry: JournalEntry) => void };
+
+function EntryItems({ entries, language, onOpen }: EntryListProps & { entries: JournalEntry[] }) {
+  return entries.map((entry, index) => (
+    <motion.li key={entry.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index, 8) * 0.04, duration: 0.35 }}>
+      <EntryCard entry={entry} language={language} onOpen={() => onOpen(entry)} />
+    </motion.li>
+  ));
+}
+
+/** One more page of the list, loaded on demand (its own cache key, refreshed with the rest of the journal). */
+function HistoryPage({ days, page, ...list }: EntryListProps & { days: number; page: number }) {
+  const h = usePatientCopy().journal.history;
+  const entries = useJournalEntries(days, page, PAGE);
+  if (entries.error && !entries.data) {
+    return <li><ErrorState message={h.loadError} onRetry={() => void entries.refresh()} /></li>;
+  }
+  if (!entries.data) return <li><HistorySkeleton rows={2} /></li>;
+  return <EntryItems entries={entries.data.data} {...list} />;
 }
 
 function EntryCard({ entry, language, onOpen }: { entry: JournalEntry; language: "en" | "ar"; onOpen: () => void }) {

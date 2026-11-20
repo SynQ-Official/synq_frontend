@@ -41,11 +41,14 @@ export function CheckinScheduleForm({
   onDone,
   onLater,
   showRemindersSwitch = false,
+  secondary = false,
 }: {
   schedule: CheckinSchedule | null;
   onDone?: () => void;
   onLater?: () => void;
   showRemindersSwitch?: boolean;
+  /** On Home the save is a secondary action (the welcome holds the page's one primary). */
+  secondary?: boolean;
 }) {
   const t = usePatientCopy().checkinSchedule;
   const zone = deviceTimeZone();
@@ -102,7 +105,7 @@ export function CheckinScheduleForm({
       </p>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" disabled={state === "saving"}>{state === "saving" ? t.saving : t.save}</Button>
+        <Button type="submit" variant={secondary ? "secondary" : "default"} disabled={state === "saving"}>{state === "saving" ? t.saving : t.save}</Button>
         {onLater && <Button type="button" variant="ghost" onClick={onLater}>{t.later}</Button>}
         <span role="status" className={cn("text-sm", state === "error" ? "text-rose-700" : "text-sage-700")}>
           {state === "saved" ? fill(t.saved, { time }) : state === "error" ? t.error : ""}
@@ -158,7 +161,7 @@ export function CheckinScheduleCard() {
         <h2 id="checkin-schedule-title" className="mt-2 text-xl font-semibold text-ink sm:text-2xl">{t.setupTitle}</h2>
         {!schedule && <p className="mt-2 max-w-2xl text-[0.9375rem] leading-7 text-ink-soft">{t.setupBody}</p>}
         <div className="mt-5">
-          <CheckinScheduleForm schedule={schedule} onDone={() => setEditing(false)} onLater={schedule ? () => setEditing(false) : postpone} />
+          <CheckinScheduleForm secondary schedule={schedule} onDone={() => setEditing(false)} onLater={schedule ? () => setEditing(false) : postpone} />
         </div>
       </GlassCard>
     );

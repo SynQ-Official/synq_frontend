@@ -111,7 +111,9 @@ export function TourOverlay({ steps, onClose }: { steps: TourStep[]; onClose: (c
 
   const [index, setIndex] = useState(0);
   const [box, setBox] = useState<Box | null>(null);
-  const [glide, setGlide] = useState(false);
+  /** The step the spotlight has finished gliding to: until then (450 ms after a step change) it animates. */
+  const [settledIndex, setSettledIndex] = useState(0);
+  const glide = index !== 0 && !still && settledIndex !== index;
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [vp, setVp] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -151,11 +153,10 @@ export function TourOverlay({ steps, onClose }: { steps: TourStep[]; onClose: (c
 
   // The spotlight glides between steps only; while the page scrolls it must stick to its target.
   useEffect(() => {
-    if (index === 0 || still) return;
-    setGlide(true);
-    const timer = window.setTimeout(() => setGlide(false), 450);
+    if (settledIndex === index) return;
+    const timer = window.setTimeout(() => setSettledIndex(index), 450);
     return () => window.clearTimeout(timer);
-  }, [index, still]);
+  }, [index, settledIndex]);
 
   useEffect(() => {
     const onResize = () => setVp({ w: window.innerWidth, h: window.innerHeight });

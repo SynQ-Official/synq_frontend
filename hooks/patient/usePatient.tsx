@@ -64,7 +64,7 @@ export function PatientProvider({
   // null on the server and until the session is restored from the refresh cookie.
   const hasToken = useSessionState();
   const [signingOut, setSigningOut] = useState(false);
-  const profileResource = usePatientResource<Profile>(hasToken ? "profile" : null, () => profileApi.get(), { staleMs: 60_000 });
+  const profileResource = usePatientResource<Profile>(hasToken ? "profile" : null, (signal) => profileApi.get(signal), { staleMs: 60_000 });
   const { data: profile, error, refresh } = profileResource;
   const { language, setLanguage } = useLanguage();
 

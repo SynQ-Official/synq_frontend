@@ -52,7 +52,8 @@ function GoalsPanel() {
         </p>
       )}
 
-      <Button asChild variant={goals.length ? "ghost" : "default"} size="lg" className="w-full">
+      {/* Secondary: the page's one primary action is the welcome's check-in / journal button. */}
+      <Button asChild variant={goals.length ? "ghost" : "secondary"} size="lg" className="w-full">
         <Link href="/dashboard/check-in">
           {today.data ? (goals.length ? g.update : g.add) : g.start}
           <ArrowRight className="rtl:-scale-x-100" aria-hidden />

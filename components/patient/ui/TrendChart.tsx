@@ -49,10 +49,15 @@ export function TrendChart({
           <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#5f716e" }} interval="preserveStartEnd" />
           <YAxis domain={domain} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#8a9a97" }} ticks={ticks} width={34} />
           <Tooltip
-            cursor={{ stroke: color, strokeOpacity: 0.25 }}
-            contentStyle={{ borderRadius: 12, border: "1px solid #e4e9e8", boxShadow: "0 8px 24px -12px rgb(44 62 59 / 0.3)", fontSize: 12 }}
-            formatter={(value) => [`${value}${unit ?? ""}`, ""]}
-            separator=""
+            cursor={{ stroke: color, strokeOpacity: 0.3, strokeDasharray: "3 3" }}
+            content={({ active, payload, label }) =>
+              active && payload?.length && payload[0].value != null ? (
+                <div className="rounded-xl border border-line bg-white/95 px-3 py-2 shadow-[0_12px_28px_-14px_rgb(36_107_112/0.45)] backdrop-blur-sm">
+                  <p className="text-[0.6875rem] font-medium text-ink-muted">{label}</p>
+                  <p className="text-sm font-semibold tabular-nums text-ink">{`${payload[0].value}${unit ?? ""}`}</p>
+                </div>
+              ) : null
+            }
           />
           <Area
             type="monotone"
@@ -61,8 +66,15 @@ export function TrendChart({
             strokeWidth={2.5}
             fill={`url(#${gradientId})`}
             connectNulls={false}
-            dot={{ r: 3, strokeWidth: 2, fill: "#fff", stroke: color }}
-            activeDot={{ r: 5 }}
+            // A smooth line carries the trend; a dot is drawn only where a day stands alone between gaps, so it never vanishes.
+            dot={({ cx, cy, index }: { cx?: number; cy?: number; index?: number }) =>
+              index !== undefined && cx != null && cy != null && data[index]?.value != null && data[index - 1]?.value == null && data[index + 1]?.value == null ? (
+                <circle key={index} cx={cx} cy={cy} r={3.5} fill="#fff" stroke={color} strokeWidth={2} />
+              ) : (
+                <g key={index} />
+              )
+            }
+            activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff", fill: color }}
             isAnimationActive
             animationDuration={900}
           />

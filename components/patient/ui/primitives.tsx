@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { AlertCircle, Inbox, type LucideIcon } from "lucide-react";
-import { SERIF } from "@/components/home/typography";
 import { Button } from "@/components/ui/button";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import { cn } from "@/lib/utils";
@@ -38,7 +36,7 @@ export function SectionTitle({ id, title, subtitle, action }: { id?: string; tit
   return (
     <div className="mb-5 flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <h2 id={id} className={cn(SERIF, "text-[1.1875rem] font-normal leading-snug tracking-[-0.01em] text-ink sm:text-xl rtl:font-semibold")}>{title}</h2>
+        <h2 id={id} className="text-lg font-semibold leading-snug tracking-[-0.015em] text-ink sm:text-[1.1875rem] rtl:tracking-normal">{title}</h2>
         {subtitle && <p className="mt-0.5 text-[0.8125rem] leading-snug text-muted-foreground">{subtitle}</p>}
       </div>
       {action}
@@ -76,7 +74,7 @@ export function PageIntro({
             {eyebrow}
           </p>
         )}
-        <h1 className={cn(SERIF, "text-[clamp(1.75rem,1.2rem+1.6vw,2.5rem)] font-light leading-[1.1] tracking-[-0.02em] text-ink rtl:font-semibold rtl:tracking-normal", hideTitle && "sr-only")}>{title}</h1>
+        <h1 className={cn("text-[clamp(1.75rem,1.2rem+1.6vw,2.5rem)] font-semibold leading-[1.1] tracking-[-0.025em] text-ink rtl:tracking-normal", hideTitle && "sr-only")}>{title}</h1>
         {subtitle && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">{subtitle}</p>}
       </div>
       {action && <div className="flex flex-wrap items-center gap-2">{action}</div>}

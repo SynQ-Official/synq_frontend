@@ -10,12 +10,12 @@ import { invalidatePatientData, usePatientResource } from "@/hooks/usePatientRes
 /** Today's check-in, or null when the patient has not checked in yet. */
 export function useTodayCheckin() {
   const day = localDay();
-  return usePatientResource<Checkin | null>(`checkins:today:${day}`, async () => (await checkinsApi.today(day)).data);
+  return usePatientResource<Checkin | null>(`checkins:today:${day}`, async (signal) => (await checkinsApi.today(day, signal)).data);
 }
 
 /** The patient's check-in schedule from the server (null until set). Under "checkins", so a submitted check-in refreshes `today`. */
 export function useCheckinSchedule() {
-  return usePatientResource<CheckinSchedule | null>("checkins:schedule", async () => (await checkinsApi.schedule()).data);
+  return usePatientResource<CheckinSchedule | null>("checkins:schedule", async (signal) => (await checkinsApi.schedule(signal)).data);
 }
 
 export async function saveCheckinSchedule(input: CheckinScheduleInput): Promise<CheckinSchedule> {
@@ -30,7 +30,7 @@ export function useCheckinHistory(days = 30) {
   const from = new Date();
   from.setDate(to.getDate() - (days - 1));
   const range = { from: localDay(from), to: localDay(to) };
-  const resource = usePatientResource<Checkin[]>(`checkins:list:${range.from}:${range.to}`, async () => (await checkinsApi.list(range)).data);
+  const resource = usePatientResource<Checkin[]>(`checkins:list:${range.from}:${range.to}`, async (signal) => (await checkinsApi.list(range, signal)).data);
   const streak = resource.data ? currentStreak(resource.data.map((row) => row.date)) : 0;
   return { ...resource, streak };
 }
@@ -39,7 +39,7 @@ export function useCheckinHistory(days = 30) {
 export function useMonthlyCheckinReport(year: number, month: number) {
   return usePatientResource<DailyReport>(
     `reports:checkin-monthly:${year}-${month}`,
-    async () => (await checkinsApi.monthlyReport(year, month)).data,
+    async (signal) => (await checkinsApi.monthlyReport(year, month, signal)).data,
     { staleMs: 60_000 },
   );
 }

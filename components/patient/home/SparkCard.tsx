@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, Clock, Zap } from "lucide-react";
 import { useReasonText } from "@/components/patient/spark/SparkTaskItem";
 import { GlassCard, SectionTitle, Skeleton } from "@/components/patient/ui/primitives";
@@ -9,6 +10,7 @@ import { usePatient } from "@/hooks/patient/usePatient";
 import { useSpark } from "@/hooks/patient/useSpark";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import { fill } from "@/lib/i18n/patient";
+import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const SHOWN = 3;
@@ -67,8 +69,15 @@ export function SparkCard() {
             </div>
 
             <ul className="grid gap-2.5 md:grid-cols-3">
+              <AnimatePresence initial={false} mode="popLayout">
               {shown.map((task, index) => (
-                <li key={task.id} className={cn("lm-inset flex min-w-0 items-start gap-3 p-3.5", index === 0 && "ring-1 ring-teal-300/70")}>
+                <motion.li
+                  key={task.id}
+                  layout
+                  // A finished task checks, shrinks and leaves; the rest close the gap.
+                  exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.28, ease: EASE_OUT } }}
+                  className={cn("lm-inset flex min-w-0 items-start gap-3 p-3.5", index === 0 && "ring-1 ring-teal-300/70")}
+                >
                   <button
                     type="button"
                     onClick={() => void spark.finish(task.id)}
@@ -84,8 +93,9 @@ export function SparkCard() {
                     <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Clock className="size-3" aria-hidden />{fill(copy.min, { n: task.estimateMin })}</p>
                     {index === 0 && <p className="mt-1.5 text-xs leading-snug text-ink-soft">{reasonOf(task)}</p>}
                   </div>
-                </li>
+                </motion.li>
               ))}
+              </AnimatePresence>
             </ul>
 
             <div className="flex flex-wrap items-center justify-between gap-3">

@@ -12,7 +12,7 @@ import { playableSounds } from "@/lib/patient/ambiences";
  * One shared cache entry: the nav, the home card and the page read the same answer.
  */
 export function useAmbiences() {
-  const resource = usePatientResource<Ambiences>("ambiences", async () => (await ambiencesApi.get()).data, { staleMs: 60_000 });
+  const resource = usePatientResource<Ambiences>("ambiences", async (signal) => (await ambiencesApi.get(signal)).data, { staleMs: 60_000 });
   const { setData } = resource;
 
   /** Save some settings and adopt the server's answer. Rejects when the request fails, so the caller can say so. */

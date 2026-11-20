@@ -46,6 +46,32 @@ export function SharingReconfirmBanner() {
   );
 }
 
+/**
+ * A clinician linked to this patient (they created the account, or sent the invitation) and the patient has not yet
+ * accepted: nothing is shared until they do. This says so on the dashboard and leads to where it is accepted.
+ */
+export function CareTeamInvitationBanner() {
+  const s = usePatientCopy().settings.privacy.invite;
+  const consents = useConsents();
+  const waiting = (consents.data ?? []).filter((consent) => consent.status === "PENDING");
+  if (waiting.length === 0) return null;
+  const names = waiting.map((consent) => `${consent.clinician.firstName} ${consent.clinician.lastName}`.trim()).join(", ");
+  return (
+    <aside role="note" className="lm-glass lm-card mb-5 flex flex-wrap items-center justify-between gap-3 p-4 lg:mb-6">
+      <div className="flex items-start gap-3">
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden />
+        <div>
+          <p className="text-sm font-semibold text-ink" dir="auto">{fill(s.bannerTitle, { name: names })}</p>
+          <p className="text-sm text-ink-soft">{s.bannerBody}</p>
+        </div>
+      </div>
+      <Button asChild size="sm">
+        <Link href={SETTINGS_PATH}>{s.bannerCta}</Link>
+      </Button>
+    </aside>
+  );
+}
+
 function GateRow({ consent }: { consent: Consent }) {
   const copy = usePatientCopy();
   const s = copy.settings.privacy;

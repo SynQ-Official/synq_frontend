@@ -8,14 +8,14 @@ import { usePatientResource } from "@/hooks/usePatientResource";
 export function useReports(limit = 12) {
   return usePatientResource<{ data: ReportListItem[]; meta: { firstWeek: string; currentWeek: string; count: number } }>(
     `reports:list:${limit}`,
-    () => reportsApi.list(limit),
+    (signal) => reportsApi.list(limit, signal),
     { staleMs: 60_000 },
   );
 }
 
 /** One report; pass null while nothing is open. */
 export function useReport(weekStart: string | null) {
-  return usePatientResource<ReportDetail>(weekStart ? `reports:detail:${weekStart}` : null, async () => (await reportsApi.get(weekStart as string)).data, {
+  return usePatientResource<ReportDetail>(weekStart ? `reports:detail:${weekStart}` : null, async (signal) => (await reportsApi.get(weekStart as string, signal)).data, {
     staleMs: 60_000,
   });
 }

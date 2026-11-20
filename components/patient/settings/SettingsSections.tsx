@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
 import { Bell, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import { EmptyState, ErrorState, GlassCard, Skeleton } from "@/components/patient/ui/primitives";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
@@ -51,25 +50,37 @@ function Row({ id, label, hint, children }: { id?: string; label: string; hint?:
   );
 }
 
+/** The API's own rule for a contact number (`PATCH /me` -> `phoneNumber`); an empty field removes it. */
+const PHONE_PATTERN = /^\+?[0-9 ().-]{6,32}$/;
+
 export function ProfileSection() {
   const copy = usePatientCopy();
   const p = copy.settings.profile;
   const { language } = useLanguage();
   const { profile, refreshProfile } = usePatient();
   const [nickname, setNickname] = useState(profile.nickname);
-  const [state, setState] = useState<"idle" | "saving" | "saved" | "taken" | "error">("idle");
-  const dirty = nickname.trim() !== profile.nickname;
+  const [phone, setPhone] = useState(profile.phoneNumber ?? "");
+  const [state, setState] = useState<"idle" | "saving" | "saved" | "taken" | "badPhone" | "error">("idle");
+  const phoneValue = phone.trim();
+  const nicknameDirty = nickname.trim() !== profile.nickname;
+  const phoneDirty = phoneValue !== (profile.phoneNumber ?? "");
+  const dirty = nicknameDirty || phoneDirty;
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
-    if (!dirty) return;
+    if (!dirty || state === "saving") return;
+    if (phoneDirty && phoneValue && !PHONE_PATTERN.test(phoneValue)) return setState("badPhone");
     setState("saving");
     try {
-      await profileApi.update({ nickname: nickname.trim() });
+      // Only what changed is sent: the API accepts these fields and nothing else.
+      await profileApi.update({
+        ...(nicknameDirty ? { nickname: nickname.trim() } : {}),
+        ...(phoneDirty ? { phoneNumber: phoneValue || null } : {}),
+      });
       await refreshProfile();
       setState("saved");
     } catch (error) {
-      setState(error instanceof ApiError && error.isConflict ? "taken" : "error");
+      setState(error instanceof ApiError && error.isConflict ? "taken" : error instanceof ApiError && error.status === 400 && phoneDirty ? "badPhone" : "error");
     }
   }
 
@@ -81,6 +92,23 @@ export function ProfileSection() {
           <Input id="settings-nickname" value={nickname} onChange={(event) => { setNickname(event.target.value); setState("idle"); }} minLength={2} maxLength={30} className="field-soft px-4" />
         </div>
         <div>
+          <label htmlFor="settings-phone" className="mb-1.5 block text-sm font-medium text-ink">{p.phone}</label>
+          <Input
+            id="settings-phone"
+            type="tel"
+            inputMode="tel"
+            dir="ltr"
+            autoComplete="tel"
+            value={phone}
+            onChange={(event) => { setPhone(event.target.value); setState("idle"); }}
+            maxLength={32}
+            aria-invalid={state === "badPhone"}
+            aria-describedby="settings-phone-hint"
+            className="field-soft px-4"
+          />
+          <p id="settings-phone-hint" className="mt-1 text-xs text-muted-foreground">{p.phoneHint}</p>
+        </div>
+        <div>
           <p className="mb-1.5 text-sm font-medium text-ink">{p.email}</p>
           <p className="field-soft flex items-center px-4 text-sm text-muted-foreground" dir="ltr">{profile.email}</p>
         </div>
@@ -89,6 +117,7 @@ export function ProfileSection() {
         </Row>
         <p className="text-xs text-muted-foreground">
           {copy.tracks[profile.track]} · {fill(p.memberSince, { date: formatDay(profile.memberSince, language, { month: "long", year: "numeric" }) })}
+          {profile.trackAssignedByClinician ? ` · ${p.trackByTeam}` : ""}
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Button type="submit" disabled={!dirty || state === "saving" || nickname.trim().length < 2}>
@@ -96,7 +125,7 @@ export function ProfileSection() {
             {state === "saving" ? copy.common.saving : p.save}
           </Button>
           <span role="status" className={cn("text-sm", state === "saved" ? "text-sage-700" : "text-rose-700")}>
-            {state === "saved" ? p.saved : state === "taken" ? p.taken : state === "error" ? p.error : ""}
+            {state === "saved" ? p.saved : state === "taken" ? p.taken : state === "badPhone" ? p.phoneInvalid : state === "error" ? p.error : ""}
           </span>
         </div>
       </form>
@@ -268,6 +297,8 @@ function OrientationConsentCard() {
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const done = Boolean(profile.orientationCompleted);
+  // The care team set the track: there is no orientation to pause, resume or wait for.
+  const skipped = profile.trackAssignedByClinician === true;
   const granted = consent.data?.granted === true;
 
   async function change(next: boolean) {
@@ -294,8 +325,8 @@ function OrientationConsentCard() {
           <Button size="sm" variant={granted ? "outline" : "default"} disabled={busy} onClick={() => void change(!granted)}>{granted ? s.withdraw : s.accept}</Button>
         </div>
       )}
-      {consent.data && !granted && !done && <p className="mt-2 text-xs text-ink-soft">{s.pendingNote}</p>}
-      {done && <p className="mt-2 text-xs text-ink-soft">{s.doneNote}</p>}
+      {consent.data && !granted && !done && !skipped && <p className="mt-2 text-xs text-ink-soft">{s.pendingNote}</p>}
+      {skipped ? <p className="mt-2 text-xs text-ink-soft">{s.skippedNote}</p> : done && <p className="mt-2 text-xs text-ink-soft">{s.doneNote}</p>}
       {failed && <p role="alert" className="mt-2 text-xs text-rose-700">{s.error}</p>}
     </div>
   );
