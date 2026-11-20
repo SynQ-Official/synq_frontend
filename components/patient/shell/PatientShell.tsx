@@ -2,7 +2,8 @@
 
 import { useEffect, type ReactNode } from "react";
 import { LuminaOrb, Skeleton } from "@/components/patient/ui/primitives";
-import { PatientMobileStrip, PatientRail, PatientTabBar } from "@/components/patient/shell/PatientChrome";
+import { MotionConfig } from "framer-motion";
+import { PatientMobileStrip, PatientRail, PatientTabBar, PatientTopActions } from "@/components/patient/shell/PatientChrome";
 import { navFor } from "@/components/patient/shell/nav";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { LogoLoader } from "@/components/shared/LogoLoader";
@@ -11,9 +12,7 @@ import { TourProvider } from "@/components/patient/tour/TourProvider";
 import { Button } from "@/components/ui/button";
 import { PatientProvider } from "@/hooks/patient/usePatient";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
-import { homeSerif } from "@/components/home/fonts";
 import { ApiError } from "@/lib/api/client";
-import { cn } from "@/lib/utils";
 
 /** Full-screen calm loader for the immersive screens (the welcome), which have no dashboard frame. */
 export function PatientLoading() {
@@ -42,8 +41,8 @@ export function PatientShellSkeleton() {
             <BrandLogo size="sm" href={null} />
           </span>
         </div>
-        <div className="mx-3 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-          <span className="size-11 shrink-0 rounded-full bg-white/15 motion-safe:animate-pulse" />
+        <div className="mx-3 flex items-center gap-3 border-b border-line/70 p-2 pb-5">
+          <span className="size-10 shrink-0 rounded-full bg-white/15 motion-safe:animate-pulse" />
           <span className="flex-1 space-y-2">
             <span className="block h-3 w-24 rounded-full bg-white/15 motion-safe:animate-pulse" />
             <span className="block h-2.5 w-16 rounded-full bg-white/10 motion-safe:animate-pulse" />
@@ -126,7 +125,8 @@ export function PatientChrome({ children }: { children: ReactNode }) {
   return (
     <PatientGate pending={<PatientShellSkeleton />}>
       <TourProvider>
-        <div data-surface="clean" className={cn(homeSerif.variable, "lm-canvas min-h-dvh text-foreground lg:flex")}>
+        <MotionConfig reducedMotion="user">
+        <div data-surface="clean" className="lm-canvas min-h-dvh text-foreground lg:flex">
           <a
             href="#patient-main"
             className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:shadow-lg"
@@ -136,13 +136,15 @@ export function PatientChrome({ children }: { children: ReactNode }) {
           <PatientRail />
           <div className="min-w-0 flex-1">
             <PatientMobileStrip />
-            <main id="patient-main" className="mx-auto w-full max-w-[88rem] px-4 pb-28 pt-4 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
+            <main id="patient-main" className="mx-auto w-full max-w-[88rem] px-4 pb-28 pt-4 sm:px-6 lg:px-8 lg:pb-10 lg:pt-5">
+              <PatientTopActions />
               <SharingReconfirmGate />
               {children}
             </main>
           </div>
           <PatientTabBar />
         </div>
+        </MotionConfig>
       </TourProvider>
     </PatientGate>
   );

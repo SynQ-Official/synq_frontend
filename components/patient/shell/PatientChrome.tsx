@@ -10,6 +10,7 @@ import { LogoSpinner } from "@/components/shared/LogoLoader";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { NotificationBell } from "@/components/patient/shell/NotificationBell";
+import { SosButton } from "@/components/patient/sos/SosButton";
 import { isActive, navFor, PATIENT_NAV } from "@/components/patient/shell/nav";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAmbiences } from "@/hooks/patient/useAmbiences";
@@ -60,7 +61,7 @@ export function PatientRail() {
   const calm = useCalmTrack();
   const [signingOut, setSigningOut] = useState(false);
   const { available: hasAmbiences } = useAmbiences();
-  const main = navFor(profile.track, hasAmbiences).filter((item) => item.key !== "settings");
+  const main = navFor(profile.track, hasAmbiences, profile.careTeam.hasClinician).filter((item) => item.key !== "settings");
   const settings = PATIENT_NAV.find((item) => item.key === "settings")!;
 
   // Items arrive one after another from the rail's edge (a plain fade on the calm tracks; still under reduced motion).
@@ -82,7 +83,7 @@ export function PatientRail() {
         </span>
       </motion.div>
 
-      <motion.div variants={item}>
+      <motion.div variants={item} className="border-b border-line/70 pb-3">
         <RailProfile />
       </motion.div>
 
@@ -96,6 +97,9 @@ export function PatientRail() {
       </motion.nav>
 
       <motion.div variants={list} className="space-y-1 border-t border-white/10 px-3 pb-4 pt-3">
+        <motion.div variants={item} className="pb-1.5">
+          <SosButton variant="wide" />
+        </motion.div>
         <motion.div variants={item}>
           <TourReplayButton className="lm-nav-link w-full" />
         </motion.div>
@@ -127,42 +131,43 @@ export function PatientRail() {
   );
 }
 
-/** Language switch and notifications, shared by the desktop rail and the small-screen strip. */
-function PatientUtilities({ side }: { side: "rail" | "strip" }) {
+/** The discreet globe; the profile keeps the language too, so a change updates it. */
+function PatientLanguage() {
   const { refreshProfile } = usePatient();
-  // The profile keeps the language too, so the switch updates it.
-  return (
-    <>
-      <LanguageSwitcher onChange={(language) => void profileApi.update({ language: language === "ar" ? "AR" : "EN" }).then(refreshProfile, () => undefined)} />
-      <NotificationBell placement={side} />
-    </>
-  );
+  return <LanguageSwitcher variant="menu" onChange={(language) => void profileApi.update({ language: language === "ar" ? "AR" : "EN" }).then(refreshProfile, () => undefined)} />;
 }
 
-/** Rail header: the patient's avatar and name (a shortcut to settings), with language and notifications beneath. */
+/** Rail header: avatar, name and a settings hint, sitting straight on the rail (no box), with the language globe at the end. */
 function RailProfile() {
   const { name } = usePatient();
   const copy = usePatientCopy();
   const initial = (name.trim()[0] ?? "V").toUpperCase();
 
   return (
-    <div className="mx-3 rounded-2xl border border-white/10 bg-white/[0.06] p-3 backdrop-blur-sm">
+    <div className="mx-3 flex items-center gap-1">
       <Link
         href="/dashboard/settings"
         aria-label={copy.shell.nav.settings}
-        className="flex items-center gap-3 rounded-xl p-1 transition-colors hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/70"
+        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-2 transition-colors hover:bg-teal-50/70"
       >
-        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-300 to-teal-700 text-base font-semibold text-white shadow-brand ring-2 ring-white/25">
+        <span className="lm-avatar inline-flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
           {initial}
         </span>
         <span className="min-w-0">
-          <span className="block truncate text-sm font-semibold leading-tight text-white" dir="auto">{name}</span>
-          <span className="mt-0.5 block text-xs text-white/60">{copy.shell.nav.settings}</span>
+          <span className="block truncate text-sm font-semibold leading-tight text-ink" dir="auto">{name}</span>
+          <span className="mt-0.5 block truncate text-xs text-ink-muted">{copy.shell.nav.settings}</span>
         </span>
       </Link>
-      <div className="mt-3 flex items-center justify-between gap-2 border-t border-white/10 pt-3">
-        <PatientUtilities side="rail" />
-      </div>
+      <PatientLanguage />
+    </div>
+  );
+}
+
+/** Desktop only: notifications sit at the top end of the content, not in the rail. */
+export function PatientTopActions() {
+  return (
+    <div className="hidden justify-end pb-2 lg:flex">
+      <NotificationBell placement="strip" />
     </div>
   );
 }
@@ -179,8 +184,11 @@ export function PatientMobileStrip() {
   return (
     <div className="lm-topbar flex items-center justify-between gap-3 px-4 pb-3 pt-4 sm:px-6 lg:hidden">
       <BrandLogo size="md" href={null} />
-      <div className="flex items-center gap-2.5">
-        <PatientUtilities side="strip" />
+      <div className="flex items-center gap-1.5 sm:gap-2.5">
+        {/* No rail on small screens, so SOS sits here. */}
+        <SosButton variant="compact" />
+        <PatientLanguage />
+        <NotificationBell placement="strip" />
         <Link
           href="/dashboard/settings"
           aria-label={copy.shell.nav.settings}
@@ -200,7 +208,7 @@ export function PatientTabBar() {
   // Schizophrenia / psychosis tracks: the active pill fades in place instead of sliding between tabs.
   const calm = useCalmTrack();
   const { profile } = usePatient();
-  const tabs = navFor(profile.track).filter((item) => item.key !== "settings");
+  const tabs = navFor(profile.track, false, profile.careTeam.hasClinician).filter((item) => item.key !== "settings");
 
   return (
     <nav

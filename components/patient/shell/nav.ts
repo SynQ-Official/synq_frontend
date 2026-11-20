@@ -1,8 +1,8 @@
-import { BookHeart, BookOpen, FileText, HeartPulse, Headphones, House, Settings, Zap, type LucideIcon } from "lucide-react";
+import { BookHeart, BookOpen, FileText, HeartHandshake, HeartPulse, Headphones, House, Settings, Zap, type LucideIcon } from "lucide-react";
 
 import { showsReads, type HomeTrack } from "@/lib/patient/content";
 
-export type PatientNavKey = "home" | "checkin" | "journal" | "spark" | "library" | "ambiances" | "reports" | "settings";
+export type PatientNavKey = "home" | "checkin" | "journal" | "spark" | "library" | "ambiances" | "care" | "reports" | "settings";
 
 /** The patient screens, in the order they appear. */
 export const PATIENT_NAV: { key: PatientNavKey; href: string; icon: LucideIcon }[] = [
@@ -12,6 +12,7 @@ export const PATIENT_NAV: { key: PatientNavKey; href: string; icon: LucideIcon }
   { key: "spark", href: "/dashboard/spark", icon: Zap },
   { key: "library", href: "/dashboard/library", icon: BookHeart },
   { key: "ambiances", href: "/dashboard/ambiances", icon: Headphones },
+  { key: "care", href: "/dashboard/care", icon: HeartHandshake },
   { key: "reports", href: "/dashboard/reports", icon: FileText },
   { key: "settings", href: "/dashboard/settings", icon: Settings },
 ];
@@ -25,11 +26,13 @@ export function isActive(pathname: string, href: string) {
  * assistant, takes its place for ADHD. Neither shows before the track is known. Comfort sounds show only when the server
  * has some for this patient (`withAmbiences`): never for the psychosis track until the clinician has switched them on.
  */
-export function navFor(track: HomeTrack | undefined, withAmbiences = false) {
+export function navFor(track: HomeTrack | undefined, withAmbiences = false, withCare = false) {
   return PATIENT_NAV.filter((item) => {
     if (item.key === "library") return track !== undefined && showsReads(track);
     if (item.key === "spark") return track === "ADHD";
     if (item.key === "ambiances") return withAmbiences;
+    // The care team's messages and medication: only for a patient who has a clinician.
+    if (item.key === "care") return withCare;
     return true;
   });
 }
