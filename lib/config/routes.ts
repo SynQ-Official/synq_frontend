@@ -11,6 +11,10 @@ export const ROUTES = {
   support: "/support",
   signIn: "/auth/signin",
   signUp: "/auth/signup",
+  /** First sign-in of an account a clinician created: replace the temporary password. */
+  changePassword: "/auth/change-password",
+  /** The link in a clinician's invitation e-mail (the API puts `?token=` after it). */
+  invitation: "/invitation",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
   dashboard: "/dashboard",

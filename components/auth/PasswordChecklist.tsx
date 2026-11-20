@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Circle } from "lucide-react";
+import { PASSWORD_MAX_BYTES } from "@/lib/i18n/passwordReset";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,11 @@ export function passwordRuleResults(value: string) {
 
 export function passwordMeetsPolicy(value: string) {
   return RULES.every((rule) => rule.test(value));
+}
+
+/** The API hashes at most 72 UTF-8 bytes (bcrypt), so a new password is capped there: sign-up and reset alike. */
+export function passwordTooLong(value: string) {
+  return new TextEncoder().encode(value).length > PASSWORD_MAX_BYTES;
 }
 
 type Copy = {

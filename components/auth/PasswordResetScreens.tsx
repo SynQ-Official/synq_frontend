@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Eye, EyeOff, Lock, Mail, MailCheck
 import Link from "next/link";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { AUTH_CARD, AUTH_TITLE } from "@/components/auth/AuthLayout";
-import { PasswordChecklist, passwordMeetsPolicy } from "@/components/auth/PasswordChecklist";
+import { PasswordChecklist, passwordMeetsPolicy, passwordTooLong } from "@/components/auth/PasswordChecklist";
 import { FormField, IconInput } from "@/components/shared/FormField";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
 import { Button } from "@/components/ui/button";
@@ -14,13 +14,13 @@ import { passwordResetApi, resetFailure } from "@/lib/api/password-reset";
 import { ROUTES } from "@/lib/config/routes";
 import { DURATION, EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { PASSWORD_MAX_BYTES, passwordResetCopy } from "@/lib/i18n/passwordReset";
+import { passwordResetCopy } from "@/lib/i18n/passwordReset";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESEND_AFTER_SECONDS = 60;
-const LINK_CLASS = "rounded-md font-semibold text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
+export const LINK_CLASS = "rounded-md font-semibold text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
 
-function Card({ icon, title, children }: { icon?: ReactNode; title: string; children: ReactNode }) {
+export function Card({ icon, title, children }: { icon?: ReactNode; title: string; children: ReactNode }) {
   return (
     <motion.section
       initial={{ opacity: 0, y: 10 }}
@@ -38,7 +38,7 @@ function Card({ icon, title, children }: { icon?: ReactNode; title: string; chil
   );
 }
 
-const Badge = ({ tone, children }: { tone: "teal" | "gold"; children: ReactNode }) => (
+export const Badge = ({ tone, children }: { tone: "teal" | "gold"; children: ReactNode }) => (
   <span
     aria-hidden
     className={`flex size-12 items-center justify-center rounded-2xl ${tone === "teal" ? "bg-teal-50 text-teal-700" : "bg-gold-100 text-gold-700"}`}
@@ -47,7 +47,7 @@ const Badge = ({ tone, children }: { tone: "teal" | "gold"; children: ReactNode 
   </span>
 );
 
-function Alert({ children }: { children: ReactNode }) {
+export function Alert({ children }: { children: ReactNode }) {
   return (
     <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-[0.9375rem] leading-6 text-rose-700">
       {children}
@@ -55,7 +55,7 @@ function Alert({ children }: { children: ReactNode }) {
   );
 }
 
-function VisibilityToggle({ show, toggle, label }: { show: boolean; toggle: () => void; label: string }) {
+export function VisibilityToggle({ show, toggle, label }: { show: boolean; toggle: () => void; label: string }) {
   return (
     <Button
       type="button"
@@ -71,7 +71,7 @@ function VisibilityToggle({ show, toggle, label }: { show: boolean; toggle: () =
   );
 }
 
-function SubmitLabel({ pending, label, busy }: { pending: boolean; label: string; busy: string }) {
+export function SubmitLabel({ pending, label, busy }: { pending: boolean; label: string; busy: string }) {
   return pending ? (
     <>
       <LogoSpinner size={18} />
@@ -228,7 +228,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
     setError(null);
     setField(null);
     if (!passwordMeetsPolicy(password)) return fail("reset-password", auth.errors.passwordRules);
-    if (new TextEncoder().encode(password).length > PASSWORD_MAX_BYTES) return fail("reset-password", copy.tooLong);
+    if (passwordTooLong(password)) return fail("reset-password", copy.tooLong);
     if (password !== confirmation) return fail("reset-confirm", copy.mismatch);
 
     setPending(true);

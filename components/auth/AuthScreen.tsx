@@ -1,13 +1,13 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { authApi } from "@/lib/api/auth";
+import { authApi, cancelPasswordChange } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 import { useSessionState } from "@/hooks/useSessionState";
 import { clearTokens, hasValidSession } from "@/lib/api/tokens";
 import { AUTH_CARD, AUTH_TITLE, AuthLoading } from "@/components/auth/AuthLayout";
 import { ACCENT_LIGHT } from "@/components/home/typography";
-import { PasswordChecklist, passwordMeetsPolicy } from "@/components/auth/PasswordChecklist";
+import { PasswordChecklist, passwordMeetsPolicy, passwordTooLong } from "@/components/auth/PasswordChecklist";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField, IconInput } from "@/components/shared/FormField";
@@ -22,6 +22,7 @@ import { useEffect, useState, useTransition } from "react";
 import { ROUTES } from "@/lib/config/routes";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
 import { LinkedText } from "@/components/legal/LegalLinks";
+import { accountAccessCopy } from "@/lib/i18n/accountAccess";
 import { legalUi } from "@/lib/i18n/legal";
 import { prefetchPatientHome } from "@/lib/patient/prefetch";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,21 @@ function safeRedirect(redirect: string | null, mode: AuthMode) {
 
 type FormValues = { nickname: string; email: string; password: string; confirmPassword: string };
 type FieldName = keyof FormValues | "phone" | "consent" | "terms";
+
+/** The API's own bounds: a nickname is 2 to 30 characters (the profile edit applies the same). */
+const NICKNAME_MIN = 2;
+const NICKNAME_MAX = 30;
+
+/** The form field a 400 names first: class-validator messages start with the property ("nickname must be…"). */
+function rejectedField(error: ApiError): "nickname" | "email" | "password" | "phone" | null {
+  const raw = (error.payload as { message?: unknown } | undefined)?.message;
+  for (const message of Array.isArray(raw) ? raw : [raw]) {
+    if (typeof message !== "string") continue;
+    const field = message.trim().split(/\s/)[0];
+    if (field === "nickname" || field === "email" || field === "password" || field === "phone") return field;
+  }
+  return null;
+}
 
 /** Which control to focus when a field fails validation. */
 const FIELD_IDS: Record<FieldName, string> = {
@@ -129,28 +145,50 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     requestAnimationFrame(() => document.getElementById(FIELD_IDS[field])?.focus());
   };
 
-  /** Server failures in the visitor's language: the raw API text is English, so it is never shown as is. */
-  const apiMessage = (err: unknown) => {
+  /**
+   * Server failures in the visitor's language: the raw API text is English, so it is never shown as is. A 400 that
+   * names a field (DTO validation) is reported on that field.
+   */
+  const apiFailure = (err: unknown): { message: string; field?: FieldName } => {
     if (err instanceof ApiError) {
-      if (err.status === 0) return auth.errors.network;
-      if (err.status === 401) return isSignUp ? auth.errors.generic : auth.errors.invalidCredentials;
-      if (err.status === 409) return isSignUp ? auth.errors.emailTaken : auth.errors.generic;
-      if (err.status === 429) return auth.errors.tooManyRequests;
-      return auth.errors.generic;
+      if (err.status === 0) return { message: auth.errors.network };
+      if (err.status === 400) {
+        const field = rejectedField(err);
+        const onField = {
+          nickname: auth.errors.nicknameLength,
+          email: auth.errors.email,
+          phone: auth.errors.phone,
+          password: isSignUp ? auth.errors.passwordRules : auth.errors.invalidCredentials,
+        };
+        return field ? { message: onField[field], field } : { message: auth.errors.validation };
+      }
+      if (err.status === 401) {
+        // A clinician-created account whose temporary password ran out: its own message, not "wrong password".
+        if (err.code === "TEMPORARY_PASSWORD_EXPIRED") return { message: accountAccessCopy[language].signIn.temporaryPasswordExpired };
+        return { message: isSignUp ? auth.errors.generic : auth.errors.invalidCredentials };
+      }
+      if (err.status === 403) return { message: auth.errors.forbidden };
+      if (err.status === 409) return { message: isSignUp ? auth.errors.emailTaken : auth.errors.generic };
+      if (err.status === 429) return { message: auth.errors.tooManyRequests };
+      if (err.status === 502 || err.status === 503 || err.status === 504) return { message: auth.errors.unavailable };
+      return { message: auth.errors.generic };
     }
-    if (err instanceof Error && err.message === "This account cannot sign in here.") return auth.errors.cannotSignInHere;
-    return auth.errors.generic;
+    if (err instanceof Error && err.message === "This account cannot sign in here.") return { message: auth.errors.cannotSignInHere };
+    return { message: auth.errors.generic };
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); setError(""); setErrorField(null);
-    if (isSignUp && !values.nickname.trim()) return fail("nickname", auth.errors.nickname);
+    const nickname = values.nickname.trim();
+    if (isSignUp && !nickname) return fail("nickname", auth.errors.nickname);
+    if (isSignUp && (nickname.length < NICKNAME_MIN || nickname.length > NICKNAME_MAX)) return fail("nickname", auth.errors.nicknameLength);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) return fail("email", auth.errors.email);
     const e164 = isSignUp ? toE164(phone) : null;
     if (isSignUp && !e164) return fail("phone", phoneMessage(phoneStatus(phone)) ?? auth.errors.phone);
     // Sign-in only needs a password: the policy applies to new passwords, never to an existing account.
     if (!isSignUp && !values.password) return fail("password", auth.errors.passwordRequired);
     if (isSignUp && !passwordMeetsPolicy(values.password)) return fail("password", auth.errors.passwordRules);
+    if (isSignUp && passwordTooLong(values.password)) return fail("password", auth.errors.passwordTooLong);
     if (isSignUp && values.password !== values.confirmPassword) return fail("confirmPassword", auth.errors.confirmPassword);
     if (isSignUp && !consent) return fail("consent", auth.errors.consent);
     if (isSignUp && !agreed) return fail("terms", legalUi[language].agreeError);
@@ -160,12 +198,16 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
         const email = values.email.trim();
         try {
           const target = safeRedirect(searchParams.get("redirect"), mode);
-          // No leftover session can ride along: only the answer to THIS request opens the space.
+          // No leftover session (or half-finished password change) can ride along: only the answer to THIS request opens the space.
           clearTokens();
+          cancelPasswordChange();
           if (isSignUp) {
-            await authApi.register({ nickname: values.nickname.trim(), email, phone: e164 ?? undefined, password: values.password, lang: language, consentVersion: CONSENT_VERSION });
-          } else {
-            await authApi.login(email, values.password);
+            await authApi.register({ nickname, email, phone: e164 ?? undefined, password: values.password, lang: language, consentVersion: CONSENT_VERSION });
+          } else if ((await authApi.login(email, values.password)) === "password_change_required") {
+            // A clinician created this account: the temporary password opens only the password change, not the app.
+            // No session exists yet, so there is nothing to wait for or prefetch.
+            router.push(ROUTES.changePassword);
+            return;
           }
           // Navigate only once the session is really established.
           if (!hasValidSession()) throw new Error("session-not-established");
@@ -175,7 +217,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           router.push(target);
         } catch (err) {
           clearTokens();
-          const message = apiMessage(err);
+          const { message, field } = apiFailure(err);
+          if (field) return fail(field, message);
           setError(message);
           toast.error(isSignUp ? auth.toastSignUp : auth.toastSignIn, { description: message });
         }
@@ -310,6 +353,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                 onChange={set("nickname")}
                 placeholder={auth.nicknamePlaceholder}
                 autoComplete="nickname"
+                minLength={NICKNAME_MIN}
+                maxLength={NICKNAME_MAX}
                 invalid={errorField === "nickname"}
               />
             </FormField>
