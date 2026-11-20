@@ -7,7 +7,7 @@ import { agentEntryHref } from "@/lib/config/routes";
 import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Stethoscope } from "lucide-react";
+import { ArrowRight, Stethoscope, UserRound, UsersRound } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Magnetic, WordReveal } from "./AnimationUtilities";
@@ -55,6 +55,11 @@ export const Hero = () => {
     const reduce = useReducedMotion();
     const { signedIn } = useAuthSession();
     const { lead, accent } = splitAccent(copy.titleB);
+    const audiences = [
+        { label: copy.audiences.clinicians, href: "#healthcare", Icon: Stethoscope },
+        { label: copy.audiences.parents, href: agentEntryHref("mira", signedIn), Icon: UsersRound },
+        { label: copy.audiences.adults, href: agentEntryHref("mira", signedIn), Icon: UserRound },
+    ];
 
     // The WebGL hills compile their shaders on the main thread: they wait until the headline has landed,
     // so the big type never stutters while it rises.
@@ -137,25 +142,22 @@ export const Hero = () => {
                                 {copy.subtitle}
                             </motion.p>
 
-                            <motion.div variants={fadeUp(0, 16)} className="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4">
-                                <Magnetic className="justify-center" strength={0.22}>
-                                    <Button asChild variant="hero" size="lg" className="group min-h-14 w-full px-8 sm:w-auto">
-                                        <Link href={agentEntryHref("mira", signedIn)}>
-                                            {copy.primary}
-                                            <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
-                                        </Link>
-                                    </Button>
-                                </Magnetic>
-                                <Magnetic className="justify-center" strength={0.12}>
-                                    <Button asChild variant="outline" size="lg" className="group min-h-14 w-full border-line-strong bg-white/70 px-6 backdrop-blur sm:w-auto">
-                                        <a href="#healthcare">
-                                            <span className="flex size-8 items-center justify-center rounded-full bg-teal-50 text-teal-700 transition-transform duration-300 group-hover:scale-110">
-                                                <Stethoscope className="size-3.5" aria-hidden />
-                                            </span>
-                                            {copy.demo}
-                                        </a>
-                                    </Button>
-                                </Magnetic>
+                            <motion.div variants={fadeUp(0, 16)} className="mx-auto mt-10 grid w-full max-w-5xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                                {audiences.map(({ label, href, Icon }, index) => (
+                                    <Magnetic key={label} className="w-full" strength={index === 0 ? 0.12 : 0.18}>
+                                        <Button asChild variant="outline" size="lg" className="group min-h-14 w-full justify-between border-line-strong bg-white/75 px-4 backdrop-blur hover:border-teal-300 hover:bg-white sm:px-5">
+                                            <Link href={href}>
+                                                <span className="flex items-center gap-3">
+                                                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700 transition-transform duration-300 group-hover:scale-110">
+                                                        <Icon className="size-4" aria-hidden />
+                                                    </span>
+                                                    <span>{label}</span>
+                                                </span>
+                                                <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
+                                            </Link>
+                                        </Button>
+                                    </Magnetic>
+                                ))}
                             </motion.div>
                         </motion.div>
                     </div>
@@ -178,9 +180,16 @@ export const Hero = () => {
                             {home.partners}
                         </p>
                         <Marquee seconds={70} className="w-full min-w-0 flex-1">
-                            {/* Two partners don't fill a wide screen: the ticker repeats them, and a reader announces them once. */}
+                            {/* The ticker repeats the partner groups; only the first copy is announced to readers. */}
                             {Array.from({ length: reduce ? 1 : 8 }, (_, index) => (
-                                <PartnerLogos key={index} hidden={index > 0} />
+                                <PartnerLogos
+                                    key={index}
+                                    hidden={index > 0}
+                                    hotLabel={home.partners}
+                                    hotNames={home.partnerHotNames}
+                                    backedLabel={home.partnerBackedLabel}
+                                    backedNames={home.partnerBackedNames}
+                                />
                             ))}
                         </Marquee>
                     </div>

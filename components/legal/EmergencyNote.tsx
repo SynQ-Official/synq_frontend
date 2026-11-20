@@ -6,7 +6,7 @@ import { legalUi } from "@/lib/i18n/legal";
 import { cn } from "@/lib/utils";
 import { LifeBuoy } from "lucide-react";
 
-/** "In danger? Call 999 (UAE)". TODO(owner): confirm the number (lib/config/brand.ts) and add a local helpline line. */
+/** "In danger? Call 197 (Tunisia)". TODO(owner): confirm the number (lib/config/brand.ts) and add a local helpline line. */
 export function EmergencyNote({ className }: { className?: string }) {
   const { language } = useLanguage();
   return (

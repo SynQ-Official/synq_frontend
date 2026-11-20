@@ -233,7 +233,8 @@ export function IntroBrand({ instant = false, className }: { instant?: boolean; 
                 <Image src="/assets/vitamind-mark-3d.png" alt="" width={220} height={220} priority className="size-[clamp(5.5rem,15vw,8.5rem)] object-contain drop-shadow-[0_18px_24px_rgb(17_76_97/0.22)]" />
             </motion.div>
 
-            <h1 className="relative mt-6 sm:mt-8" aria-label={BRAND.name} dir="ltr">
+            {/* Not a heading: the intro now sits over the real page, whose own <h1> is the only one. */}
+            <p role="img" className="relative mt-6 sm:mt-8" aria-label={BRAND.name} dir="ltr">
                 <span aria-hidden className={cn("relative flex text-teal-900", wordmark)}>
                     {letters.map((letter, index) => (
                         <span key={index} className="inline-block overflow-hidden pb-[0.12em]">
@@ -259,7 +260,7 @@ export function IntroBrand({ instant = false, className }: { instant?: boolean; 
                         {BRAND.name}
                     </motion.span>
                 )}
-            </h1>
+            </p>
         </div>
     );
 }

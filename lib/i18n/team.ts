@@ -25,8 +25,8 @@ const en: TeamCopy = {
   titleB: "close to the care.",
   intro: "The founders who lead SynQ's product, technology and operations.",
   members: [
-    { name: "Chedi Ouerghi", role: "Co-CEO & CTO" },
-    { name: "Roua Bellasoued", role: "Co-CEO & COO" },
+    { name: "Chedi Ouerghi", role: "CTO & Co-founder" },
+    { name: "Roua Bellasoued", role: "CEO & Co-founder" },
   ],
 };
 
@@ -37,8 +37,8 @@ const ar: TeamCopy = {
   titleB: "قريب من الرعاية.",
   intro: "المؤسسون الذين يقودون منتج SynQ وتقنيتها وعملياتها.",
   members: [
-    { name: "Chedi Ouerghi", role: "رئيس تنفيذي مشارك ومدير التقنية" },
-    { name: "Roua Bellasoued", role: "رئيس تنفيذي مشارك ومدير العمليات" },
+    { name: "Chedi Ouerghi", role: "مدير التقنية ومؤسس مشارك" },
+    { name: "Roua Bellasoued", role: "الرئيس التنفيذي ومؤسسة مشاركة" },
   ],
 };
 

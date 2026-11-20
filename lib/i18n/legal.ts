@@ -80,7 +80,7 @@ function termsCopy(lang: Lang): LegalPageCopy {
 
   if (lang === "ar") {
     return {
-      seoTitle: terms.title,
+      seoTitle: "شروط الاستخدام وأحكام الخدمة",
       seoDescription: "شروط استخدام SynQ: ما هي الخدمة وما ليست، وحسابك، والمسؤوليات، وسبل التواصل معنا.",
       eyebrow: "قانوني",
       title: terms.title,
@@ -97,7 +97,7 @@ function termsCopy(lang: Lang): LegalPageCopy {
     };
   }
   return {
-    seoTitle: terms.title,
+    seoTitle: "Terms of use and service conditions",
     seoDescription: "SynQ terms of use: what the service is and is not (not a diagnosis or an emergency service), your account, responsibilities and how to reach us.",
     eyebrow: "Legal",
     title: terms.title,
@@ -129,7 +129,7 @@ export const legalUi: Record<Lang, LegalUi> = {
     agree: "I agree to the {terms} and {privacy}.",
     agreeError: "Please accept the Terms and Privacy Policy to create your account.",
     subscribeConsent: "By subscribing, you agree to our {privacy}.",
-    emergency: "In danger? Call {number} (UAE)",
+    emergency: "In danger? Call {number} (Tunisia)",
     contactMissing: "Contact email for privacy requests.",
     notFound: {
       seoTitle: "Page not found",
@@ -150,7 +150,7 @@ export const legalUi: Record<Lang, LegalUi> = {
     agree: "أوافق على {terms} و{privacy}.",
     agreeError: "يرجى الموافقة على الشروط وسياسة الخصوصية لإنشاء حسابك.",
     subscribeConsent: "بالاشتراك فإنك توافق على {privacy}.",
-    emergency: "في خطر؟ اتصل بالرقم {number} (الإمارات)",
+    emergency: "في خطر؟ اتصل بالرقم {number} (تونس)",
     contactMissing: "بريد التواصل لطلبات الخصوصية.",
     notFound: {
       seoTitle: "الصفحة غير موجودة",

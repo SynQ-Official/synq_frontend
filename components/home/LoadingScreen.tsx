@@ -67,7 +67,7 @@ export const LoadingScreen = ({ onComplete, onSkip }: LoadingScreenProps) => {
             aria-label={dictionary.common.loading}
             onClick={leave}
             exit={reduce ? { opacity: 0, transition: { duration: 0.3 } } : undefined}
-            className="fixed inset-0 z-50 isolate cursor-pointer overflow-hidden bg-white text-ink"
+            className="fixed inset-0 z-[10000] isolate cursor-pointer overflow-hidden bg-white text-ink"
         >
             {reduce ? (
                 <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_50%_at_0%_20%,rgb(191_221_225/0.55),transparent_70%),radial-gradient(60%_50%_at_100%_20%,rgb(230_213_170/0.45),transparent_70%)]" />

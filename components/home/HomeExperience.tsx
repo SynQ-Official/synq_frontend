@@ -17,6 +17,7 @@ type Phase = "loading" | "intro" | "main";
 export function HomeExperience({ introSeen }: { introSeen: boolean }) {
   const { direction } = useLanguage();
   const [phase, setPhase] = useState<Phase>(introSeen ? "main" : "loading");
+  const [revealKey, setRevealKey] = useState(0);
   // Content re-settles on language change; the fixed header and progress bar stay outside it.
   const contentRef = useLanguageTransition<HTMLDivElement>();
   const HOME_INTRO_STORAGE_KEY = "mindsens_home_intro_seen";
@@ -43,41 +44,44 @@ export function HomeExperience({ introSeen }: { introSeen: boolean }) {
     };
   }, [phase]);
 
+  // The intro hands over to the page: remount it so its entrance motion plays when it is revealed.
+  const reveal = () => {
+    setPhase("main");
+    setRevealKey((key) => key + 1);
+  };
+
   return (
     <main
       dir={direction}
       className={cn(homeSerif.variable, "home-page min-h-dvh w-full overflow-x-clip bg-white text-ink selection:bg-teal-200 selection:text-ink")}
     >
+      {/* Always in the server HTML (crawlers and inspection tools read the same page as visitors); the intro below only covers it. */}
+      <motion.div
+        key={revealKey}
+        // `inert` keeps focus and screen readers out of the page while the intro covers it.
+        inert={phase !== "main"}
+        initial={revealKey === 0 ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative w-full"
+      >
+        <SmoothScrollProvider>
+          <ProgressBar />
+          <Header />
+          <SectionRail />
+          <div ref={contentRef}>
+            <HeroSection />
+            <WhatSection />
+            <HealthcareSection />
+            <TeamSection />
+            <CTASection />
+            <FooterSection />
+          </div>
+        </SmoothScrollProvider>
+      </motion.div>
       <AnimatePresence>
-        {phase === "loading" && (
-          <LoadingScreen key="loading" onComplete={() => setPhase("intro")} onSkip={() => setPhase("main")} />
-        )}
-        {phase === "intro" && (
-          <CinematicIntro key="intro" onComplete={() => setPhase("main")} />
-        )}
-        {phase === "main" && (
-          <motion.div
-            key="main"
-            initial={introSeen ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative w-full"
-          >
-            <SmoothScrollProvider>
-              <ProgressBar />
-              <Header />
-              <SectionRail />
-              <div ref={contentRef}>
-                <HeroSection />
-                <WhatSection />
-                <HealthcareSection />
-                <TeamSection />
-                <CTASection />
-                <FooterSection />
-              </div>
-            </SmoothScrollProvider>
-          </motion.div>
-        )}
+        {phase === "loading" && <LoadingScreen key="loading" onComplete={() => setPhase("intro")} onSkip={reveal} />}
+        {phase === "intro" && <CinematicIntro key="intro" onComplete={reveal} />}
       </AnimatePresence>
     </main>
   );

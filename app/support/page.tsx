@@ -6,7 +6,7 @@ import { SITE, pageMetadata } from "@/lib/config/site";
 import { LANGUAGE_STORAGE_KEY, copy, normalizeLanguage } from "@/lib/i18n/config";
 import { cookies } from "next/headers";
 
-const TITLE = "Support";
+const TITLE = "Help and support for your account and privacy";
 const DESCRIPTION =
   "Questions about SynQ, your privacy or your account? Write to the team: we reply within one working day. Quick answers on sharing and urgent situations.";
 
