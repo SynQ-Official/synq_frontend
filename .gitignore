@@ -73,3 +73,35 @@ AGENTS.md
 # Local agent / browser tooling output
 .agents/
 .playwright-mcp/
+# ─── Local AI tooling, personal notes & internal docs (never committed) ───
+.claude/
+.claudeignore
+CLAUDE.md
+AGENT.md
+AGENTS.md
+GEMINI.md
+.agents/
+.cursor/
+.continue/
+.aider*
+.augment/
+.codebuddy/
+.codemaker/
+.codestudio/
+.codeartsdoer/
+.forge/
+.kilo/
+.kiro/
+.windsurf/
+.zencoder/
+.impeccable/
+.superpowers/
+.playwright-mcp/
+graphify-out/
+skill-observations/
+skills-lock.json
+/docs/
+/doc/
+/QA_*.md
+/mira_interface.jpeg
+/app/dashboard/image.png
