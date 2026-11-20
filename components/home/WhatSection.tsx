@@ -11,8 +11,8 @@ import { StageRise } from "./Interactions";
 import { SectionHeader } from "./SectionHeader";
 import { ACCENT_LIGHT, BODY, DISPLAY_S, SERIF } from "./typography";
 
-/** The films in `public/media`, in the order of `copy.films`. */
-const FILMS = ["/media/SynQ_Patient_2K.mp4", "/media/SynQ_Parent_2K.mp4", "/media/SynQ_Clinician_2K.mp4"] as const;
+/** The web encodes in `public/media/web` (shipped with the app), in the order of `copy.films`. */
+const FILMS = ["/media/web/SynQ_Patient_2K.web.mp4", "/media/web/SynQ_Parent_2K.web.mp4", "/media/web/SynQ_Clinician_2K.web.mp4"] as const;
 
 /** Only the active film plays; the others rest on their first frame and restart from the top when chosen. */
 function Film({ src, label, active, playing }: { src: string; label: string; active: boolean; playing: boolean }) {

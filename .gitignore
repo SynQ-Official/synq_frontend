@@ -53,9 +53,8 @@ next-env.d.ts
 .claude/
 .kilo/
 
-# Large product films: hosted on R2, never committed (web encodes live in public/media/web/)
+# Large product film masters: never committed (the light web encodes in public/media/web/ ship with the app)
 public/media/*.mp4
-public/media/web/
 
 # Ambient sound files live in ../ambiances-src (outside this repo); never commit them if copied in by mistake
 ambiances-src/**/*.m4a
@@ -71,3 +70,6 @@ ambiances-src/**/*.wav
 CLAUDE.md
 AGENTS.md
 .claudeignore
+# Local agent / browser tooling output
+.agents/
+.playwright-mcp/
