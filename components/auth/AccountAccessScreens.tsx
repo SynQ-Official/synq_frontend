@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Lock, Mail, MailWarning, TriangleAlert, UserRound } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react";
 import { AuthLoading } from "@/components/auth/AuthLayout";

@@ -5,7 +5,7 @@ import { CONTACT } from "@/lib/config/brand";
 import { ROUTES } from "@/lib/config/routes";
 import { legalUi } from "@/lib/i18n/legal";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { Fragment, type ReactNode } from "react";
 
 const LINK_CLASS =

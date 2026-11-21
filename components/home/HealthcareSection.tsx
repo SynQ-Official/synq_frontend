@@ -7,7 +7,7 @@ import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowRight, Lock, ShieldAlert, Stethoscope } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { HomeSection } from "./HomeSection";
 import { SectionHeader } from "./SectionHeader";
 import { DISPLAY_S } from "./typography";

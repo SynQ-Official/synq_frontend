@@ -31,6 +31,8 @@ export function MoodPicker({
     event.preventDefault();
     const next = Math.max(0, Math.min(MOOD_LEVELS.length - 1, (selectedIndex < 0 ? 2 : selectedIndex) + step));
     onChange(MOOD_LEVELS[next].score);
+    // Roving tabindex: focus follows the selection, or it stays on a button that just left the tab order.
+    event.currentTarget.querySelectorAll<HTMLElement>('[role="radio"]')[next]?.focus();
   }
 
   return (

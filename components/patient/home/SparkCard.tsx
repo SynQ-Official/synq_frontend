@@ -88,7 +88,7 @@ export function SparkCard() {
                     <Check className="size-3.5" aria-hidden />
                   </button>
                   <div className="min-w-0">
-                    {index === 0 && <p className="lm-eyebrow mb-0.5">{copy.next}</p>}
+                    {index === 0 && <p className="mb-0.5 text-xs font-medium text-teal-700">{copy.next}</p>}
                     <p className="text-sm font-medium leading-snug text-ink">{task.title}</p>
                     <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><Clock className="size-3" aria-hidden />{fill(copy.min, { n: task.estimateMin })}</p>
                     {index === 0 && <p className="mt-1.5 text-xs leading-snug text-ink-soft">{reasonOf(task)}</p>}

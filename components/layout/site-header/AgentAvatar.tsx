@@ -14,6 +14,7 @@ export const LUMINA_MARK_SRC = "/assets/lumina-mark.png";
 export const MIRA_MARK_SRC = "/assets/mira-mark.png";
 
 const MARKS: Record<Exclude<AgentId, "psy">, string> = { mira: MIRA_MARK_SRC, lumina: LUMINA_MARK_SRC };
+const MARK_ALT: Record<Exclude<AgentId, "psy">, string> = { mira: "Mira logo", lumina: "Lumina logo" };
 
 /** Agent portraits: each agent's official 3D logo mark on a white tile; the clinician workspace has no mark yet, so it wears a stethoscope. */
 export function AgentAvatar({ agent, className }: AgentAvatarProps) {
@@ -22,7 +23,7 @@ export function AgentAvatar({ agent, className }: AgentAvatarProps) {
       {agent === "psy" ? (
         <Stethoscope className="size-[52%] text-sage-700" strokeWidth={1.5} />
       ) : (
-        <Image src={MARKS[agent]} alt="" width={128} height={128} className="size-[86%] object-contain" />
+        <Image src={MARKS[agent]} alt={MARK_ALT[agent]} width={128} height={128} className="size-[86%] object-contain" />
       )}
     </span>
   );

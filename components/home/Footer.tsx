@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/config/routes";
 import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import type { ReactNode } from "react";
 import { Grain } from "./Atmosphere";
 import { LABEL } from "./typography";

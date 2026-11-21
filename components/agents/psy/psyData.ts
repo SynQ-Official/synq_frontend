@@ -32,14 +32,6 @@ export const KPI_DELTAS: readonly { pct: number | null; goodWhen: "up" | "down" 
   { pct: null, goodWhen: "down" },
 ];
 
-export const KPI_SPARKS: readonly (readonly number[])[] = [
-  [4, 6, 5, 7, 6, 8, 6, 5, 7, 4, 5, 3],
-  [8, 9, 9, 10, 9, 11, 10, 11, 12, 11, 12, 12],
-  [2, 3, 2, 4, 3, 4, 5, 4, 5, 4, 6, 5],
-  [],
-];
-export const KPI_SPARK_COLORS = [PSY_COLOR.orange, PSY_COLOR.teal, PSY_COLOR.indigo, PSY_COLOR.teal] as const;
-
 /** Thirty days of sessions: completed, scheduled and missed, with the calm rhythm of a working month (no weekends). */
 export const ACTIVITY: readonly (readonly [completed: number, scheduled: number, missed: number])[] = Array.from({ length: 30 }, (_, day) => {
   const weekend = day % 7 === 5 || day % 7 === 6;
@@ -63,6 +55,12 @@ export const PATIENT_ROWS: readonly (readonly [light: 0 | 1 | 2, alerts: number,
 
 /** Attention items by kind: an alert, an alert, a priority report, an assessment to review. */
 export const ATTENTION_KINDS = ["alert", "alert", "report", "assessment"] as const;
+/** One colour per kind, so the same kind always reads the same: safety in red, a report in amber, routine review in slate. */
+export const ATTENTION_BADGES = {
+  alert: "bg-red-50 text-red-700 ring-red-200",
+  report: "bg-amber-50 text-amber-700 ring-amber-200",
+  assessment: "bg-slate-50 text-slate-700 ring-slate-200",
+} as const;
 export const ATTENTION_TONES = {
   alert: "bg-red-50 text-red-600",
   report: "bg-orange-50 text-orange-600",

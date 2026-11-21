@@ -22,14 +22,14 @@ export const LANGS: {
 
 const arabicHomeLanding = {
   nav: { home: "الرئيسية", features: "الميزات", process: "كيف نعمل", getStarted: "ابدأ الآن", menu: "فتح القائمة", close: "إغلاق القائمة" },
-  hero: { titleA: "عقلك لا يتوقف،", titleB: "ورعايتك تبقى معه.", subtitle: "عيادتك تدعوك إلى SynQ. تسجّل يومك، وتختار ما يراه مختصك قبل زيارتك القادمة.", audiences: { clinicians: "للمختصين", parents: "للأهل", adults: "للبالغين" }, discover: "اكتشف المزيد", preview: "معاينة مباشرة", dashboard: ["لوحة التحكم", "التحليلات", "الدعم", "المذكرات", "الإعدادات"], stats: ["مؤشر العافية", "التتابع", "الجلسات"], scoreChange: "+4.2٪", days: "أيام", thisMonth: "هذا الشهر", baseline: "نطاقك المعتاد", last30: "آخر 30 يوماً", stable: "مستقر", insight: "بين موعدين", pattern: "لا يضيع شيء مهم", encrypted: "خاص في التصميم — أنت تختار ما يُشارَك" },
-  cta: { eyebrow: "ابدأ خطوتك اليوم", titleA: "هل أنت مستعد", titleB: "للخطوة التالية؟", body: "ابدأ مع ميرا. ويشاركك مختصك متى اخترت.", primary: "ابدأ الآن", demo: "العيادات والمؤسسات: تواصل معنا", benefits: ["التوجيه ضمن حسابك", "أنت تقرر ما يُشارَك"] },
+  hero: { titleA: "رعاية تستمر", titleB: "بين المواعيد.", subtitle: "للأشخاص المصابين بفرط الحركة وتشتت الانتباه أو الاضطراب ثنائي القطب أو الذهان. ميرا ترافق خطوتك الأولى، ولومينا تحفظ أيامك، وأنت تقرر ما يراه مختصك.", audiences: { clinicians: "للمختصين", parents: "للأهل", adults: "للبالغين" }, discover: "اكتشف المزيد", preview: "معاينة مباشرة", dashboard: ["لوحة التحكم", "التحليلات", "الدعم", "المذكرات", "الإعدادات"], stats: ["مؤشر العافية", "التتابع", "الجلسات"], scoreChange: "+4.2٪", days: "أيام", thisMonth: "هذا الشهر", baseline: "نطاقك المعتاد", last30: "آخر 30 يوماً", stable: "مستقر", insight: "بين موعدين", pattern: "لا يضيع شيء مهم", encrypted: "خاص في التصميم — أنت تختار ما يُشارَك" },
+  cta: { eyebrow: "ابدأ خطوتك اليوم", titleA: "هل أنت مستعد", titleB: "للخطوة التالية؟", body: "أنشئ حسابك وابدأ مع ميرا. واربط حسابك بمختصك متى اخترت.", primary: "ابدأ الآن", demo: "المختصون: قدّموا طلب انضمام", benefits: ["التوجيه ضمن حسابك", "أنت تقرر ما يُشارَك"] },
   footer: {
     product: "المنتج",
     company: "المساعدة",
     legal: "قانوني",
     links: ["ميرا · التوجيه", "لومينا · التسجيل اليومي", "مسارات الرعاية", "للمختصين"],
-    companyLinks: ["الدعم", "تسجيل الدخول", "إنشاء حساب", "طلب انضمام لعيادة"],
+    companyLinks: ["الدعم", "تسجيل الدخول", "إنشاء حساب", "المختصون: قدّموا طلباً"],
     legalLinks: ["سياسة الخصوصية", "شروط الاستخدام"],
     tagline: "دعم بين المواعيد، والقرار يبقى بيد مختصك.",
     rights: "جميع الحقوق محفوظة.",
@@ -69,7 +69,7 @@ const baseCopy = {
             description:
               "Mira leads a structured conversation around three areas — ADHD, bipolar disorder and psychotic symptoms — using questions based on established screening tools, to surface signals worth discussing with a professional.",
             impact: "She suggests a next step and prepares a summary for your clinician. A diagnosis is always made by a licensed professional.",
-            meta: "Members · Done once",
+            meta: "For adults · Once, at the start",
             cta: "Start with Mira",
             tagline: "A guided orientation that supports clinical assessment.",
           },
@@ -81,7 +81,7 @@ const baseCopy = {
               "Your daily space once you have an account and have met Mira: a quick check-in, a private journal and a few simple goals, read against your usual range.",
             impact: "Over the weeks you see how you are evolving — and share it with your clinician only if you choose.",
             cta: "Enter Lumina",
-            meta: "Members · Daily and private",
+            meta: "For adults · Daily and private",
             tagline: "Check-in, journal and goals — your days, kept in one private place.",
           },
           psy: {
@@ -120,9 +120,9 @@ const baseCopy = {
     homeLanding: {
       nav: { home: "Home", features: "Features", process: "Process", getStarted: "Get started", menu: "Open menu", close: "Close menu" },
       hero: {
-        titleA: "Your mind doesn't pause.",
-        titleB: "Neither does your care.",
-        subtitle: "Your clinic invites you to SynQ. You check in each day and choose what your clinician sees before your next visit.",
+        titleA: "Care that continues",
+        titleB: "between appointments.",
+        subtitle: "For people living with ADHD, bipolar disorder or psychosis. Mira guides your first step, Lumina keeps your days, and you decide what your clinician sees.",
         audiences: { clinicians: "For clinicians", parents: "For parents", adults: "For adults" },
         discover: "Discover",
         preview: "Live preview",
@@ -138,13 +138,13 @@ const baseCopy = {
         pattern: "nothing important is lost",
         encrypted: "Private by design — you choose what is shared",
       },
-      cta: { eyebrow: "Start your next step today", titleA: "Ready to take", titleB: "the next step?", body: "Start with Mira. Your clinician joins whenever you choose.", primary: "Get started", demo: "Clinics and institutions: contact us", benefits: ["Orientation included with your account", "You decide what is shared"] },
+      cta: { eyebrow: "Start your next step today", titleA: "Ready to take", titleB: "the next step?", body: "Create your account and start with Mira. Connect your clinician whenever you choose.", primary: "Get started", demo: "Clinicians: apply for access", benefits: ["Orientation included with your account", "You decide what is shared"] },
       footer: {
         product: "Product",
         company: "Help",
         legal: "Legal",
         links: ["Mira · Orientation", "Lumina · Daily check-in", "Care paths", "For clinicians"],
-        companyLinks: ["Support", "Sign in", "Create account", "Request clinic access"],
+        companyLinks: ["Support", "Sign in", "Create account", "Clinicians: apply"],
         legalLinks: ["Privacy Policy", "Terms of Use"],
         tagline: "Support between appointments, with your clinician still in charge.",
         rights: "All rights reserved.",
@@ -545,8 +545,8 @@ const baseCopy = {
       faqMore: "How we protect your information",
       faq: [
         { question: "Does SynQ diagnose or prescribe?", answer: "No. Mira offers an orientation that supports clinical assessment, and Lumina helps you track your days between consultations. Neither diagnoses, recommends treatment or prescribes medication: a licensed professional makes every clinical decision." },
-        { question: "Who can see my journal?", answer: "Only you, by default. In Settings, you choose whether your clinician sees nothing, excerpts you pick, or the full text. Entries you mark private are never shared. You can change this at any time. SynQ never gives your family, employer or insurer access to your journal. If something you write suggests you may be in danger, your clinician is alerted. You agree to this when you join." },
-        { question: "What happens in an urgent situation?", answer: "SynQ is not an emergency service. If you are in danger now, call {numbers}. When something you log or write suggests a serious risk, the app shows you emergency numbers and alerts your clinician{sla}.{cover}" },
+        { question: "Who can see my journal?", answer: "Only you, by default. Lumina's AI reads your entries to pick out themes and emotions; your clinician sees those themes in the monthly summary only if you switch sharing on. In Settings, you choose whether your clinician sees nothing, excerpts you pick, or the full text. Entries you mark private are never analysed or shared. You can change this at any time. SynQ never gives your family, employer or insurer access to your journal. If something you write suggests you may be in danger, your clinician is alerted. You agree to this when you join." },
+        { question: "What happens in an urgent situation?", answer: "SynQ is not an emergency service. If you are in danger now, call {numbers}. When something you log or write suggests a serious risk, the app shows you emergency numbers and, if you have connected a clinician, alerts them{sla}.{cover}" },
       ],
     },
     dashboard: {
@@ -883,7 +883,7 @@ const arabicCopy = {
           status: "متاحة الآن",
           description: "تقود ميرا محادثة منظمة حول ثلاثة مجالات — اضطراب فرط الحركة وتشتت الانتباه، والاضطراب ثنائي القطب، وأعراض الذهان — وتعتمد على أسئلة مبنية على أدوات فحص معروفة لرصد إشارات تستحق نقاشاً مع مختص.",
           impact: "توجّهك إلى الخطوة التالية المناسبة، ولا تقدّم تشخيصاً أبداً.",
-          meta: "للأعضاء · تُجرى مرة واحدة",
+          meta: "للبالغين · مرة واحدة في البداية",
           cta: "ابدأ مع ميرا",
           tagline: "توجيه موجَّه — وليس تشخيصاً.",
         },
@@ -893,7 +893,7 @@ const arabicCopy = {
           status: "مع حسابك",
           description: "مساحتك اليومية بعد إنشاء الحساب: فحص سريع ومفكرة خاصة وبضعة أهداف بسيطة، تُقرأ مقارنةً بنطاقك المعتاد.",
           impact: "ومع الأسابيع ترى كيف تتطوّر — وتشاركه مع مختصك فقط إن اخترت ذلك.",
-          meta: "للأعضاء · يومية وخاصة",
+          meta: "للبالغين · يومية وخاصة",
           cta: "ادخل إلى لومينا",
           tagline: "الفحص والمفكرة والأهداف — أيامك محفوظة في مكان خاص واحد.",
         },
@@ -1051,8 +1051,8 @@ const arabicCopy = {
     faqMore: "كيف نحمي معلوماتك",
     faq: [
       { question: "هل تشخّص SynQ أو تصف الأدوية؟", answer: "لا. تقدّم ميرا توجيهاً يدعم التقييم السريري، وتساعدك لومينا على متابعة أيامك بين المواعيد. لا أيٌّ منهما يشخّص أو يوصي بعلاج أو يصف دواءً: فمختص مرخَّص هو من يتخذ كل قرار سريري." },
-      { question: "من يقدر يطّلع على مفكرتي؟", answer: "أنت فقط، في الأساس. من الإعدادات تختار ما يراه مختصك: لا شيء، أو مقتطفات تختارها، أو النص كاملاً. المدخلات التي تجعلها خاصة لا تُشارَك أبداً. وتقدر تغيّر ذلك متى شئت. لا تمنح SynQ عائلتك أو جهة عملك أو شركة التأمين أي وصول إلى مفكرتك. إذا أشار ما تكتبه إلى أنك قد تكون في خطر، يصل تنبيه إلى مختصك. وتوافق على ذلك عند انضمامك." },
-      { question: "ماذا يحدث في حالة عاجلة؟", answer: "SynQ ليست خدمة طوارئ. إذا كنت في خطر الآن، اتصل بـ {numbers}. عندما يشير ما تسجّله أو تكتبه إلى خطر جدي، يعرض لك التطبيق أرقام الطوارئ وينبّه مختصك{sla}.{cover}" },
+      { question: "من يقدر يطّلع على مفكرتي؟", answer: "أنت فقط، في الأساس. يقرأ الذكاء الاصطناعي في لومينا مدخلاتك ليستخرج المواضيع والمشاعر، ولا يرى مختصك هذه المواضيع في الملخص الشهري إلا إن فعّلت المشاركة. من الإعدادات تختار ما يراه مختصك: لا شيء، أو مقتطفات تختارها، أو النص كاملاً. المدخلات التي تجعلها خاصة لا تُحلَّل ولا تُشارَك أبداً. وتقدر تغيّر ذلك متى شئت. لا تمنح SynQ عائلتك أو جهة عملك أو شركة التأمين أي وصول إلى مفكرتك. إذا أشار ما تكتبه إلى أنك قد تكون في خطر، يصل تنبيه إلى مختصك. وتوافق على ذلك عند انضمامك." },
+      { question: "ماذا يحدث في حالة عاجلة؟", answer: "SynQ ليست خدمة طوارئ. إذا كنت في خطر الآن، اتصل بـ {numbers}. عندما يشير ما تسجّله أو تكتبه إلى خطر جدي، يعرض لك التطبيق أرقام الطوارئ، وينبّه مختصك إن كنت قد ربطت حسابك به{sla}.{cover}" },
     ],
   },
   dashboard: {

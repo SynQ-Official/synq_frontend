@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/config/routes";

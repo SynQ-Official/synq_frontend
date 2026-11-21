@@ -10,7 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { ROUTES } from "@/lib/config/routes";
 import { legalUi } from "@/lib/i18n/legal";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 
 /** The 404 page: its own title (see app/not-found.tsx), a plain sentence, and two ways out. */
 export function NotFoundScreen() {

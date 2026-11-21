@@ -44,7 +44,6 @@ export function AppWindow({ active, children, className, agent = "lumina", nav =
         ))}
         <span className="mt-auto flex size-8 items-center justify-center rounded-full bg-white/10 sm:size-9">
           <span className="relative flex size-2">
-            <span className="absolute inset-0 rounded-full bg-sage opacity-60 motion-safe:animate-ping" />
             <span className="relative size-2 rounded-full bg-sage" />
           </span>
         </span>

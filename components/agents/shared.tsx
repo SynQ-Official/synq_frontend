@@ -12,13 +12,13 @@ import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvide
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { useLanguageTransition } from "@/hooks/useLanguageTransition";
-import { agentEntryHref } from "@/lib/config/routes";
+import { PSY_APP_URL, agentEntryHref } from "@/lib/config/routes";
 import { agentPagesCopy } from "@/lib/i18n/agents";
 import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { MotionConfig, motion } from "framer-motion";
 import { ArrowRight, Check, ShieldCheck, X } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import type { ReactNode } from "react";
 
 const OTHER: Record<AgentId, AgentId> = { mira: "lumina", lumina: "mira", psy: "lumina" };
@@ -29,9 +29,13 @@ export function useAgentPage(agent: AgentId) {
   const { dictionary, language } = useLanguage();
   const { signedIn } = useAuthSession();
   const copy = agentPagesCopy[language];
+  // Without the clinician app's URL the button opens the access form: its label must say so.
+  const requestAccess = agent === "psy" && !PSY_APP_URL;
   return {
     copy,
     page: copy[agent],
+    heroPrimary: requestAccess ? copy.psy.requestAccess : copy[agent].hero.primary,
+    ctaPrimary: requestAccess ? copy.psy.requestAccess : copy[agent].cta.primary,
     identity: dictionary.header.agents.items[agent],
     config: AGENTS.find((candidate) => candidate.id === agent)!,
     primaryHref: agentEntryHref(agent, signedIn),
@@ -179,7 +183,7 @@ export function Boundaries({ agent, counter, tone = "tint" }: { agent: AgentId; 
 
 /** The last word of a page: a big two-line title, one line, the button, three reassurances. */
 export function Closing({ agent, tone }: { agent: AgentId; tone: "deep" | "champagne" }) {
-  const { page, primaryHref } = useAgentPage(agent);
+  const { page, primaryHref, ctaPrimary } = useAgentPage(agent);
   const { cta } = page;
   const deep = tone === "deep";
 
@@ -222,7 +226,7 @@ export function Closing({ agent, tone }: { agent: AgentId; tone: "deep" | "champ
           <motion.div variants={fadeUp(0, 18)} className="mt-10">
             <Magnetic strength={0.12}>
               <PillLink href={primaryHref} tone={deep ? "white" : "ink"}>
-                {cta.primary}
+                {ctaPrimary}
               </PillLink>
             </Magnetic>
           </motion.div>

@@ -65,7 +65,7 @@ export function CheckinView({ copy }: { copy: LuminaPreviewCopy }) {
             key={level.level}
             initial={reduce ? false : { opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: index === 3 ? 1.12 : 1 }}
-            transition={{ type: "spring", stiffness: 320, damping: 20, delay: 0.2 + index * 0.07 }}
+            transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.2 + index * 0.07 }}
             className={cn("flex size-11 items-center justify-center rounded-xl text-[1.875rem] sm:size-12", index === 3 ? "bg-white shadow-float" : "opacity-70")}
             style={index === 3 ? { boxShadow: `0 0 0 2px ${level.color}` } : undefined}
           >
@@ -124,7 +124,7 @@ export function JournalView({ copy }: { copy: LuminaPreviewCopy }) {
                 key={theme}
                 initial={reduce ? false : { opacity: 0, scale: 0.6 }}
                 animate={done ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
-                transition={{ type: "spring", stiffness: 320, damping: 20, delay: index * 0.15 }}
+                transition={{ duration: 0.4, ease: EASE_OUT, delay: index * 0.15 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-gold-100 bg-white px-3.5 py-1.5 text-[0.875rem] font-medium text-gold-700 shadow-xs"
               >
                 <span className="size-1.5 rounded-full bg-gold" />
@@ -186,8 +186,8 @@ export function TrendView({ copy }: { copy: LuminaPreviewCopy }) {
               animate={{ pathLength: 1 }}
               transition={{ duration: 1.8, ease: EASE_OUT, delay: 0.2 }}
             />
-            <motion.g initial={reduce ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.8, type: "spring", stiffness: 300, damping: 16 }} style={{ transformOrigin: `${LAST[0]}px ${LAST[1]}px` }}>
-              <motion.circle cx={LAST[0]} cy={LAST[1]} r="10" fill="var(--color-gold)" animate={reduce ? undefined : { r: [9, 17, 9], opacity: [0.4, 0.05, 0.4] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
+            <motion.g initial={reduce ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.8, duration: 0.4, ease: EASE_OUT }} style={{ transformOrigin: `${LAST[0]}px ${LAST[1]}px` }}>
+              <motion.circle cx={LAST[0]} cy={LAST[1]} r="10" fill="var(--color-gold)" />
               <circle cx={LAST[0]} cy={LAST[1]} r="6.5" fill="var(--color-gold)" stroke="#fff" strokeWidth="3" />
             </motion.g>
           </svg>

@@ -55,7 +55,10 @@ export function WelcomeExperience() {
   const voice = useRef<SpeakHandle | null>(null);
   const timers = useRef<number[]>([]);
 
-  const lines = w.lines.map((line) => fill(line, { name }));
+  // Where this welcome leads is decided once, when it opens (see `next` below).
+  const [firstTime] = useState(() => !profile.hasCompletedOnboarding);
+  // A replay (`?force=1`) by an onboarded patient ends on the dashboard, so the closing "first check-in" line is dropped.
+  const lines = (firstTime ? w.lines : w.lines.slice(0, -1)).map((line) => fill(line, { name }));
   const soundPossible = canSpeak();
 
   const clear = useCallback(() => {
@@ -71,7 +74,6 @@ export function WelcomeExperience() {
 
   // Where this welcome leads is decided once, when it opens: completing the onboarding refreshes the profile,
   // and that must neither re-arm the hand-off nor turn the first check-in into the dashboard.
-  const [firstTime] = useState(() => !profile.hasCompletedOnboarding);
   const next = firstTime ? ROUTES.checkIn : ROUTES.dashboard;
   const leaving = useRef(false);
 
@@ -254,7 +256,7 @@ export function WelcomeExperience() {
                     {phase === "done" && !reduce && (
                       <motion.span aria-hidden className="absolute inset-y-0 start-0 bg-white/25" initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: REDIRECT_MS / 1000, ease: "linear" }} />
                     )}
-                    <span className="relative inline-flex items-center gap-2">{w.continue}<ArrowRight className="rtl:-scale-x-100" aria-hidden /></span>
+                    <span className="relative inline-flex items-center gap-2">{firstTime ? w.continue : w.continueHome}<ArrowRight className="rtl:-scale-x-100" aria-hidden /></span>
                   </Button>
                   <div className="flex items-center gap-1">
                     {withSound && soundPossible && phase === "playing" && (

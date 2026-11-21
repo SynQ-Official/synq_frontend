@@ -623,7 +623,7 @@ const en = {
       "Let's begin with your first check-in. It takes about a minute, and you can skip anything.",
     ],
     voiceText: "Hello {name}. Welcome to Lumina, your daily space. A quick check-in, a private journal and a few simple goals. Over time, SynQ shows you your own patterns, and shares them with your clinician only if you choose. Let's begin with your first check-in. It takes about a minute, and you can skip anything.",
-    continue: "Start my first check-in", skip: "Skip for now", mute: "Mute", unmute: "Unmute", replay: "Hear it again", safe: "Private · Supportive · Yours",
+    continue: "Start my first check-in", continueHome: "Go to my space", skip: "Skip for now", mute: "Mute", unmute: "Unmute", replay: "Hear it again", safe: "Private · Supportive · Yours",
   },
 };
 
@@ -1233,7 +1233,7 @@ const ar: PatientCopy = {
       "لنبدأ بفحصك الأول. يستغرق نحو دقيقة، ويمكنك تخطّي أي شيء.",
     ],
     voiceText: "مرحبًا {name}. أهلًا بك في لومينا، مساحتك اليومية. فحص سريع ومفكرة خاصة وبضعة أهداف بسيطة. ومع الوقت تُريك SynQ أنماطك، ولا تشاركها مع مختصك إلا إن اخترت ذلك. لنبدأ بفحصك الأول. يستغرق نحو دقيقة، ويمكنك تخطّي أي شيء.",
-    continue: "ابدأ فحصي الأول", skip: "تخطَّ الآن", mute: "كتم", unmute: "تشغيل الصوت", replay: "استمع مرة أخرى", safe: "خاص · داعم · لك",
+    continue: "ابدأ فحصي الأول", continueHome: "انتقل إلى مساحتي", skip: "تخطَّ الآن", mute: "كتم", unmute: "تشغيل الصوت", replay: "استمع مرة أخرى", safe: "خاص · داعم · لك",
   },
 };
 

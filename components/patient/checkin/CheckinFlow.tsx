@@ -190,7 +190,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="mt-4 text-center text-xs  uppercase tracking-[0.14em] text-teal-700 rtl:tracking-normal"
+                        className="mt-4 text-center text-xs font-medium text-teal-700"
                       >
                         {copy.moods.levels[mood.level - 1].tone}
                       </motion.p>
@@ -299,7 +299,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
 
 function answerText(key: StepKey, answers: Answers, goals: string[], copy: ReturnType<typeof usePatientCopy>): string {
   switch (key) {
-    case "mood": return moodForLevel(answers.mood)?.emoji ?? "";
+    case "mood": { const level = moodForLevel(answers.mood); return level ? copy.moods.levels[level.level - 1].name : ""; }
     case "sleep": return answers.sleepHours === undefined ? "" : `${answers.sleepHours}${copy.checkin.q.sleep.unit}`;
     case "goals": return String(goals.filter((title) => title.trim()).length);
     default: return answers[key] === undefined ? "" : `${answers[key]}/5`;
@@ -372,12 +372,12 @@ function CompanionPanel({ mood, children }: { mood: MoodLevel | null; children?:
       </AnimatePresence>
       {children && (
         <div>
-          <p className="mb-2 text-xs  uppercase tracking-wide text-ink-muted rtl:tracking-normal">{c.path}</p>
+          <p className="mb-2 text-xs font-medium text-ink-muted">{c.path}</p>
           {children}
         </div>
       )}
       <div className="mt-auto">
-        <p className="mb-2 text-xs  uppercase tracking-wide text-ink-muted rtl:tracking-normal">{c.valueTitle}</p>
+        <p className="mb-2 text-xs font-medium text-ink-muted">{c.valueTitle}</p>
         <ul className="space-y-2">
           {c.value.map((text, index) => {
             const Icon = VALUE_ICONS[index] ?? Sparkles;
@@ -408,7 +408,7 @@ function StartCard({ onBegin }: { onBegin: () => void }) {
         </div>
 
         <div>
-          <p className="mb-2.5 text-xs  uppercase tracking-wide text-ink-muted rtl:tracking-normal">{s.covers}</p>
+          <p className="mb-2.5 text-xs font-medium text-ink-muted">{s.covers}</p>
           <ul className="flex flex-wrap gap-2">
             {STEPS.map((entry, position) => {
               const Icon = STEP_ICON[entry.key];

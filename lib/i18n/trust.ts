@@ -84,7 +84,7 @@ const en: TrustCopy = {
         "Mira's orientation uses questions based on established screening tools. It surfaces signals worth a professional evaluation; it is not a diagnosis.",
         "The journal analysis names themes and emotions. It does not label a person or score them against others.",
         "Every summary and report states its evidence and its limits, and says that a licensed professional makes every diagnostic and treatment decision.",
-        "When a serious signal appears, AI does not act alone: the patient sees clear guidance and emergency numbers, and a clinician is alerted and follows up.",
+        "When a serious signal appears, AI does not act alone: the patient sees clear guidance and emergency numbers, and the clinician they connected is alerted to follow up.",
       ],
     },
     {
@@ -173,7 +173,7 @@ const ar: TrustCopy = {
         "يعتمد توجيه ميرا على أسئلة مبنية على أدوات فحص معروفة. ويُبرز إشارات تستحق تقييماً مهنياً، وهو ليس تشخيصاً.",
         "يسمّي تحليل المفكرة المواضيع والمشاعر. ولا يصنّف الشخص ولا يقارنه بغيره.",
         "يذكر كل ملخص وتقرير أدلته وحدوده، ويؤكد أن مختصاً مرخَّصاً يتخذ كل قرار تشخيصي وعلاجي.",
-        "حين تظهر إشارة خطيرة لا يتصرف الذكاء الاصطناعي وحده: يرى المريض إرشاداً واضحاً وأرقام الطوارئ، ويُنبَّه مختص ويتابع الحالة.",
+        "حين تظهر إشارة خطيرة لا يتصرف الذكاء الاصطناعي وحده: يرى المريض إرشاداً واضحاً وأرقام الطوارئ، ويُنبَّه المختص الذي ربط حسابه به ليتابع الحالة.",
       ],
     },
     {

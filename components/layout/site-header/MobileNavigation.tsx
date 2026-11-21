@@ -3,7 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, LogOut } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Grain } from "@/components/home/Atmosphere";

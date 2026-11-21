@@ -1,6 +1,5 @@
 "use client";
 
-import { pad } from "@/components/home/accents";
 import { HomeSection } from "@/components/home/HomeSection";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import { BODY_SM, DISPLAY_S, LABEL } from "@/components/home/typography";
@@ -46,9 +45,6 @@ export function MiraRoles() {
                     onPointerEnter={(event) => event.pointerType === "mouse" && setOpen(index)}
                     className="group flex w-full cursor-pointer items-center gap-4 py-5 ps-5 text-start outline-none transition-colors focus-visible:bg-canvas focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-500 sm:gap-6 sm:py-6"
                   >
-                    <span dir="ltr" className="w-6 shrink-0 font-mono text-[0.8125rem] tabular-nums text-ink-muted">
-                      {pad(index + 1)}
-                    </span>
                     <span className={cn(DISPLAY_S, "min-w-0 flex-1 text-[clamp(1.375rem,1.2vw+1.05rem,2.125rem)] transition-colors duration-300", isOpen ? "text-ink" : "text-ink-soft group-hover:text-ink")}>
                       {title}
                     </span>
@@ -58,21 +54,18 @@ export function MiraRoles() {
                     </span>
                   </button>
                 </h3>
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      id={panelId}
-                      role="region"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: EASE_OUT }}
-                      className="overflow-hidden"
-                    >
-                      <p className={cn(BODY_SM, "pb-6 ps-[3.75rem] pe-6 text-[1.0625rem] sm:ps-[4.75rem]")}>{line}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Always rendered (collapsed when closed) so every line is in the server HTML for readers and search. */}
+                <motion.div
+                  id={panelId}
+                  role="region"
+                  initial={false}
+                  animate={isOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: EASE_OUT }}
+                  inert={!isOpen}
+                  className="overflow-hidden"
+                >
+                  <p className={cn(BODY_SM, "pb-6 ps-5 pe-6 text-[1.0625rem] ")}>{line}</p>
+                </motion.div>
               </motion.li>
             );
           })}
@@ -92,8 +85,6 @@ export function MiraRoles() {
                 key={ring}
                 className="absolute rounded-full border border-teal-300/70"
                 style={{ width: `${46 + ring * 24}%`, aspectRatio: "1" }}
-                animate={reduce ? undefined : { scale: [1, 1.05, 1], opacity: [0.8, 0.35, 0.8] }}
-                transition={{ duration: 6 + ring * 1.4, repeat: Infinity, ease: "easeInOut", delay: ring * 0.7 }}
               />
             ))}
             <AnimatePresence mode="wait">

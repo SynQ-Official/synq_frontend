@@ -4,10 +4,19 @@ import type { Lang } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 import { Phone } from "lucide-react";
 
-/** A number as a call link, kept left-to-right so "800 725462" is never reordered in Arabic. */
+/**
+ * A number as a call link, kept left-to-right so "800 725462" is never reordered in Arabic. Inside a sentence the text
+ * is only ~18px tall: an invisible pseudo-element widens the tap area to 44px high without moving the line.
+ */
 export function CallLink({ line, className, children }: { line: EmergencyLine; className?: string; children?: React.ReactNode }) {
   return (
-    <a href={line.telHref} className={cn("rounded-md underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500", className)}>
+    <a
+      href={line.telHref}
+      className={cn(
+        "relative rounded-md underline-offset-4 before:absolute before:-inset-x-2 before:top-1/2 before:h-11 before:-translate-y-1/2 before:content-[''] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500",
+        className,
+      )}
+    >
       {children ?? <bdi dir="ltr">{line.alias ?? line.display}</bdi>}
     </a>
   );
@@ -17,15 +26,16 @@ export function CallLink({ line, className, children }: { line: EmergencyLine; c
  * Every emergency and support line from config/emergency.ts, grouped by country in the interface language's order.
  * No hooks: the static /help page renders it on the server, the "Need help now" panel on the client.
  */
-export function EmergencyNumbers({ language, className }: { language: Lang; className?: string }) {
+export function EmergencyNumbers({ language, className, headingLevel = 3 }: { language: Lang; className?: string; headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const copy = helpCopy[language];
   return (
     <div className={cn("space-y-6", className)}>
       {linesByCountry(language).map(({ country, lines }) => (
         <section key={country} aria-labelledby={`help-${country}`}>
-          <h3 id={`help-${country}`} className="text-sm  uppercase tracking-[0.12em] text-teal-800 rtl:tracking-normal">
+          <Heading id={`help-${country}`} className="text-sm  uppercase tracking-[0.12em] text-teal-800 rtl:tracking-normal">
             {copy.countries[country]}
-          </h3>
+          </Heading>
           <ul className="mt-2 divide-y divide-line rounded-2xl border border-line bg-white">
             {lines.map((line) => (
               <li key={line.id}>

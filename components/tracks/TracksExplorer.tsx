@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { tracksCopy, type TrackId } from "@/lib/i18n/tracks";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
+import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { TRACK_TONE, TrackVisual } from "./TrackVisuals";
@@ -66,9 +66,6 @@ export function TracksExplorer() {
     tabRefs.current[TRACK_ORDER[next]]?.focus();
   };
 
-  const track = copy.tracks[active];
-  const tone = TRACK_TONE[active];
-
   return (
     <HomeSection id="explorer" labelledBy="explorer-title" tone="base">
       <SectionHeader variant="editorial" id="explorer-title" counter="01 / 02" eyebrow={copy.eyebrow} titleA={copy.titleA} titleB={copy.titleB} />
@@ -108,16 +105,23 @@ export function TracksExplorer() {
           </div>
         </LayoutGroup>
 
-        <AnimatePresence mode="wait" initial={false}>
+        {/* All three panels are in the HTML (search engines and no-JS readers get every condition); only the
+            selected one is shown, the others carry `hidden`, as the ARIA tabs pattern expects. */}
+        {TRACK_ORDER.map((id) => {
+          const selected = id === active;
+          const track = copy.tracks[id];
+          const tone = TRACK_TONE[id];
+          const motionIn = selected && !reduce;
+          return (
           <motion.div
-            key={active}
+            key={selected ? `${id}-on` : id}
             role="tabpanel"
-            id={`track-panel-${active}`}
-            aria-labelledby={`track-tab-${active}`}
+            id={`track-panel-${id}`}
+            aria-labelledby={`track-tab-${id}`}
             tabIndex={0}
-            initial={reduce ? false : { opacity: 0, y: 14 }}
+            hidden={!selected}
+            initial={motionIn ? { opacity: 0, y: 14 } : false}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? undefined : { opacity: 0, y: -8 }}
             transition={{ duration: 0.45, ease: EASE_OUT }}
             className="mt-8 outline-none lg:mt-12"
           >
@@ -135,7 +139,7 @@ export function TracksExplorer() {
                   {track.signs.map((sign, index) => (
                     <motion.li
                       key={sign}
-                      initial={reduce ? false : { opacity: 0, y: 10 }}
+                      initial={motionIn ? { opacity: 0, y: 10 } : false}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, ease: EASE_OUT, delay: 0.15 + index * 0.07 }}
                       className="flex items-start gap-3 rounded-2xl border border-line bg-canvas p-4 text-[0.9375rem] leading-6 text-ink-soft"
@@ -150,7 +154,8 @@ export function TracksExplorer() {
               </div>
 
               <div className="min-w-0 lg:col-span-6 lg:sticky lg:top-28 lg:self-start">
-                <TrackVisual track={active} labels={track.visual.labels} caption={track.visual.caption} />
+                {/* The animated picture is drawn for the visible track only. */}
+                {selected && <TrackVisual track={id} labels={track.visual.labels} caption={track.visual.caption} />}
               </div>
             </div>
 
@@ -160,7 +165,7 @@ export function TracksExplorer() {
                 {track.leans.map((item, index) => (
                   <motion.li
                     key={item.name}
-                    initial={reduce ? false : { opacity: 0, y: 16 }}
+                    initial={motionIn ? { opacity: 0, y: 16 } : false}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.25 + index * 0.1 }}
                     className={cn("rounded-panel border p-6 transition-transform duration-500 ease-out-soft hover:-translate-y-1 sm:p-7", tone.soft, "border-line")}
@@ -175,7 +180,8 @@ export function TracksExplorer() {
               </ul>
             </div>
           </motion.div>
-        </AnimatePresence>
+          );
+        })}
       </div>
     </HomeSection>
   );

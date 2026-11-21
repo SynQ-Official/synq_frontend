@@ -14,8 +14,8 @@ import { PillLink, StatsStrip, useAgentPage } from "../shared";
 import { AppWindow } from "./AppWindow";
 import { HomeScreen } from "./LuminaHome";
 
-/** A glass chip that bobs gently beside the window. */
-function Floater({ children, className, delay = 0, seconds = 7 }: { children: ReactNode; className?: string; delay?: number; seconds?: number }) {
+/** A glass chip beside the window: it fades in once, then stays still. */
+function Floater({ children, className, delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
@@ -25,8 +25,6 @@ function Floater({ children, className, delay = 0, seconds = 7 }: { children: Re
       className={cn("absolute z-10", className)}
     >
       <motion.div
-        animate={reduce ? undefined : { y: [0, -8, 0] }}
-        transition={{ duration: seconds, repeat: Infinity, ease: "easeInOut", delay }}
         className="rounded-2xl border border-white/80 bg-white/90 px-3.5 py-2.5 text-ink shadow-float backdrop-blur-md"
       >
         {children}
@@ -65,10 +63,10 @@ function HeroWindow() {
           </motion.div>
         </motion.div>
 
-        <Floater className="-start-1 top-1 sm:-start-6 sm:top-[3%]" delay={0.2} seconds={7}>
+        <Floater className="-start-1 top-1 sm:-start-6 sm:top-[3%]" delay={0.2}>
           <ul className="flex flex-wrap gap-1.5">
             {preview.views.journal.themes.map((theme) => (
-              <li key={theme} className="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-1 text-[0.6875rem]  text-gold-700 ring-1 ring-gold-100">
+              <li key={theme} className="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-1 text-[0.6875rem] rtl:text-[0.75rem]  text-gold-700 ring-1 ring-gold-100">
                 <span className="size-1.5 rounded-full bg-gold" />
                 {theme}
               </li>
@@ -76,21 +74,21 @@ function HeroWindow() {
           </ul>
         </Floater>
 
-        <Floater className="-end-1 top-[38%] hidden sm:block lg:-end-6" delay={0.7} seconds={8}>
-          <p className="text-[0.6875rem] font-medium text-ink-muted">{preview.views.trend.baseline}</p>
+        <Floater className="-end-1 top-[38%] hidden sm:block lg:-end-6" delay={0.7}>
+          <p className="text-[0.6875rem] rtl:text-[0.75rem] font-medium text-ink-muted">{preview.views.trend.baseline}</p>
           <p className="mt-0.5 flex items-center gap-2 text-[0.8125rem]  text-ink">
             <span className="size-2 rounded-full bg-teal-500" />
             {preview.views.trend.verdict}
           </p>
         </Floater>
 
-        <Floater className="-end-1 bottom-1 sm:-end-3 sm:bottom-[2%]" delay={0.4} seconds={7.5}>
+        <Floater className="-end-1 bottom-1 sm:-end-3 sm:bottom-[2%]" delay={0.4}>
           <p className="flex items-center gap-2 text-[0.75rem]  text-ink">
             <FileText className="size-4 text-gold-600" aria-hidden />
             {preview.views.report.title}
             <LockKeyhole className="size-3.5 text-teal-600" aria-hidden />
           </p>
-          <p className="mt-1 text-[0.6875rem] text-ink-muted">{preview.views.report.consent}</p>
+          <p className="mt-1 text-[0.6875rem] rtl:text-[0.75rem] text-ink-muted">{preview.views.report.consent}</p>
         </Floater>
       </div>
       <figcaption className="text-center text-[0.75rem] text-ink-muted">{preview.caption}</figcaption>
@@ -101,7 +99,6 @@ function HeroWindow() {
 /** The opening, on the same light ground as /mira: the headline and three numbers beside Lumina's own app. */
 export function LuminaHero() {
   const { page, identity, config, primaryHref } = useAgentPage("lumina");
-  const reduce = useReducedMotion();
 
   return (
     <section
@@ -112,14 +109,10 @@ export function LuminaHero() {
       <motion.span
         aria-hidden
         className="pointer-events-none absolute -top-24 start-[-8%] -z-10 size-[32rem] rounded-full bg-[radial-gradient(closest-side,rgb(230_213_170/0.5),transparent)]"
-        animate={reduce ? undefined : { x: [0, 44, 0], y: [0, 28, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.span
         aria-hidden
         className="pointer-events-none absolute bottom-[-6rem] end-[8%] -z-10 size-[28rem] rounded-full bg-[radial-gradient(closest-side,rgb(134_186_188/0.42),transparent)]"
-        animate={reduce ? undefined : { x: [0, -48, 0], y: [0, -24, 0] }}
-        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="page-container grid items-center gap-14 lg:grid-cols-12 lg:gap-8">

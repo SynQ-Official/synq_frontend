@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CalendarCheck2, Dumbbell, HeartHandshake, Pill, Printer, Sparkles, TriangleAlert } from "lucide-react";
+import { MoodEmoji } from "@/components/patient/ui/MoodEmoji";
 import { insightText } from "@/components/patient/reports/ReportCards";
 import { ErrorState, Skeleton } from "@/components/patient/ui/primitives";
 import { TrendChart } from "@/components/patient/ui/TrendChart";
@@ -94,7 +95,7 @@ function Body({ report }: { report: ReportDetail }) {
         <Tile label={copy.reports.metrics.journal} value={String(report.journalEntries)} />
         <Tile
           label={copy.reports.metrics.mood}
-          value={report.averages.mood !== null ? `${moodForLevel(report.averages.mood)?.emoji ?? ""} ${report.averages.mood}` : "—"}
+          value={report.averages.mood !== null ? `${report.averages.mood}/5` : "—"}
           hint={report.moodDelta !== null ? fill(d.vs, { delta: `${report.moodDelta > 0 ? "+" : ""}${report.moodDelta}` }) : undefined}
         />
         <Tile label={copy.reports.metrics.consistency} value={`${Math.round(report.consistency * 100)}%`} />
@@ -115,8 +116,8 @@ function Body({ report }: { report: ReportDetail }) {
         <h3 className="mb-2 text-sm  text-ink">{d.moodChart}</h3>
         {hasMood ? <TrendChart data={chart} height={200} domain={[1, 5]} ticks={[1, 3, 5]} /> : <p className="rounded-xl bg-white/60 px-4 py-8 text-center text-sm text-muted-foreground">{d.noMood}</p>}
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
-          {best && <span className="chip chip-success">{d.bestDay}: {formatDay(best.date, language, { weekday: "long" })} {moodForLevel(best.mood)?.emoji}</span>}
-          {hard && <span className="chip chip-pending">{d.hardestDay}: {formatDay(hard.date, language, { weekday: "long" })} {moodForLevel(hard.mood)?.emoji}</span>}
+          {best && <span className="chip chip-success">{d.bestDay}: {formatDay(best.date, language, { weekday: "long" })}{moodForLevel(best.mood) && <MoodEmoji level={moodForLevel(best.mood)!} className="text-base" />}</span>}
+          {hard && <span className="chip chip-pending">{d.hardestDay}: {formatDay(hard.date, language, { weekday: "long" })}{moodForLevel(hard.mood) && <MoodEmoji level={moodForLevel(hard.mood)!} className="text-base" />}</span>}
         </div>
         <div className="mt-3 flex gap-1.5" dir="ltr" aria-hidden>
           {report.days.map((day) => (

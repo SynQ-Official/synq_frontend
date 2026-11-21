@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { House, LogOut, Settings } from "lucide-react";

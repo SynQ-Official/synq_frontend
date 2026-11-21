@@ -7,7 +7,7 @@ import { EASE_OUT, SPRING_SOFT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { LayoutGroup, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Stethoscope, UserRound, UsersRound, type LucideIcon } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useEffect, useRef, useState } from "react";
 import { WordReveal } from "./AnimationUtilities";
 import { Grain } from "./Atmosphere";
@@ -149,24 +149,25 @@ export const Hero = () => {
                     className="flex flex-1 flex-col items-center justify-center px-4 pb-8 pt-32 text-center sm:px-6 sm:pt-36 lg:px-8"
                 >
                     <div className="w-full max-w-6xl">
-                        <h1 className={cn(DISPLAY_XL, "mx-auto text-ink")}>
+                        <h1 className={cn(DISPLAY_XL, "mx-auto text-balance text-ink rtl:text-[clamp(2.75rem,5.2vw+0.5rem,5.75rem)] rtl:font-medium rtl:leading-[1.2]")}>
                             <span className="block">
-                                <WordReveal delay={0.05} step={0.05}>{copy.titleA}</WordReveal>
+                                {/* The headline is the LCP element: painted with the server HTML, not after hydration. */}
+                                <WordReveal instant>{copy.titleA}</WordReveal>
                             </span>
                             <span className="block">
                                 {lead ? (
                                     <>
-                                        <WordReveal delay={0.2} step={0.05}>{lead}</WordReveal>{" "}
+                                        <WordReveal instant>{lead}</WordReveal>{" "}
                                     </>
                                 ) : null}
-                                <WordReveal className={ACCENT_LIGHT} delay={0.35} step={0.05}>
+                                <WordReveal className={ACCENT_LIGHT} instant>
                                     {accent}
                                 </WordReveal>
                             </span>
                         </h1>
 
                         <motion.div variants={stagger(0.1, 0.7)} initial="hidden" animate="show">
-                            <motion.p variants={fadeUp(0, 16)} className={cn(BODY, "mx-auto mt-10 max-w-2xl")}>
+                            <motion.p variants={fadeUp(0, 16)} className={cn(BODY, "mx-auto mt-8 max-w-[46ch] text-pretty text-ink-soft")}>
                                 {copy.subtitle}
                             </motion.p>
 
@@ -174,7 +175,8 @@ export const Hero = () => {
                                 <AudienceChooser
                                     items={[
                                         { label: copy.audiences.clinicians, href: ROUTES.psy, Icon: Stethoscope },
-                                        { label: copy.audiences.parents, href: "/family", Icon: UsersRound },
+                                        // The public parent registration (the rest of /family is behind sign-in).
+                                        { label: copy.audiences.parents, href: ROUTES.familyRegister, Icon: UsersRound },
                                         { label: copy.audiences.adults, href: agentEntryHref("mira", signedIn), Icon: UserRound },
                                     ]}
                                 />

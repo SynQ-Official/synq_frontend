@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { Check, Copy, House, ShieldCheck, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { SiteHeader } from "@/components/layout/site-header";

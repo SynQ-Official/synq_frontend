@@ -29,7 +29,7 @@ export function GET() {
     "",
     "## Conditions covered",
     "",
-    link("The three tracks", ROUTES.tracks, tracksCopy.en.seo.description),
+    link("Care paths", ROUTES.tracks, tracksCopy.en.seo.description),
     "",
     "## Trust and support",
     "",

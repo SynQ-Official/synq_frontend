@@ -108,3 +108,6 @@ skills-lock.json
 
 # Ambient sound files are not committed (see scripts/ambiances/LICENCES.md): production serves them from R2.
 /public/media/ambiances/
+
+# Founder research workspace (local only)
+/founder/

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, Flame, HeartHandshake, Lightbulb, RotateCcw, ShieldAlert, Sparkles, Wind } from "lucide-react";
 import { AnalysisNote } from "@/components/patient/journal/AnalysisNote";

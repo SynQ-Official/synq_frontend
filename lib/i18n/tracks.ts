@@ -1,7 +1,8 @@
 import type { Lang } from "./config";
 
 /**
- * Copy of /tracks — the one page that describes the three tracks (ADHD, bipolar disorder, psychosis).
+ * Copy of /care-paths — the one page that describes the three care paths (ADHD, bipolar disorder, psychosis).
+ * One word everywhere: "care path" (menu, footer, page, metadata). The code keeps the `track` identifiers.
  * It says what each is and how it can show up, and what the daily space does differently for it. It does not repeat
  * how Mira or Lumina work (that lives on /mira and /lumina) and it never offers a diagnosis.
  */
@@ -43,26 +44,26 @@ export type TracksCopy = {
 
 const en: TracksCopy = {
   seo: {
-    title: "The three tracks: ADHD, bipolar disorder, psychosis",
+    title: "Care paths for ADHD, bipolar disorder and psychosis",
     description:
-      "What ADHD, bipolar disorder and psychosis are, how each can show up in daily life, and how SynQ adapts your space to your care path.",
+      "What ADHD, bipolar disorder and psychosis are, how each can show up in daily life, and which tools each SynQ care path adds.",
   },
   hero: {
-    eyebrow: "The three tracks",
-    titleA: "One space,",
-    titleB: "shaped to your track.",
-    body: "ADHD, bipolar disorder and psychosis ask different things of a day. SynQ keeps the same simple core and changes what it puts first.",
-    scroll: "Explore the tracks",
+    eyebrow: "Care paths",
+    titleA: "Care paths for ADHD,",
+    titleB: "bipolar disorder and psychosis.",
+    body: "Three care paths share one daily core: check-in, journal and monthly summary. Each adds a few tools suited to it. Mira's orientation suggests a path, and your clinician can confirm or change it.",
+    scroll: "Explore the care paths",
   },
   explorer: {
-    eyebrow: "Know the track",
+    eyebrow: "The three conditions",
     titleA: "Three ways a mind",
     titleB: "can need support.",
-    pick: "Choose a track",
+    pick: "Choose a care path",
     tracks: {
       adhd: {
         tab: "ADHD",
-        kicker: "Attention · Momentum",
+        kicker: "Attention and organisation",
         title: "ADHD",
         what: "A difference in how attention, activity and impulses are regulated. It has nothing to do with effort or intelligence: the hard part is usually starting, staying with a task and keeping track of time.",
         signsTitle: "How it can show up",
@@ -72,7 +73,7 @@ const en: TracksCopy = {
           "A restless body or a mind that keeps jumping",
           "Long, intense focus on what truly interests you",
         ],
-        leansTitle: "What leans in for ADHD",
+        leansTitle: "What the ADHD care path adds",
         leans: [
           { name: "Spark", body: "Write one thing; it comes back as tiny steps to tick off, beside a short focus timer." },
           { name: "Focus and energy", body: "The check-in follows both, so a scattered week is visible early." },
@@ -82,7 +83,7 @@ const en: TracksCopy = {
       },
       bipolar: {
         tab: "Bipolar disorder",
-        kicker: "Rhythm · Balance",
+        kicker: "Mood and energy cycles",
         title: "Bipolar disorder",
         what: "Stretches of unusually high energy and stretches of low mood, with steadier periods between them. Sleep and routine are often the first things to move, sometimes days before the mood does.",
         signsTitle: "How it can show up",
@@ -92,17 +93,17 @@ const en: TracksCopy = {
           "Weeks of low energy and a flat mood",
           "A mood that changes faster than the day does",
         ],
-        leansTitle: "What leans in for bipolar disorder",
+        leansTitle: "What the bipolar disorder care path adds",
         leans: [
           { name: "Sleep and rhythm", body: "Hours slept, mood and energy are read against your usual range, not an average." },
-          { name: "Early signals", body: "When a pattern lifts or drops, you get a gentle note to bring to your care team." },
+          { name: "Early changes", body: "When your sleep, mood or energy moves outside your usual range, you see a gentle note to discuss with your clinician. If it suggests a serious risk, you see emergency numbers, and your clinician is alerted if you have connected one." },
           { name: "Reading library", body: "Short articles from WHO, NIMH, NICE and the NHS, at your pace." },
         ],
         visual: { caption: "Your usual range, and how far the days move from it", labels: ["Higher", "Usual", "Lower"] },
       },
       psychosis: {
         tab: "Psychosis",
-        kicker: "Quiet · Grounding",
+        kicker: "Perception and thinking",
         title: "Psychosis",
         what: "In psychosis, some of what you see, hear or believe is no longer shared by those around you. Schizophrenia is one condition where it can return. Steady, early support makes a real difference.",
         signsTitle: "How it can show up",
@@ -112,11 +113,11 @@ const en: TracksCopy = {
           "Thoughts that feel jumbled or hard to follow",
           "Pulling back, sleeping badly, less energy for daily tasks",
         ],
-        leansTitle: "What leans in for psychosis",
+        leansTitle: "What the psychosis care path adds",
         leans: [
           { name: "A quiet space", body: "No drifting motion and no pressure: the screens only fade, and nothing asks for speed." },
           { name: "Grounding", body: "The 5-4-3-2-1 exercise brings attention back to the room you are in." },
-          { name: "A private journal", body: "Yours by default. Only what you choose to share reaches your clinician." },
+          { name: "A private journal", body: "Yours by default: your clinician sees only what you choose to share. One exception: if something you log or write suggests you may be in danger, you see emergency numbers, and your clinician is alerted if you have connected one." },
         ],
         visual: { caption: "Five things you see, four you feel, and so on, back to the room", labels: ["5", "4", "3", "2", "1"] },
       },
@@ -127,7 +128,7 @@ const en: TracksCopy = {
     titleA: "What changes,",
     titleB: "and what stays.",
     body: "The check-in, the journal and the reports are the same for everyone. Only what sits around them adapts.",
-    columns: ["ADHD", "Bipolar", "Psychosis"],
+    columns: ["ADHD", "Bipolar disorder", "Psychosis"],
     rows: [
       { label: "Spark: one task into small steps", values: [true, false, false] },
       { label: "Focus timer", values: [true, false, false] },
@@ -137,13 +138,13 @@ const en: TracksCopy = {
       { label: "Motion-free, quiet screens", values: [false, false, true] },
     ],
     yes: "Included",
-    no: "Not part of this track",
+    no: "Not included",
   },
   cta: {
     eyebrow: "Not sure which one?",
     titleA: "Start with",
     titleB: "a conversation.",
-    body: "Mira walks you through everyday situations and quick questions, then suggests the track to follow. She orients, she never diagnoses.",
+    body: "Mira walks you through everyday situations and quick questions, then suggests a care path to discuss with your clinician. Mira is software: it orients, it never diagnoses.",
     primary: "Meet Mira",
     note: "Only a licensed professional can make a diagnosis.",
   },
@@ -151,26 +152,26 @@ const en: TracksCopy = {
 
 const ar: TracksCopy = {
   seo: {
-    title: "المسارات الثلاثة: فرط الحركة، ثنائي القطب، الذهان",
+    title: "مسارات الرعاية لفرط الحركة وثنائي القطب والذهان",
     description:
-      "ما هو اضطراب فرط الحركة وتشتت الانتباه والاضطراب ثنائي القطب والذهان، وكيف يظهر كلٌّ منها في الحياة اليومية، وكيف تتكيّف SynQ مع المسار الذي تتابعه.",
+      "ما هو اضطراب فرط الحركة وتشتت الانتباه والاضطراب ثنائي القطب والذهان، وكيف يظهر كلٌّ منها في الحياة اليومية، وما الأدوات التي يضيفها كل مسار رعاية في SynQ.",
   },
   hero: {
-    eyebrow: "المسارات الثلاثة",
-    titleA: "مساحة واحدة،",
-    titleB: "على مقاس مسارك.",
-    body: "فرط الحركة وتشتت الانتباه، والاضطراب ثنائي القطب، والذهان؛ لكلٍّ منها ما يطلبه من اليوم. تُبقي SynQ النواة البسيطة نفسها وتغيّر ما تضعه أولًا.",
-    scroll: "استكشف المسارات",
+    eyebrow: "مسارات الرعاية",
+    titleA: "مسارات رعاية لفرط الحركة،",
+    titleB: "وثنائي القطب والذهان.",
+    body: "ثلاثة مسارات رعاية تتشارك نواة يومية واحدة: الفحص اليومي والمفكرة والملخص الشهري، ويضيف كل مسار بعض الأدوات المناسبة له. يقترح توجيه ميرا مسارًا، ويمكن لمختصك أن يؤكده أو يغيّره.",
+    scroll: "استكشف مسارات الرعاية",
   },
   explorer: {
-    eyebrow: "تعرّف على المسار",
+    eyebrow: "الحالات الثلاث",
     titleA: "ثلاث طرق قد يحتاج",
     titleB: "فيها العقل إلى دعم.",
-    pick: "اختر مسارًا",
+    pick: "اختر مسار رعاية",
     tracks: {
       adhd: {
         tab: "فرط الحركة وتشتت الانتباه",
-        kicker: "انتباه · زخم",
+        kicker: "الانتباه والتنظيم",
         title: "فرط الحركة وتشتت الانتباه",
         what: "اختلاف في تنظيم الانتباه والنشاط والاندفاع. لا علاقة له بالجهد أو الذكاء: الصعوبة غالبًا في البدء، والبقاء مع المهمة، وتتبّع الوقت.",
         signsTitle: "كيف قد يظهر",
@@ -180,7 +181,7 @@ const ar: TracksCopy = {
           "جسد لا يهدأ أو عقل يقفز من فكرة إلى أخرى",
           "تركيز طويل وعميق على ما يثير اهتمامك حقًا",
         ],
-        leansTitle: "ما يتكيّف لفرط الحركة",
+        leansTitle: "ما يضيفه مسار فرط الحركة",
         leans: [
           { name: "سبارك", body: "اكتب شيئًا واحدًا، فيعود إليك خطواتٍ صغيرة تضع عليها علامة، بجانب مؤقت تركيز قصير." },
           { name: "التركيز والطاقة", body: "يتابعهما الفحص اليومي، فيظهر الأسبوع المشتَّت مبكرًا." },
@@ -190,7 +191,7 @@ const ar: TracksCopy = {
       },
       bipolar: {
         tab: "الاضطراب ثنائي القطب",
-        kicker: "إيقاع · توازن",
+        kicker: "دورات المزاج والطاقة",
         title: "الاضطراب ثنائي القطب",
         what: "فترات من الطاقة المرتفعة على غير المعتاد وفترات من المزاج المنخفض، تتخللها فترات أهدأ. غالبًا ما يتحرك النوم والروتين أولًا، وأحيانًا قبل المزاج بأيام.",
         signsTitle: "كيف قد يظهر",
@@ -200,17 +201,17 @@ const ar: TracksCopy = {
           "أسابيع من الطاقة المنخفضة والمزاج المسطّح",
           "مزاج يتغيّر أسرع من اليوم نفسه",
         ],
-        leansTitle: "ما يتكيّف للاضطراب ثنائي القطب",
+        leansTitle: "ما يضيفه مسار ثنائي القطب",
         leans: [
           { name: "النوم والإيقاع", body: "تُقرأ ساعات النوم والمزاج والطاقة مقارنةً بنطاقك المعتاد، لا بمتوسط عام." },
-          { name: "إشارات مبكرة", body: "حين يرتفع نمط أو ينخفض، تصلك ملاحظة لطيفة تحملها إلى فريق رعايتك." },
+          { name: "تغيّرات مبكرة", body: "حين يخرج نومك أو مزاجك أو طاقتك عن نطاقك المعتاد، تظهر لك ملاحظة لطيفة تناقشها مع مختصك. وإن أشار ذلك إلى خطر جدي، ترى أرقام الطوارئ، ويُنبَّه مختصك إن كنت قد ربطت حسابك به." },
           { name: "مكتبة القراءة", body: "مقالات قصيرة من منظمة الصحة العالمية وNIMH وNICE وNHS، بوتيرتك." },
         ],
         visual: { caption: "نطاقك المعتاد، ومدى ابتعاد الأيام عنه", labels: ["أعلى", "المعتاد", "أدنى"] },
       },
       psychosis: {
         tab: "الذهان",
-        kicker: "هدوء · ثبات",
+        kicker: "الإدراك والتفكير",
         title: "الذهان",
         what: "في الذهان يصبح بعض ما تراه أو تسمعه أو تعتقده غير مشترك مع من حولك. الفصام إحدى الحالات التي قد يعود فيها. والدعم المبكر المنتظم يصنع فرقًا حقيقيًا.",
         signsTitle: "كيف قد يظهر",
@@ -220,11 +221,11 @@ const ar: TracksCopy = {
           "أفكار مشوّشة يصعب تتبّعها",
           "انسحاب ونوم سيّئ وطاقة أقل للمهام اليومية",
         ],
-        leansTitle: "ما يتكيّف للذهان",
+        leansTitle: "ما يضيفه مسار الذهان",
         leans: [
           { name: "مساحة بسيطة", body: "بلا حركة منجرفة ولا ضغط: الشاشات تظهر وتتلاشى فقط، ولا شيء يطلب منك السرعة." },
           { name: "التثبيت", body: "تمرين 5-4-3-2-1 يعيد انتباهك إلى الغرفة التي أنت فيها." },
-          { name: "مفكرة خاصة", body: "هي لك افتراضيًا. لا يصل إلى مختصك إلا ما تختار مشاركته." },
+          { name: "مفكرة خاصة", body: "هي لك افتراضيًا: لا يرى مختصك إلا ما تختار مشاركته. استثناء واحد: إن أشار شيء تسجّله أو تكتبه إلى أنك قد تكون في خطر، ترى أرقام الطوارئ، ويُنبَّه مختصك إن كنت قد ربطت حسابك به." },
         ],
         visual: { caption: "خمسة أشياء ترى، وأربعة تلمس، وهكذا، عودةً إلى الغرفة", labels: ["5", "4", "3", "2", "1"] },
       },
@@ -235,7 +236,7 @@ const ar: TracksCopy = {
     titleA: "ما يتغيّر،",
     titleB: "وما يبقى.",
     body: "الفحص اليومي والمفكرة والتقارير واحدة للجميع. وحده ما يحيط بها يتكيّف.",
-    columns: ["فرط الحركة", "ثنائي القطب", "الذهان"],
+    columns: ["فرط الحركة", "الاضطراب ثنائي القطب", "الذهان"],
     rows: [
       { label: "سبارك: مهمة واحدة إلى خطوات صغيرة", values: [true, false, false] },
       { label: "مؤقت التركيز", values: [true, false, false] },
@@ -245,13 +246,13 @@ const ar: TracksCopy = {
       { label: "شاشات بسيطة بلا حركة", values: [false, false, true] },
     ],
     yes: "مشمول",
-    no: "ليس ضمن هذا المسار",
+    no: "غير مشمول",
   },
   cta: {
-    eyebrow: "لست متأكدًا من مسارك؟",
+    eyebrow: "لست متأكدًا من مسار رعايتك؟",
     titleA: "ابدأ",
     titleB: "بمحادثة.",
-    body: "تمرّ معك ميرا على مواقف يومية وأسئلة سريعة، ثم تقترح المسار الذي تتابعه. هي توجّه ولا تشخّص أبدًا.",
+    body: "تمرّ معك ميرا على مواقف يومية وأسئلة سريعة، ثم تقترح مسار رعاية تناقشه مع مختصك. ميرا برنامج: توجّه ولا تشخّص أبدًا.",
     primary: "تعرّف على ميرا",
     note: "التشخيص لا يقوم به إلا مختص مرخَّص.",
   },

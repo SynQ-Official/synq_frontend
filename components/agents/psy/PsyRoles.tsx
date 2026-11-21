@@ -1,6 +1,5 @@
 "use client";
 
-import { pad } from "@/components/home/accents";
 import { HomeSection } from "@/components/home/HomeSection";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import { BODY_SM, DISPLAY_S, LABEL, SERIF } from "@/components/home/typography";
@@ -129,7 +128,7 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
                 initial={{ opacity: 0, scale: 0.6 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ type: "spring", stiffness: 320, damping: 20, delay: 0.3 + i * 0.12 }}
+                transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.3 + i * 0.12 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-[#99f6e4] bg-[#f0fdfa] px-3 py-1 text-[0.8125rem] font-medium text-[#115e59]"
               >
                 <span className="size-1.5 rounded-full bg-[#0d9488]" />
@@ -183,14 +182,9 @@ function Tile({ index, title, line, tag, preview }: { index: number; title: stri
     >
       <motion.span aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ backgroundImage: glow }} />
       <div className={cn("flex flex-col", wide && "lg:w-5/12 lg:shrink-0")}>
-        <p className="flex items-center justify-between gap-3">
-          <span className={cn(LABEL, "inline-flex items-center gap-2", theme.label)}>
-            <Icon className="size-4" strokeWidth={1.75} aria-hidden />
-            {tag}
-          </span>
-          <span dir="ltr" className="font-mono text-[0.8125rem] tabular-nums text-ink-muted">
-            {pad(index + 1)}
-          </span>
+        <p className={cn(LABEL, "inline-flex items-center gap-2", theme.label)}>
+          <Icon className="size-4" strokeWidth={1.75} aria-hidden />
+          {tag}
         </p>
         <h3 className={cn(DISPLAY_S, "mt-5 text-ink")}>{title}</h3>
         <p className={cn(BODY_SM, "mt-3")}>{line}</p>

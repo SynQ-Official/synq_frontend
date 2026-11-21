@@ -1,9 +1,9 @@
 "use client";
 
 import { ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import type { ReactNode } from "react";
-import { AuthBrandPanel } from "@/components/auth/AuthBrandPanel";
+import { AuthBrandPanel, type AuthAudience } from "@/components/auth/AuthBrandPanel";
 import { AuthBackdrop } from "@/components/auth/AuthBackdrop";
 import { homeSerif } from "@/components/home/fonts";
 import { SERIF } from "@/components/home/typography";
@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
  * auth page), the home hero's light behind everything, and the form first with the brand story beside it on desktop.
  * Mobile/tablet: the form is the whole experience; the layout mirrors by reading direction via grid order.
  */
-export function AuthLayout({ children }: { children: ReactNode }) {
+export function AuthLayout({ children, audience = "patient" }: { children: ReactNode; audience?: AuthAudience }) {
   const { direction, dictionary } = useLanguage();
   const scope = useLanguageTransition<HTMLElement>();
 
@@ -38,7 +38,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         className="page-container relative flex flex-1 flex-col pb-12 pt-6 sm:pb-16 sm:pt-10 lg:grid lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:items-start lg:gap-10 lg:pt-6 xl:gap-16"
       >
         <div className="mx-auto flex w-full max-w-[28rem] flex-1 flex-col justify-start sm:justify-center md:max-w-[34rem] lg:max-w-none">{children}</div>
-        <AuthBrandPanel />
+        <AuthBrandPanel audience={audience} />
       </main>
 
       <footer className="page-container relative flex flex-wrap items-center justify-center gap-x-4 gap-y-1 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-[0.875rem] text-ink-soft sm:justify-between">

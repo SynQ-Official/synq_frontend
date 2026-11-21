@@ -19,7 +19,7 @@ import { EASE_OUT, REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { ArrowRight, Clock, Globe2, LifeBuoy, Lock, Mail, MessageSquare, Plus, Send, UserRound } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useId, useState } from "react";
 import { SupportThread } from "./SupportThread";
 
@@ -61,21 +61,18 @@ function FaqItem({ item, index, open, onToggle }: { item: { question: string; an
                 </button>
             </h3>
 
-            <AnimatePresence initial={false}>
-                {open && (
-                    <motion.div
-                        id={panelId}
-                        role="region"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: EASE_OUT }}
-                        className="overflow-hidden"
-                    >
-                        <p className="pb-6 ps-[3.25rem] pe-3 text-[1rem] sm:pe-12 leading-7 text-ink-soft sm:ps-[3.75rem]">{item.answer}</p>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Always rendered (collapsed when closed): the answers must be in the HTML, as the FAQPage data says. */}
+            <motion.div
+                id={panelId}
+                role="region"
+                initial={false}
+                animate={open ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+                transition={{ duration: 0.4, ease: EASE_OUT }}
+                inert={!open}
+                className="overflow-hidden"
+            >
+                <p className="pb-6 ps-[3.25rem] pe-3 text-[1rem] sm:pe-12 leading-7 text-ink-soft sm:ps-[3.75rem]">{item.answer}</p>
+            </motion.div>
         </li>
     );
 }

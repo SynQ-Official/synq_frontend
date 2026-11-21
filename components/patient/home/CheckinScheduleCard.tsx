@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AlarmClock, BellOff, CheckCircle2, Globe2 } from "lucide-react";
-import { LABEL } from "@/components/home/typography";
 import { GlassCard } from "@/components/patient/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -13,22 +12,12 @@ import { fill } from "@/lib/i18n/patient";
 import { parseReminderPrefs, readReminderSnapshot } from "@/lib/patient/reminders";
 import { cn } from "@/lib/utils";
 
-const LATER_KEY = "vitamind_checkin_setup_later";
-
 /** The device's IANA zone ("Africa/Tunis"); the server computes every reminder in it. */
 export function deviceTimeZone(): string {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   } catch {
     return "UTC";
-  }
-}
-
-function setupPostponed(): boolean {
-  try {
-    return window.sessionStorage.getItem(LATER_KEY) === "1";
-  } catch {
-    return false;
   }
 }
 
@@ -123,24 +112,15 @@ export function CheckinScheduleForm({
 export function CheckinScheduleCard() {
   const t = usePatientCopy().checkinSchedule;
   const { data: schedule, isLoading, error } = useCheckinSchedule();
-  const [later, setLater] = useState(() => typeof window !== "undefined" && setupPostponed());
   const [editing, setEditing] = useState(false);
 
   // Loading or failing: say nothing, rather than ask a patient who has already chosen.
   if (isLoading || error || schedule === undefined) return null;
 
-  const postpone = () => {
-    try {
-      window.sessionStorage.setItem(LATER_KEY, "1");
-    } catch {
-      /* asked again on the next visit */
-    }
-    setLater(true);
-  };
-
-  if (!schedule && later && !editing) {
+  // No time yet: one quiet line that opens the setup, so Home's dashboard stays in the first screen.
+  if (!schedule && !editing) {
     return (
-      <GlassCard className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+      <GlassCard className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4 lg:mb-6">
         <span aria-hidden className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-700"><AlarmClock className="size-5" /></span>
         <div className="min-w-0 flex-1">
           <p className="text-[0.9375rem]  text-ink">{t.pendingTitle}</p>
@@ -153,15 +133,14 @@ export function CheckinScheduleCard() {
 
   if (!schedule || editing) {
     return (
-      <GlassCard className="mb-6 p-5 sm:p-7" aria-labelledby="checkin-schedule-title">
-        <p className={cn(LABEL, "flex items-center gap-2 text-teal-700")}>
-          <AlarmClock className="size-4" aria-hidden />
-          {t.setupEyebrow}
-        </p>
-        <h2 id="checkin-schedule-title" className="mt-2 text-xl  text-ink sm:text-2xl">{t.setupTitle}</h2>
-        {!schedule && <p className="mt-2 max-w-2xl text-[0.9375rem] leading-7 text-ink-soft">{t.setupBody}</p>}
-        <div className="mt-5">
-          <CheckinScheduleForm secondary schedule={schedule} onDone={() => setEditing(false)} onLater={schedule ? () => setEditing(false) : postpone} />
+      <GlassCard className="mb-5 p-5 sm:p-6 lg:mb-6" aria-labelledby="checkin-schedule-title">
+        <h2 id="checkin-schedule-title" className="flex items-center gap-2 text-lg text-ink">
+          <AlarmClock className="size-[1.125rem] text-teal-700" aria-hidden />
+          {t.setupTitle}
+        </h2>
+        {!schedule && <p className="mt-1 max-w-2xl text-sm leading-6 text-ink-soft">{t.setupBody}</p>}
+        <div className="mt-4">
+          <CheckinScheduleForm secondary schedule={schedule} onDone={() => setEditing(false)} onLater={() => setEditing(false)} />
         </div>
       </GlassCard>
     );
@@ -170,7 +149,7 @@ export function CheckinScheduleCard() {
   const zone = deviceTimeZone();
   const done = schedule.today.completed;
   return (
-    <GlassCard className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+    <GlassCard className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4 lg:mb-6">
       <span aria-hidden className={cn("flex size-10 shrink-0 items-center justify-center rounded-full", done ? "bg-sage-50 text-sage-700" : "bg-teal-50 text-teal-700")}>
         {done ? <CheckCircle2 className="size-5" /> : <AlarmClock className="size-5" />}
       </span>

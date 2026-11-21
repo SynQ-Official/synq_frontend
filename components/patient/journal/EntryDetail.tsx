@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Pencil, RotateCcw, Share2, Target, Trash2, X } from "lucide-react";
+import { NotebookPen, Pencil, RotateCcw, Share2, Target, Trash2, X } from "lucide-react";
 import { AnalysisNote } from "@/components/patient/journal/AnalysisNote";
 import { EntryForm, type EntryValues } from "@/components/patient/journal/EntryForm";
 import { PatientModal } from "@/components/patient/ui/PatientModal";
@@ -105,7 +105,7 @@ function EntryBody({ entry, onClose }: { entry: JournalEntry; onClose: () => voi
   return (
     <div className="mt-1">
       <div className="flex items-center gap-3 pe-10">
-        <span className="flex size-12 items-center justify-center rounded-2xl text-2xl" style={{ background: mood?.soft ?? "#e3eeef" }} aria-hidden>{mood ? <MoodEmoji level={mood} className="text-3xl" /> : "📝"}</span>
+        <span className="flex size-12 items-center justify-center rounded-2xl text-2xl" style={{ background: mood?.soft ?? "#e3eeef" }} aria-hidden>{mood ? <MoodEmoji level={mood} className="text-3xl" /> : <NotebookPen className="size-5 text-teal-700" />}</span>
         <div>
           <h2 className="text-lg  text-ink">{formatDay(entry.createdAt, language, { weekday: "long", month: "long", day: "numeric" })}</h2>
           <p className="text-xs text-muted-foreground"><AnalysisNote entry={entry} /></p>

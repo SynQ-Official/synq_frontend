@@ -1,6 +1,5 @@
 "use client";
 
-import { pad } from "@/components/home/accents";
 import { HomeSection } from "@/components/home/HomeSection";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import { BODY_SM, DISPLAY_S, LABEL, SERIF } from "@/components/home/typography";
@@ -27,7 +26,7 @@ function WeekDots() {
           key={index}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 320, damping: 20, delay: 0.25 + index * 0.06 }}
+          transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.25 + index * 0.06 }}
           className={cn("size-6 rounded-full sm:size-7", state === 1 && "bg-gold", state === 0 && "border border-dashed border-ink-subtle/50", state === 2 && "bg-gold ring-2 ring-ink ring-offset-2 ring-offset-white")}
         />
       ))}
@@ -82,7 +81,7 @@ function RoleVisual({ index, preview }: { index: number; preview: LuminaPreviewC
                 key={theme}
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: "spring", stiffness: 320, damping: 20, delay: 0.4 + index * 0.14 }}
+                transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.4 + index * 0.14 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-gold-100 bg-gold-50 px-3 py-1 text-[0.8125rem] font-medium text-gold-700"
               >
                 <span className="size-1.5 rounded-full bg-gold" />
@@ -190,9 +189,6 @@ export function LuminaRoles() {
                     onPointerEnter={(event) => event.pointerType === "mouse" && setOpen(index)}
                     className="group flex w-full cursor-pointer items-center gap-4 py-5 ps-5 text-start outline-none transition-colors focus-visible:bg-canvas focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-500 sm:gap-6 sm:py-6"
                   >
-                    <span dir="ltr" className="w-6 shrink-0 font-mono text-[0.8125rem] tabular-nums text-ink-muted">
-                      {pad(index + 1)}
-                    </span>
                     <span className={cn(DISPLAY_S, "min-w-0 flex-1 text-[clamp(1.375rem,1.2vw+1.05rem,2.125rem)] transition-colors duration-300", isOpen ? "text-ink" : "text-ink-soft group-hover:text-ink")}>
                       {title}
                     </span>
@@ -202,25 +198,24 @@ export function LuminaRoles() {
                     </span>
                   </button>
                 </h3>
-                <AnimatePresence initial={false}>
+                {/* Always rendered (collapsed when closed) so every line is in the server HTML for readers and search. */}
+                <motion.div
+                  id={panelId}
+                  role="region"
+                  initial={false}
+                  animate={isOpen ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: EASE_OUT }}
+                  inert={!isOpen}
+                  className="overflow-hidden"
+                >
+                  <p className={cn(BODY_SM, "pb-6 ps-5 pe-6 text-[1.0625rem]  lg:pb-6")}>{line}</p>
+                  {/* Below lg the picture sits under the line it belongs to (drawn only for the open row). */}
                   {isOpen && (
-                    <motion.div
-                      id={panelId}
-                      role="region"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: EASE_OUT }}
-                      className="overflow-hidden"
-                    >
-                      <p className={cn(BODY_SM, "pb-6 ps-[3.75rem] pe-6 text-[1.0625rem] sm:ps-[4.75rem] lg:pb-6")}>{line}</p>
-                      {/* Below lg the picture sits under the line it belongs to. */}
-                      <div aria-hidden className="mb-6 me-5 ms-[3.75rem] rounded-2xl border border-gold-100 bg-white p-4 shadow-card sm:ms-[4.75rem] lg:hidden">
-                        <RoleVisual index={index} preview={preview} />
-                      </div>
-                    </motion.div>
+                    <div aria-hidden className="mb-6 me-5 ms-[3.75rem] rounded-2xl border border-gold-100 bg-white p-4 shadow-card sm:ms-[4.75rem] lg:hidden">
+                      <RoleVisual index={index} preview={preview} />
+                    </div>
                   )}
-                </AnimatePresence>
+                </motion.div>
               </motion.li>
             );
           })}
@@ -240,8 +235,6 @@ export function LuminaRoles() {
                 key={ring}
                 className="absolute rounded-full border border-gold-300/60"
                 style={{ width: `${54 + ring * 22}%`, aspectRatio: "1" }}
-                animate={reduce ? undefined : { scale: [1, 1.05, 1], opacity: [0.8, 0.3, 0.8] }}
-                transition={{ duration: 6 + ring * 1.4, repeat: Infinity, ease: "easeInOut", delay: ring * 0.7 }}
               />
             ))}
             <AnimatePresence mode="wait">

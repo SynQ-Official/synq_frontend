@@ -1,8 +1,8 @@
 import type { Lang } from "@/lib/i18n/config";
 
 /**
- * Copy for /invite (patients join through their clinic) and /clinic-access (clinics ask for SynQ). B2B2C: there is no
- * public sign-up. Every Arabic string is listed for review by an Arabic-speaking clinician.
+ * Copy for /invite (opening a clinician's invitation, or joining without one) and /clinic-access (a clinician applies;
+ * the SynQ team reviews every application). Every Arabic string is listed for review by an Arabic-speaking clinician.
  */
 export type AccessCopy = {
   invite: {
@@ -18,8 +18,8 @@ export type AccessCopy = {
     pasteError: string;
     signedUp: string;
     signIn: string;
-    none: { title: string; body: string; messageLabel: string; message: string; copy: string; copied: string };
     adults: { title: string; body: string; link: string };
+    none: { title: string; body: string; messageLabel: string; message: string; copy: string; copied: string };
     parents: { title: string; body: string; link: string };
     clinicians: { title: string; link: string };
   };
@@ -39,6 +39,8 @@ export type AccessCopy = {
     pendingEmail: string;
     sent: string;
     subject: string;
+    /** The panel beside the form (same shape as the patient auth panel), written for clinics. */
+    brand: { eyebrow: string; titleA: string; titleB: string; body: string; points: readonly string[]; quote: string };
   };
 };
 
@@ -64,24 +66,24 @@ const en: AccessCopy = {
       copy: "Copy the message",
       copied: "Copied",
     },
-    adults: {
-      title: "Are you an adult, with no invitation?",
-      body: "You can create your own account and start with Mira. Your clinician can join later, when you choose.",
-      link: "Create an adult account",
-    },
     parents: {
       title: "Are you a parent?",
       body: "Parents have their own account, separate from their teenager's. Your teenager's clinician approves the link between you.",
       link: "Parent portal",
     },
-    clinicians: { title: "Are you a clinician?", link: "Request clinic access" },
+    adults: {
+      title: "No invitation? You don't need one.",
+      body: "Adults can create their own account and start with Mira right away. Connect a clinician later, when you choose.",
+      link: "Create your account",
+    },
+    clinicians: { title: "Are you a clinician?", link: "Apply for access" },
   },
   clinic: {
-    seoTitle: "Request clinic access",
-    seoDescription: "Clinics and clinicians in the UAE and Tunisia can ask to use SynQ with their patients.",
-    eyebrow: "For clinics",
-    title: "Request clinic access",
-    body: "Tell us about your clinic. We reply by e-mail.",
+    seoTitle: "Apply as a clinician",
+    seoDescription: "Licensed clinicians in the UAE and Tunisia can apply to use SynQ with their patients. The SynQ team reviews every application and replies by e-mail.",
+    eyebrow: "For clinicians",
+    title: "Apply as a clinician",
+    body: "For licensed clinicians in the UAE and Tunisia. Send your details: the SynQ team checks every application and replies by e-mail. Your workspace opens only once it is approved.",
     noPatientData: "Please don't include any patient information.",
     fields: { name: "Full name", role: "Role", clinic: "Clinic", country: "Country", city: "City", email: "Work e-mail", phone: "Phone", optional: "optional", message: "Message" },
     roles: ["Psychiatrist", "Psychologist", "Therapist", "Nurse", "Clinic manager", "Other"],
@@ -92,6 +94,14 @@ const en: AccessCopy = {
     pendingEmail: "Clinic contact e-mail",
     sent: "Your e-mail app is opening with your request. Send it from there.",
     subject: "Clinic access request",
+    brand: {
+      eyebrow: "For clinicians",
+      titleA: "Follow patients",
+      titleB: "between visits.",
+      body: "A web workspace for licensed clinicians: patients choose you, you accept who you can follow, and you see only what each one chose to share, plus safety alerts with the evidence behind them.",
+      points: ["Every application reviewed by the SynQ team", "Shared data only, plus safety alerts", "SynQ never diagnoses: you decide"],
+      quote: "No workspace opens before the SynQ team has reviewed it.",
+    },
   },
 };
 
@@ -117,24 +127,24 @@ const ar: AccessCopy = {
       copy: "انسخ الرسالة",
       copied: "تم النسخ",
     },
-    adults: {
-      title: "هل أنت بالغ وليس عندك دعوة؟",
-      body: "تقدر تنشئ حسابك بنفسك وتبدأ مع ميرا. ويمكن لمختصك الانضمام لاحقاً، متى اخترت.",
-      link: "أنشئ حساب بالغ",
-    },
     parents: {
       title: "هل أنت ولي أمر؟",
       body: "لأولياء الأمور حسابهم الخاص، منفصل عن حساب الابن أو الابنة. ويوافق مختص الابن أو الابنة على الربط بينكما.",
       link: "بوابة الأهل",
     },
-    clinicians: { title: "هل أنت مختص؟", link: "طلب انضمام لعيادة" },
+    adults: {
+      title: "ما عندك دعوة؟ لا تحتاج إليها.",
+      body: "يمكن للبالغين إنشاء حسابهم بأنفسهم والبدء مع ميرا فوراً. واربط حسابك بمختص لاحقاً، متى اخترت.",
+      link: "أنشئ حسابك",
+    },
+    clinicians: { title: "هل أنت مختص؟", link: "قدّم طلب انضمام" },
   },
   clinic: {
-    seoTitle: "طلب انضمام لعيادة",
-    seoDescription: "يمكن للعيادات والمختصين في الإمارات وتونس طلب استخدام SynQ مع مرضاهم.",
-    eyebrow: "للعيادات",
-    title: "طلب انضمام لعيادة",
-    body: "أخبرنا عن عيادتك. نرد عليك بالبريد الإلكتروني.",
+    seoTitle: "قدّم طلب انضمام كمختص",
+    seoDescription: "يمكن للمختصين المرخّصين في الإمارات وتونس التقدّم لاستخدام SynQ مع مرضاهم. يراجع فريق SynQ كل طلب ويرد بالبريد الإلكتروني.",
+    eyebrow: "للمختصين",
+    title: "قدّم طلب انضمام كمختص",
+    body: "للمختصين المرخّصين في الإمارات وتونس. أرسل بياناتك: يتحقق فريق SynQ من كل طلب ويرد عليك بالبريد الإلكتروني. ولا تُفتح مساحة عملك إلا بعد الموافقة.",
     noPatientData: "يرجى عدم ذكر أي معلومات عن المرضى.",
     fields: { name: "الاسم الكامل", role: "الدور", clinic: "العيادة", country: "البلد", city: "المدينة", email: "بريد العمل", phone: "الهاتف", optional: "اختياري", message: "الرسالة" },
     roles: ["طبيب نفسي", "أخصائي نفسي", "معالج", "ممرض", "مدير عيادة", "غير ذلك"],
@@ -145,6 +155,14 @@ const ar: AccessCopy = {
     pendingEmail: "بريد التواصل مع العيادات",
     sent: "يفتح تطبيق البريد الآن بطلبك. أرسله من هناك.",
     subject: "طلب انضمام عيادة",
+    brand: {
+      eyebrow: "للمختصين",
+      titleA: "تابع مرضاك",
+      titleB: "بين الزيارات.",
+      body: "مساحة عمل على الويب للمختصين المرخّصين: يختارك المرضى، وتقبل من تستطيع متابعته، ولا ترى إلا ما اختار كل منهم مشاركته، مع تنبيهات السلامة وأدلتها.",
+      points: ["كل طلب يراجعه فريق SynQ", "البيانات المُشارَكة فقط، مع تنبيهات السلامة", "لا تشخّص SynQ أبداً: القرار لك"],
+      quote: "لا تُفتح أي مساحة عمل قبل أن يراجعها فريق SynQ.",
+    },
   },
 };
 

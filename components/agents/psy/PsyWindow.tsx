@@ -67,7 +67,6 @@ function Rail({ copy, screen, compact }: { copy: PsyPreviewCopy; screen: PsyScre
           <div className="rounded-xl border border-red-200 bg-gradient-to-b from-red-50 to-white p-3">
             <p className="flex items-center gap-2 text-xs  text-red-800">
               <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full rounded-full bg-red-400 opacity-60 motion-safe:animate-ping" />
                 <span className="relative inline-flex size-2 rounded-full bg-red-500" />
               </span>
               {copy.triage[0]}
