@@ -29,7 +29,7 @@ function Section({ icon, title, body, children }: { icon: ReactNode; title: stri
       <div className="mb-5 flex items-start gap-3.5">
         <span className="stat-tile size-10 shrink-0">{icon}</span>
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-ink">{title}</h2>
+          <h2 className="text-base  text-ink">{title}</h2>
           {body && <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{body}</p>}
         </div>
       </div>
@@ -218,7 +218,7 @@ function ConsentCard({ consent }: { consent: Consent }) {
     <li className="rounded-2xl border border-white/80 bg-white/65 p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-ink" dir="auto">{name}</p>
+          <p className="text-sm  text-ink" dir="auto">{name}</p>
           <p className="text-xs text-muted-foreground" dir="auto">{[consent.clinician.role, consent.monitoring.clinicName].filter(Boolean).join(" · ")}</p>
         </div>
         {pending && <span className="chip chip-pending">{s.pending}</span>}
@@ -315,7 +315,7 @@ function OrientationConsentCard() {
 
   return (
     <div className="mt-4 rounded-2xl border border-white/80 bg-white/65 p-4">
-      <p className="text-sm font-semibold text-ink">{s.title}</p>
+      <p className="text-sm  text-ink">{s.title}</p>
       <p className="mt-0.5 text-xs text-ink-soft">{s.body}</p>
       {!consent.data ? (
         <Skeleton className="mt-3 h-9" />

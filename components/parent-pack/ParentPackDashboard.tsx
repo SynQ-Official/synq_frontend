@@ -9,7 +9,7 @@ import { useParentOverview } from "@/hooks/parent-pack/useParentPack";
 import { presetById } from "@/lib/parent-pack/room";
 import type { Condition, ParentOverview } from "@/lib/parent-pack/types";
 
-const CONDITION_LABEL: Record<Condition, string> = { ADHD: "ADHD", BIPOLAR: "bipolar disorder", PSYCHOSIS: "psychosis and schizophrenia" };
+const CONDITION_LABEL: Record<Condition, string> = { ADHD: "ADHD", BIPOLAR: "bipolar disorder", PSYCHOSIS: "psychosis" };
 
 function Pillar({ href, icon: Icon, title, status, tone = "teal" }: { href: string; icon: LucideIcon; title: string; status: string; tone?: "teal" | "rose" | "gold" }) {
   const toneClass = { teal: "stat-tile-sage", rose: "stat-tile-rose", gold: "stat-tile-gold" }[tone];
@@ -18,7 +18,7 @@ function Pillar({ href, icon: Icon, title, status, tone = "teal" }: { href: stri
       <Link href={href} className="group flex items-center gap-4 rounded-2xl px-3 py-3.5 transition-colors hover:bg-teal-50/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
         <span className={`stat-tile ${toneClass}`}><Icon className="size-5" aria-hidden /></span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[0.9375rem] font-semibold text-ink">{title}</span>
+          <span className="block text-[0.9375rem]  text-ink">{title}</span>
           <span className="block truncate text-[0.8125rem] text-muted-foreground">{status}</span>
         </span>
         <ArrowRight className="size-4 shrink-0 text-ink-subtle transition-transform group-hover:translate-x-0.5 rtl:-scale-x-100" aria-hidden />
@@ -72,9 +72,9 @@ function Dashboard({ overview }: { overview: ParentOverview }) {
         <div>
           <p className="lm-eyebrow">Today</p>
           {overview.todayCheckin ? (
-            <p className="mt-2 flex items-center gap-2 text-lg font-semibold text-ink"><CheckCircle2 className="size-5 text-teal-600" aria-hidden />Today&apos;s observation is saved</p>
+            <p className="mt-2 flex items-center gap-2 text-lg  text-ink"><CheckCircle2 className="size-5 text-teal-600" aria-hidden />Today&apos;s observation is saved</p>
           ) : (
-            <p className="mt-2 text-lg font-semibold text-ink">A one-minute observation helps you remember the day for the next appointment.</p>
+            <p className="mt-2 text-lg  text-ink">A one-minute observation helps you remember the day for the next appointment.</p>
           )}
           <p className="mt-1.5 text-sm text-muted-foreground">
             The same daily check-in as your child&apos;s own, from your point of view. It stays separate from what your child records.

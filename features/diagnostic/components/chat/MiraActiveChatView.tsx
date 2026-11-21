@@ -41,7 +41,7 @@ function UrgentBanner({ show, language }: { show: boolean; language: Lang }) {
         >
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-700" aria-hidden />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-rose-700">{diagnostic.urgentTitle}</p>
+            <p className="text-sm  text-rose-700">{diagnostic.urgentTitle}</p>
             <p className="mt-1 text-[0.8125rem] leading-5 text-rose-700/90">{diagnostic.urgentBody}</p>
           </div>
         </motion.div>

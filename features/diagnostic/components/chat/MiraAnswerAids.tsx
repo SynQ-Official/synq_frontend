@@ -71,7 +71,7 @@ export function MiraChoiceOptions({ options, language, onChoose }: { options: Mi
             onClick={() => onChoose(`${option.emoji} ${option.text}`.trim())}
             className="group inline-flex min-h-12 min-w-0 cursor-pointer items-center gap-2.5 rounded-2xl border border-line bg-white py-2 ps-2 pe-4 text-start text-[0.9375rem] font-medium text-ink transition-[border-color,background-color,color] duration-200 hover:border-teal-300 hover:bg-sage-50 hover:text-teal-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 active:border-teal-600 sm:min-w-32"
           >
-            <span aria-hidden className="inline-flex size-8 shrink-0 items-center justify-center rounded-xl border border-sage-100 bg-sage-50 text-sm font-semibold text-teal-800 transition-colors duration-200 group-hover:border-teal-700 group-hover:bg-teal-800 group-hover:text-white">
+            <span aria-hidden className="inline-flex size-8 shrink-0 items-center justify-center rounded-xl border border-sage-100 bg-sage-50 text-sm  text-teal-800 transition-colors duration-200 group-hover:border-teal-700 group-hover:bg-teal-800 group-hover:text-white">
               {option.label}
             </span>
             {option.emoji ? <span aria-hidden>{option.emoji}</span> : null}

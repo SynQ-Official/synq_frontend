@@ -29,7 +29,7 @@ function Rail({ copy, screen, compact }: { copy: PsyPreviewCopy; screen: PsyScre
     <aside className={cn("flex shrink-0 flex-col p-3", compact ? "w-[64px] items-center" : "w-[204px]")}>
       <div className={cn("flex h-11 items-center gap-2.5", compact ? "justify-center" : "px-1")}>
         <AgentAvatar agent="psy" className="size-9 rounded-xl bg-white ring-1 ring-slate-200/80" />
-        {!compact && <span className="text-sm font-semibold text-slate-900">SynQ</span>}
+        {!compact && <span className="text-sm  text-slate-900">SynQ</span>}
       </div>
 
       <nav aria-hidden className="mt-3 flex-1">
@@ -52,7 +52,7 @@ function Rail({ copy, screen, compact }: { copy: PsyPreviewCopy; screen: PsyScre
                   >
                     <Icon size={16} strokeWidth={active ? 2.2 : 1.85} className={active ? "text-[#0f766e]" : "text-slate-500"} />
                     {!compact && <span className="truncate">{label}</span>}
-                    {BADGES[key] && !compact && <span className={cn("ms-auto min-w-5 rounded-md px-1.5 text-center text-[11px] font-semibold leading-5 tabular-nums", BADGES[key])}>{BADGE_VALUES[key]}</span>}
+                    {BADGES[key] && !compact && <span className={cn("ms-auto min-w-5 rounded-md px-1.5 text-center text-[11px]  leading-5 tabular-nums", BADGES[key])}>{BADGE_VALUES[key]}</span>}
                     {BADGES[key] && compact && <span className={cn("absolute -end-0.5 -top-0.5 size-2 rounded-full ring-2 ring-[#f4f5f7]", key === "0-2" ? "bg-red-500" : "bg-amber-500")} />}
                   </li>
                 );
@@ -65,7 +65,7 @@ function Rail({ copy, screen, compact }: { copy: PsyPreviewCopy; screen: PsyScre
       <div className={cn("mt-2 space-y-2", compact && "flex flex-col items-center")}>
         {!compact && (
           <div className="rounded-xl border border-red-200 bg-gradient-to-b from-red-50 to-white p-3">
-            <p className="flex items-center gap-2 text-xs font-semibold text-red-800">
+            <p className="flex items-center gap-2 text-xs  text-red-800">
               <span className="relative flex size-2">
                 <span className="absolute inline-flex size-full rounded-full bg-red-400 opacity-60 motion-safe:animate-ping" />
                 <span className="relative inline-flex size-2 rounded-full bg-red-500" />
@@ -83,11 +83,11 @@ function Rail({ copy, screen, compact }: { copy: PsyPreviewCopy; screen: PsyScre
           {!compact && copy.settings}
         </div>
         <div className={cn("flex items-center gap-2.5 rounded-xl p-1.5", compact ? "justify-center" : "border border-slate-200/80 bg-white shadow-sm")}>
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#0d9488] to-[#115e59] text-[11px] font-semibold text-white">{initials}</span>
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#0d9488] to-[#115e59] text-[11px]  text-white">{initials}</span>
           {!compact && (
             <>
               <span className="min-w-0 flex-1 leading-tight">
-                <span className="block truncate text-[13px] font-semibold text-slate-900">{name}</span>
+                <span className="block truncate text-[13px]  text-slate-900">{name}</span>
                 <span className="block truncate text-[11px] text-slate-500">{role}</span>
               </span>
               <ChevronsUpDown size={14} className="shrink-0 text-slate-400" />

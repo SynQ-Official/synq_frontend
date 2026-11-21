@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 type Filter = "all" | Condition | "favorites";
 const FILTERS: { id: Filter; label: string }[] = [
   { id: "all", label: "All" }, { id: "ADHD", label: "ADHD" }, { id: "BIPOLAR", label: "Bipolar disorder" },
-  { id: "PSYCHOSIS", label: "Psychosis & schizophrenia" }, { id: "favorites", label: "Favourites" },
+  { id: "PSYCHOSIS", label: "Psychosis" }, { id: "favorites", label: "Favourites" },
 ];
 
 /** Educational resources by condition and topic, ordered by the server for this family; opened and favourite state is saved. */
@@ -78,8 +78,8 @@ export function ParentGuidance() {
                 <button type="button" onClick={() => setOpenId(r.id)} aria-current={open?.id === r.id ? "true" : undefined}
                   className={cn("flex w-full items-start gap-3 rounded-xl px-3 py-3 text-start transition-colors hover:bg-teal-50/70 focus-visible:outline-2 focus-visible:outline-teal-500", open?.id === r.id && "bg-teal-50")}>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-[0.6875rem] font-semibold uppercase tracking-wide text-ink-subtle">{r.topic}</span>
-                    <span className="block text-sm font-semibold text-ink">{r.title}</span>
+                    <span className="block text-[0.6875rem]  uppercase tracking-wide text-ink-subtle">{r.topic}</span>
+                    <span className="block text-sm  text-ink">{r.title}</span>
                     {r.suggested && <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-medium text-gold-700"><Sparkles className="size-3" aria-hidden />Matches this week&apos;s observations</span>}
                   </span>
                   {r.viewedAt && <CheckCircle2 className="mt-1 size-4 shrink-0 text-teal-600" aria-label="Opened" />}
@@ -101,7 +101,7 @@ function ResourceDetail({ resource, onFavorite }: { resource: GuidanceResource; 
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="lm-eyebrow">{resource.topic}</p>
-          <h2 id="guidance-title" className="mt-1 text-xl font-semibold text-ink">{resource.title}</h2>
+          <h2 id="guidance-title" className="mt-1 text-xl  text-ink">{resource.title}</h2>
         </div>
         <Button variant="outline" size="sm" onClick={onFavorite} aria-pressed={resource.favorite}>
           <Heart className={cn(resource.favorite && "fill-rose text-rose")} aria-hidden />{resource.favorite ? "Saved" : "Save"}
@@ -115,7 +115,7 @@ function ResourceDetail({ resource, onFavorite }: { resource: GuidanceResource; 
       </ul>
       {resource.exercise && (
         <section className="mt-6 rounded-2xl border border-teal-100 bg-teal-50/50 p-4" aria-label={resource.exercise.title}>
-          <h3 className="mb-3 text-sm font-semibold text-teal-900">Practice: {resource.exercise.title}</h3>
+          <h3 className="mb-3 text-sm  text-teal-900">Practice: {resource.exercise.title}</h3>
           {resource.exercise.tool === "checklist" && <Checklist key={resource.id} id={resource.id} items={resource.exercise.items ?? []} />}
           {resource.exercise.tool === "token-board" && <TokenBoard key={resource.id} id={resource.id} />}
           {resource.exercise.tool === "visual-timer" && <VisualTimer key={resource.id} />}

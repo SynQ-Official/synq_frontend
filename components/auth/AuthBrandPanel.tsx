@@ -1,18 +1,16 @@
 "use client";
 
-import { Grain, Swash } from "@/components/home/Atmosphere";
-import { ACCENT_LIGHT, DISPLAY_L, LABEL } from "@/components/home/typography";
+import { Grain } from "@/components/home/Atmosphere";
+import { ACCENT_DARK, DISPLAY_L } from "@/components/home/typography";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { BrainCircuit, HeartHandshake, Quote, ShieldCheck } from "lucide-react";
-
-const POINT_ICONS = [BrainCircuit, ShieldCheck, HeartHandshake] as const;
 
 /**
- * Desktop-only storytelling column for /auth/*: frosted glass lit like the home hero (teal mist into champagne, fine
- * grain), the accent phrase underlined by the hero's gold stroke, the points as a calm list, the quote closing the panel.
+ * Desktop-only story column for /auth/*: one solid block of the logo's deep teal beside the form, white type, the
+ * points as a ruled list and the quote closing it. It sits at its own height and stays in view while a long form
+ * scrolls, instead of stretching to the form's height.
  */
 export function AuthBrandPanel() {
   const { dictionary } = useLanguage();
@@ -21,51 +19,41 @@ export function AuthBrandPanel() {
   return (
     <motion.aside
       aria-labelledby="auth-brand-title"
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, ease: EASE_OUT }}
-      className="relative isolate hidden min-h-[min(36rem,calc(100dvh-16rem))] flex-col overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/65 p-10 text-ink shadow-[inset_0_1px_0_#fff,0_30px_60px_-34px_rgb(17_76_97/0.3)] backdrop-blur-xl lg:flex xl:p-14 2xl:p-16"
+      transition={{ duration: 0.8, ease: EASE_OUT }}
+      className="relative isolate hidden overflow-hidden rounded-[1.75rem] bg-teal-900 p-10 text-white shadow-[0_2px_4px_rgb(13_61_80/0.12),0_32px_64px_-36px_rgb(13_61_80/0.7)] lg:sticky lg:top-24 lg:flex lg:flex-col xl:p-14"
     >
-      {/* The hero's light: teal mist from the top corner, champagne from the bottom; teal into gold along the edge */}
-      <span aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_55%_at_0%_0%,rgb(191_221_225/0.6),transparent_70%),radial-gradient(65%_55%_at_100%_100%,rgb(230_213_170/0.5),transparent_72%)]" />
-      <Grain tone="light" />
-      <span aria-hidden className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-teal-300 via-gold to-gold-100" />
+      {/* A thin gold edge along the top is the only ornament. */}
+      <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gold-300/60" />
+      <Grain tone="deep" />
 
-      <motion.div variants={stagger(0.08, 0.2)} initial="hidden" animate="show" className="flex flex-1 flex-col">
-        <motion.p variants={fadeUp(0, 10)} className={cn(LABEL, "inline-flex items-center gap-3 text-teal-700")}>
-          <span aria-hidden className="h-px w-8 bg-gold" />
-          {brand.eyebrow}
-        </motion.p>
-
-        <motion.h2 id="auth-brand-title" variants={fadeUp(0, 14)} className={cn(DISPLAY_L, "mt-7 max-w-[14ch] text-[clamp(2.25rem,2.4vw+1.3rem,3.75rem)] text-ink")}>
-          {brand.titleA}{" "}
-          <span className="relative inline-block">
-            <span className={ACCENT_LIGHT}>{brand.titleB}</span>
-            <Swash delay={1.1} />
-          </span>
+      <motion.div variants={stagger(0.07, 0.15)} initial="hidden" animate="show" className="flex flex-col">
+        <motion.h2
+          id="auth-brand-title"
+          variants={fadeUp(0, 14)}
+          className={cn(DISPLAY_L, "max-w-[13ch] text-balance text-[clamp(2.25rem,2.4vw+1.3rem,3.75rem)] leading-[1.04] text-white")}
+        >
+          {brand.titleA} <span className={ACCENT_DARK}>{brand.titleB}</span>
         </motion.h2>
 
-        <motion.p variants={fadeUp(0, 12)} className="mt-6 max-w-md text-[1.0625rem] leading-8 text-ink-soft 2xl:max-w-lg">
+        <motion.p variants={fadeUp(0, 12)} className="mt-6 max-w-[42ch] text-pretty text-[1.0625rem] leading-[1.7] text-teal-100">
           {brand.body}
         </motion.p>
 
-        <motion.ul variants={fadeUp(0, 12)} className="mt-9 max-w-md 2xl:max-w-lg divide-y divide-line overflow-hidden rounded-2xl border border-white/80 bg-white/60 backdrop-blur-sm">
-          {brand.points.map((point, index) => {
-            const Icon = POINT_ICONS[index % POINT_ICONS.length];
-            return (
-              <li key={point} className="flex items-center gap-4 px-4 py-3.5 text-[0.9375rem] font-medium text-ink">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-teal-200 bg-white text-teal-700">
-                  <Icon className="size-[1.0625rem]" strokeWidth={1.5} aria-hidden />
-                </span>
-                {point}
-              </li>
-            );
-          })}
+        <motion.ul variants={fadeUp(0, 12)} className="mt-10 max-w-md border-t border-white/15">
+          {brand.points.map((point) => (
+            <li key={point} className="flex items-baseline gap-4 border-b border-white/15 py-4 text-base font-medium leading-6 text-white">
+              <span aria-hidden className="size-1.5 shrink-0 translate-y-[-0.15em] rounded-full bg-gold-300" />
+              {point}
+            </li>
+          ))}
         </motion.ul>
 
-        <motion.figure variants={fadeUp(0, 12)} className="mt-auto max-w-sm pt-10">
-          <Quote className="size-5 text-gold-600 rtl:-scale-x-100" aria-hidden />
-          <blockquote className="mt-3 border-s border-gold ps-4 text-[0.9375rem] leading-7 text-ink-soft">{brand.quote}</blockquote>
+        <motion.figure variants={fadeUp(0, 12)} className="mt-12 max-w-sm">
+          <blockquote className="text-pretty font-[family-name:var(--font-home-serif)] text-title font-light leading-[1.4] text-white rtl:font-sans rtl:text-base">
+            {brand.quote}
+          </blockquote>
         </motion.figure>
       </motion.div>
     </motion.aside>

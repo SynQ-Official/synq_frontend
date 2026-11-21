@@ -83,7 +83,7 @@ function EntryBody({ entry, onClose }: { entry: JournalEntry; onClose: () => voi
   if (mode === "edit") {
     return (
       <div className="mt-2">
-        <h2 className="mb-5 pe-10 text-lg font-semibold text-ink">{h.edit}</h2>
+        <h2 className="mb-5 pe-10 text-lg  text-ink">{h.edit}</h2>
         <EntryForm
           initial={{
             content: entry.content,
@@ -107,7 +107,7 @@ function EntryBody({ entry, onClose }: { entry: JournalEntry; onClose: () => voi
       <div className="flex items-center gap-3 pe-10">
         <span className="flex size-12 items-center justify-center rounded-2xl text-2xl" style={{ background: mood?.soft ?? "#e3eeef" }} aria-hidden>{mood ? <MoodEmoji level={mood} className="text-3xl" /> : "📝"}</span>
         <div>
-          <h2 className="text-lg font-semibold text-ink">{formatDay(entry.createdAt, language, { weekday: "long", month: "long", day: "numeric" })}</h2>
+          <h2 className="text-lg  text-ink">{formatDay(entry.createdAt, language, { weekday: "long", month: "long", day: "numeric" })}</h2>
           <p className="text-xs text-muted-foreground"><AnalysisNote entry={entry} /></p>
         </div>
       </div>
@@ -121,12 +121,12 @@ function EntryBody({ entry, onClose }: { entry: JournalEntry; onClose: () => voi
 
       {!entry.isPrivate && (
         <div className="mt-5 rounded-2xl border border-teal-100 bg-teal-50/60 p-4">
-          <p className="text-sm font-semibold text-ink">{h.shareTitle}</p>
+          <p className="text-sm  text-ink">{h.shareTitle}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">{h.shareHint}</p>
           <Button size="sm" variant="outline" className="mt-3" onClick={() => void share()}><Share2 aria-hidden />{h.share}</Button>
           {excerpts.length > 0 && (
             <div className="mt-4">
-              <p className="mb-1.5 text-xs font-semibold text-teal-800">{h.shared}</p>
+              <p className="mb-1.5 text-xs  text-teal-800">{h.shared}</p>
               <ul className="space-y-1.5">
                 {excerpts.map((item) => (
                   <li key={item.id} className="flex items-start justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 text-sm text-ink-soft">

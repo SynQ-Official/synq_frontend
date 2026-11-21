@@ -67,7 +67,7 @@ export function ParentPackShell({ children }: { children: ReactNode }) {
         </nav>
         <Link
           href={`${PARENT_PACK_BASE}/safety#emergency`}
-          className="inline-flex shrink-0 items-center gap-2 rounded-full border border-rose-100 bg-rose-50 px-3.5 py-2 text-[0.8125rem] font-semibold text-rose-700 hover:bg-rose-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-700"
+          className="inline-flex shrink-0 items-center gap-2 rounded-full border border-rose-100 bg-rose-50 px-3.5 py-2 text-[0.8125rem]  text-rose-700 hover:bg-rose-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-700"
         >
           <LifeBuoy className="size-4" aria-hidden />
           Emergency &amp; safety plan

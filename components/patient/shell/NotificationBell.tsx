@@ -33,7 +33,7 @@ export function NotificationBell({ placement = "strip" }: { placement?: "rail" |
       </PopoverTrigger>
       <PopoverContent align={placement === "rail" ? "start" : "end"} sideOffset={8} className="lm-glass w-[min(22rem,calc(100vw-2rem))] rounded-2xl p-2">
         <div className="flex items-center justify-between gap-3 px-3 py-2">
-          <p className="text-sm font-semibold text-ink">{copy.shell.notifications.title}</p>
+          <p className="text-sm  text-ink">{copy.shell.notifications.title}</p>
           {unreadCount > 0 && (
             <button type="button" onClick={markAllRead} className="text-xs font-medium text-teal-700 hover:underline">
               {copy.shell.notifications.markAllRead}
@@ -58,7 +58,7 @@ export function NotificationBell({ placement = "strip" }: { placement?: "rail" |
                     {item.kind === "checkin" ? <HeartPulse className="size-4" aria-hidden /> : <FileText className="size-4" aria-hidden />}
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold leading-snug text-ink">{item.title}</span>
+                    <span className="block text-sm  leading-snug text-ink">{item.title}</span>
                     <span className="mt-0.5 block text-[0.8125rem] leading-snug text-muted-foreground">{item.body}</span>
                   </span>
                 </Link>

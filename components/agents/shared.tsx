@@ -2,7 +2,6 @@
 
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
-import { CountUp } from "@/components/home/CountUp";
 import { homeSerif } from "@/components/home/fonts";
 import { Footer } from "@/components/home/Footer";
 import { CURTAIN, HomeSection } from "@/components/home/HomeSection";
@@ -65,7 +64,7 @@ export function PillLink({ href, children, tone = "ink" }: { href: string; child
     <Link
       href={href}
       className={cn(
-        "group inline-flex min-h-14 items-center gap-3 rounded-full py-1.5 ps-7 pe-1.5 text-[0.9375rem] font-semibold transition-[background-color,transform] duration-300 ease-out-soft active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2",
+        "group inline-flex min-h-14 items-center gap-3 rounded-full py-1.5 ps-7 pe-1.5 text-[0.9375rem]  transition-[background-color,transform] duration-300 ease-out-soft active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2",
         tone === "ink"
           ? "bg-ink text-white shadow-[0_14px_30px_-14px_rgb(17_76_97/0.7)] hover:bg-teal-800 focus-visible:outline-teal-500"
           : "bg-white text-ink shadow-[0_18px_36px_-18px_rgb(0_0_0/0.6)] hover:bg-gold-100 focus-visible:outline-gold-300",
@@ -92,7 +91,7 @@ export function StatsStrip({ stats, tone = "light", className }: { stats: readon
       {stats.map(([value, label], index) => (
         <div key={label} className={cn("min-w-0", index > 0 && cn("border-s ps-4 sm:ps-7", dark ? "border-white/20" : "border-line-strong"))}>
           <dd dir="ltr" className={cn(SERIF, "text-[clamp(2rem,2vw+1.25rem,3.25rem)] font-light leading-none tracking-[-0.03em] tabular-nums rtl:text-end", dark ? "text-white" : "text-ink")}>
-            <CountUp value={value} />
+            {value}
           </dd>
           <dt className={cn("mt-2 text-[0.8125rem] leading-snug sm:text-[0.875rem]", dark ? "text-teal-100" : "text-ink-soft")}>{label}</dt>
         </div>
@@ -164,7 +163,7 @@ export function Boundaries({ agent, counter, tone = "tint" }: { agent: AgentId; 
               <p className={cn(DISPLAY_M, "mt-2 text-ink")}>{handoff.title}</p>
               <p className={cn(BODY_SM, "mt-2 text-[1rem]")}>{handoff.body}</p>
             </div>
-            <span className={cn("order-3 hidden shrink-0 items-center gap-3 text-[0.9375rem] font-semibold sm:inline-flex", other.tone.text)}>
+            <span className={cn("order-3 hidden shrink-0 items-center gap-3 text-[0.9375rem]  sm:inline-flex", other.tone.text)}>
               {handoff.cta}
             </span>
             <span className={cn("order-2 ms-auto flex size-12 shrink-0 items-center justify-center rounded-full transition-colors duration-300 sm:order-4 sm:ms-0", other.tone.arrow)} aria-hidden>
@@ -207,16 +206,12 @@ export function Closing({ agent, tone }: { agent: AgentId; tone: "deep" | "champ
       />
       <div className="page-container">
         <motion.div variants={stagger(0.09, 0.05)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3", deep ? "text-teal-200" : "text-teal-700")}>
-            <span aria-hidden className={cn("h-px w-8", deep ? "bg-gold-300" : "bg-gold-600")} />
-            {cta.eyebrow}
-          </motion.p>
           <h2 id="start-title" className={cn(SERIF, "mt-8 text-[clamp(3rem,6.6vw+0.5rem,7rem)] font-light leading-[0.98] tracking-[-0.04em] rtl:tracking-normal", deep ? "text-white" : "text-ink")}>
             <span className="block">
               <WordReveal>{cta.titleA}</WordReveal>
             </span>
             <span className="block">
-              <WordReveal className={deep ? "italic text-gold-100 rtl:not-italic" : "italic text-gold-600 rtl:not-italic"} delay={0.15}>
+              <WordReveal className={deep ? " text-white" : " text-teal-900"} delay={0.15}>
                 {cta.titleB}
               </WordReveal>
             </span>

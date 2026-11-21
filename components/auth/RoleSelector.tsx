@@ -18,7 +18,7 @@ export function RoleSelector({ role, onChange, language }: { role: AuthRole | nu
   ] as const;
   return (
     <fieldset className="mt-6">
-      <legend className="text-[0.9375rem] font-semibold text-ink">{copy.legend}</legend>
+      <legend className="text-[0.9375rem]  text-ink">{copy.legend}</legend>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {options.map(({ value, icon: Icon, title, hint }) => (
           <label key={value} className="cursor-pointer">
@@ -32,7 +32,7 @@ export function RoleSelector({ role, onChange, language }: { role: AuthRole | nu
             >
               <Icon className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden />
               <span>
-                <span className="block text-[0.9375rem] font-semibold text-ink">{title}</span>
+                <span className="block text-[0.9375rem]  text-ink">{title}</span>
                 <span className="block text-[0.8125rem] leading-5 text-ink-soft">{hint}</span>
               </span>
             </span>

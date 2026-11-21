@@ -20,7 +20,7 @@ export function FamilySettings() {
       {me.error ? <LoadError error={me.error} retry={me.reload} /> : me.data ? <ProfileForm key={me.data.id} profile={me.data} onSaved={me.setData} /> : <p className="text-sm text-ink-muted">{t.loading}</p>}
 
       <Card>
-        <h2 className="text-base font-semibold">{t.settings.children}</h2>
+        <h2 className="text-base ">{t.settings.children}</h2>
         {children.error ? <LoadError error={children.error} retry={children.reload} /> : (
           <ul className="mt-3 divide-y divide-line">
             {(children.data ?? []).map((link) => <AccessRow key={link.childId} link={link} onChange={() => { children.reload(); consents.reload(); }} />)}
@@ -29,7 +29,7 @@ export function FamilySettings() {
       </Card>
 
       <Card>
-        <h2 className="text-base font-semibold">{t.settings.consents}</h2>
+        <h2 className="text-base ">{t.settings.consents}</h2>
         {consents.error ? <LoadError error={consents.error} retry={consents.reload} /> : (
           <ul className="mt-3 space-y-2 text-sm">
             {(consents.data ?? []).map((c) => (
@@ -72,7 +72,7 @@ function ProfileForm({ profile, onSaved }: { profile: ParentProfile; onSaved: (p
 
   return (
     <Card>
-      <h2 className="text-base font-semibold">{t.settings.profile}</h2>
+      <h2 className="text-base ">{t.settings.profile}</h2>
       <p className="mt-1 text-sm text-ink-muted" dir="ltr">{profile.email}</p>
       <form onSubmit={save} className="mt-3 grid gap-3 sm:grid-cols-2">
         <label className="text-sm font-medium">{t.auth.firstName}<input required maxLength={60} className={inputClass} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} /></label>

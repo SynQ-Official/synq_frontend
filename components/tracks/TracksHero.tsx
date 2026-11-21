@@ -2,7 +2,7 @@
 
 import { WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
-import { ACCENT_LIGHT, BODY, DISPLAY_XL, LABEL } from "@/components/home/typography";
+import { ACCENT_LIGHT, BODY, DISPLAY_XL } from "@/components/home/typography";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { tracksCopy } from "@/lib/i18n/tracks";
 import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
@@ -35,10 +35,6 @@ export function TracksHero() {
       <Grain tone="light" />
       <div className="page-container grid items-center gap-14 lg:grid-cols-12 lg:gap-10">
         <motion.div variants={stagger(0.09, 0.05)} initial="hidden" animate="show" className="lg:col-span-6">
-          <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3 text-teal-700")}>
-            <span aria-hidden className="h-px w-8 bg-gold-600" />
-            {hero.eyebrow}
-          </motion.p>
           <h1 id="tracks-title" className={cn(DISPLAY_XL, "mt-7 text-[clamp(2.5rem,3.6vw+0.75rem,4.75rem)] text-ink")}>
             <span className="block">
               <WordReveal>{hero.titleA}</WordReveal>
@@ -55,7 +51,7 @@ export function TracksHero() {
           <motion.a
             variants={fadeUp(0, 14)}
             href="#explorer"
-            className="group mt-10 inline-flex min-h-12 items-center gap-3 rounded-full border border-line-strong bg-white/80 py-1.5 ps-6 pe-1.5 text-[0.9375rem] font-semibold text-ink backdrop-blur transition-colors duration-300 hover:border-teal-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+            className="group mt-10 inline-flex min-h-12 items-center gap-3 rounded-full border border-line-strong bg-white/80 py-1.5 ps-6 pe-1.5 text-[0.9375rem]  text-ink backdrop-blur transition-colors duration-300 hover:border-teal-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
           >
             {hero.scroll}
             <span className="flex size-9 items-center justify-center rounded-full bg-ink text-white transition-colors duration-300 group-hover:bg-teal-800">
@@ -89,7 +85,7 @@ export function TracksHero() {
                 open(id);
               }}
               className={cn(
-                "absolute z-10 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/80 bg-white/90 px-3.5 py-2 text-[0.8125rem] font-semibold text-ink shadow-float backdrop-blur-md transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500",
+                "absolute z-10 inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/80 bg-white/90 px-3.5 py-2 text-[0.8125rem]  text-ink shadow-float backdrop-blur-md transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500",
                 index === 0 && "start-[2%] top-[22%]",
                 index === 1 && "end-[2%] top-[22%]",
                 index === 2 && "start-1/2 bottom-[10%] -translate-x-1/2 rtl:translate-x-1/2",

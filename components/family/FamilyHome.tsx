@@ -29,7 +29,7 @@ export function FamilyHome() {
       <section className="lm-welcome p-6 sm:p-8">
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div className="min-w-0">
-            <h1 className="text-title font-semibold tracking-[-0.02em] text-balance" dir="auto">{t.home.hello(me.data?.firstName ?? "")}</h1>
+            <h1 className="text-title  tracking-[-0.02em] text-balance" dir="auto">{t.home.hello(me.data?.firstName ?? "")}</h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-muted">{t.home.lead}</p>
           </div>
           {!adding && <PrimaryButton onClick={() => setAdding(true)}><Plus className="size-4" aria-hidden />{t.home.add}</PrimaryButton>}
@@ -68,7 +68,7 @@ function RequestSteps({ status }: { status: ChildLink["status"] }) {
       {t.home.steps.map((label, i) => (
         <li key={label} aria-current={i === at ? "step" : undefined} className="min-w-0">
           <span aria-hidden className={cn("block h-1.5 rounded-full", i <= at ? (status === "REJECTED" ? "bg-rose-300" : status === "SUSPENDED" ? "bg-gold-300" : "bg-teal-600") : "bg-teal-100")} />
-          <span className={cn("mt-1.5 block truncate text-[0.6875rem]", i === at ? "font-semibold text-ink" : "text-ink-subtle")}>{label}</span>
+          <span className={cn("mt-1.5 block truncate text-[0.6875rem]", i === at ? " text-ink" : "text-ink-subtle")}>{label}</span>
         </li>
       ))}
     </ol>
@@ -83,13 +83,13 @@ function ChildCard({ link, onChange }: { link: ChildLink; onChange: () => void }
     <Card tone={STATUS_TONE[link.status]} className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span aria-hidden className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-200 to-teal-600 text-lg font-semibold text-white shadow-brand">{(link.firstName?.trim()[0] ?? "·").toUpperCase()}</span>
+          <span aria-hidden className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-200 to-teal-600 text-lg  text-white shadow-brand">{(link.firstName?.trim()[0] ?? "·").toUpperCase()}</span>
           <div className="min-w-0">
-            <h2 className="truncate text-lg font-semibold" dir="auto">{link.firstName}</h2>
+            <h2 className="truncate text-lg " dir="auto">{link.firstName}</h2>
             <p className="text-sm text-ink-muted">{link.age !== null ? `${t.overview.ageYears(link.age)} · ` : ""}{t.relationship[link.relationship]}</p>
           </div>
         </div>
-        <span className={cn("shrink-0 rounded-full px-3 py-1 text-xs font-semibold ring-1", badge)}>{t.status[link.status]}</span>
+        <span className={cn("shrink-0 rounded-full px-3 py-1 text-xs  ring-1", badge)}>{t.status[link.status]}</span>
       </div>
       <RequestSteps status={link.status} />
       <p className="text-sm leading-relaxed">{t.statusHelp[link.status]}</p>
@@ -104,11 +104,11 @@ function ChildCard({ link, onChange }: { link: ChildLink; onChange: () => void }
       )}
       {link.status === "ACTIVE" && (
         <div className="flex flex-wrap gap-2">
-          <Link href={`/family/children/${link.childId}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-teal-700 px-5 text-sm font-semibold text-white shadow-brand transition hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
+          <Link href={`/family/children/${link.childId}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-teal-700 px-5 text-sm  text-white shadow-brand transition hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
             {t.home.open} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />
           </Link>
           {link.permissions?.canViewResources && (
-            <Link href={`/family/children/${link.childId}?tab=room`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-white/80 px-5 text-sm font-semibold text-ink transition hover:border-teal-200 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
+            <Link href={`/family/children/${link.childId}?tab=room`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong bg-white/80 px-5 text-sm  text-ink transition hover:border-teal-200 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500">
               <BedDouble className="size-4" aria-hidden />{t.tabs.room}
             </Link>
           )}
@@ -140,7 +140,7 @@ function AddChild({ onDone, onCancel }: { onDone: () => void; onCancel: () => vo
   return (
     <Card>
       <form onSubmit={submit} className="space-y-4">
-        <h2 className="text-lg font-semibold">{t.addChild.title}</h2>
+        <h2 className="text-lg ">{t.addChild.title}</h2>
         <p className="text-sm text-ink-muted">{t.addChild.note}</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-sm font-medium">{t.addChild.firstName}<input className={inputClass} value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} /></label>
@@ -189,7 +189,7 @@ function SubmitRequest({ link, onDone }: { link: ChildLink; onDone: () => void }
   };
   return (
     <form onSubmit={submit} className="space-y-3 border-t border-line pt-3">
-      <h3 className="text-sm font-semibold">{t.submit.title}</h3>
+      <h3 className="text-sm ">{t.submit.title}</h3>
       <label className="block text-sm font-medium">{t.submit.clinicianEmail}
         <input type="email" dir="ltr" required className={inputClass} value={email} onChange={(e) => setEmail(e.target.value)} />
         <span className="mt-1 block text-xs font-normal text-ink-muted">{t.submit.clinicianHint}</span>
@@ -226,7 +226,7 @@ function ReviewAccess({ link, onDone }: { link: ChildLink; onDone: () => void })
   };
   return (
     <div className="space-y-3 border-t border-line pt-3">
-      <h3 className="text-sm font-semibold">{t.review.title}</h3>
+      <h3 className="text-sm ">{t.review.title}</h3>
       <p className="text-sm text-ink-muted">{t.review.lead}</p>
       <ul className="grid gap-1 text-sm sm:grid-cols-2">
         {PERMISSIONS.map((p) => {
@@ -234,7 +234,7 @@ function ReviewAccess({ link, onDone }: { link: ChildLink; onDone: () => void })
           return (
             <li key={p} className="flex items-center justify-between gap-2 rounded-lg bg-white/70 px-3 py-2">
               <span>{t.permission[p]}</span>
-              <span className={cn("text-xs font-semibold", on ? "text-sage-700" : "text-ink-muted")}>{on ? t.allowed : t.notAllowed}</span>
+              <span className={cn("text-xs ", on ? "text-sage-700" : "text-ink-muted")}>{on ? t.allowed : t.notAllowed}</span>
             </li>
           );
         })}

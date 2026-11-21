@@ -53,7 +53,7 @@ export function JournalHistory() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-ink">{h.title}</h2>
+        <h2 className="text-lg  text-ink">{h.title}</h2>
         <div role="group" aria-label={h.title} className="segmented">
           {RANGES.map((range) => (
             <button
@@ -135,7 +135,7 @@ function EntryCard({ entry, language, onOpen }: { entry: JournalEntry; language:
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-baseline justify-between gap-3">
-            <span className="text-sm font-semibold text-ink">{formatDay(entry.createdAt, language, { weekday: "short", month: "short", day: "numeric" })}</span>
+            <span className="text-sm  text-ink">{formatDay(entry.createdAt, language, { weekday: "short", month: "short", day: "numeric" })}</span>
             <span className="text-xs text-muted-foreground">{formatTime(entry.createdAt, language)}</span>
           </span>
           <span className="mt-1 line-clamp-2 block text-sm leading-relaxed text-ink-soft" dir="auto">{preview}</span>

@@ -3,8 +3,7 @@
 import { motion } from "framer-motion";
 import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { WordReveal } from "./AnimationUtilities";
-import { ACCENT_DARK, ACCENT_LIGHT, BODY, DISPLAY_L, LABEL } from "./typography";
+import { ACCENT_DARK, ACCENT_LIGHT, BODY, DISPLAY_L } from "./typography";
 
 type SectionHeaderProps = {
   /** Heading id — referenced by the section's `aria-labelledby`. */
@@ -27,7 +26,7 @@ type SectionHeaderProps = {
   className?: string;
 };
 
-/** Gold rule + eyebrow, two-tone heading, intro — revealed together. Shared by every home section. */
+/** Heading with a weight-carried accent, then the intro. Shared by every home section. */
 export function SectionHeader({
   id,
   eyebrow,
@@ -39,7 +38,6 @@ export function SectionHeader({
   as = "h2",
   variant = "classic",
   tone = "light",
-  counter,
   className,
 }: SectionHeaderProps) {
   const centered = align === "center";
@@ -47,7 +45,6 @@ export function SectionHeader({
   const editorial = variant === "editorial";
   const dark = tone === "dark";
   const Heading = as === "h1" ? motion.h1 : motion.h2;
-  const indexed = editorial && !!counter;
 
   return (
     <motion.header
@@ -63,37 +60,21 @@ export function SectionHeader({
       )}
     >
       <div className={cn(split && "lg:col-span-7")}>
-        <motion.p
-          variants={fadeUp()}
-          className={cn(editorial ? LABEL : "home-eyebrow", "flex flex-wrap items-center gap-x-3 gap-y-1", centered && "justify-center", editorial && (dark ? "text-teal-200" : "text-teal-700"))}
-        >
-          {indexed ? (
-            <>
-              <span dir="ltr" className={cn("font-mono text-[0.8125rem] font-medium normal-case tracking-normal tabular-nums", dark ? "text-gold-300" : "text-gold-600")}>
-                {counter}
-              </span>
-              <span aria-hidden className={cn("h-px w-8 shrink-0", dark ? "bg-white/25" : "bg-line-strong")} />
-            </>
-          ) : (
-            <span aria-hidden className={cn("h-px w-8 shrink-0", dark ? "bg-gold-300" : "bg-gold")} />
-          )}
-          {eyebrow}
-        </motion.p>
-
+        {/* No kicker above the heading: the heading carries the section on its own. `eyebrow` stays as the accessible
+            description for screen readers only, so translations keep their meaning. */}
+        <span className="sr-only">{eyebrow}</span>
         {editorial ? (
-          <Heading id={id} className={cn(DISPLAY_L, "mt-6", dark ? "text-white" : "text-ink")}>
-            <WordReveal>{titleA}</WordReveal>
+          <Heading id={id} variants={fadeUp()} className={cn(DISPLAY_L, "text-balance", dark ? "text-white" : "text-ink")}>
+            {titleA}
             {titleB ? (
               <>
                 {" "}
-                <WordReveal className={dark ? ACCENT_DARK : ACCENT_LIGHT} delay={0.12}>
-                  {titleB}
-                </WordReveal>
+                <span className={dark ? ACCENT_DARK : ACCENT_LIGHT}>{titleB}</span>
               </>
             ) : null}
           </Heading>
         ) : (
-          <Heading id={id} variants={fadeUp()} className="home-heading mt-5">
+          <Heading id={id} variants={fadeUp()} className="home-heading text-balance">
             {titleA}
             {titleB ? (
               <>
@@ -109,9 +90,9 @@ export function SectionHeader({
         <motion.p
           variants={fadeUp()}
           className={cn(
-            editorial ? cn(BODY, dark && "text-teal-100") : "home-body",
+            editorial ? cn(BODY, "text-pretty", dark && "text-teal-100") : "home-body",
             "max-w-2xl",
-            split ? "lg:col-span-5 lg:col-start-8 lg:pb-2" : editorial ? "mt-7" : "mt-5",
+            split ? "lg:col-span-5 lg:col-start-8 lg:pb-2" : editorial ? "mt-6" : "mt-5",
             centered && "mx-auto",
           )}
         >

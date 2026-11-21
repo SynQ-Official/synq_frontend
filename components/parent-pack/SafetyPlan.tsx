@@ -48,13 +48,13 @@ export function EmergencyPanel({ plan, resources }: { plan: Plan | null; resourc
   const emergency = plan?.emergencyNumber ? telLink(plan.emergencyNumber) : null;
   return (
     <section id="emergency" aria-labelledby="pp-emergency" className="scroll-mt-24 rounded-[1.5rem] border border-rose-100 bg-white p-5 shadow-sm sm:p-6">
-      <h2 id="pp-emergency" className="flex items-center gap-2 text-lg font-semibold text-rose-800"><TriangleAlert className="size-5" aria-hidden />If someone is in immediate danger</h2>
+      <h2 id="pp-emergency" className="flex items-center gap-2 text-lg  text-rose-800"><TriangleAlert className="size-5" aria-hidden />If someone is in immediate danger</h2>
       <p className="mt-1 text-sm text-ink-soft">Call your local emergency services now. SynQ does not call anyone for you and is not an emergency service.</p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <div className="space-y-2">
           {emergency ? (
-            <a href={emergency} className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-rose-700 px-5 text-base font-semibold text-white shadow-sm hover:bg-rose-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-700">
+            <a href={emergency} className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-rose-700 px-5 text-base  text-white shadow-sm hover:bg-rose-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-700">
               <Phone className="size-5" aria-hidden />Call emergency services · {plan!.emergencyNumber}
             </a>
           ) : (
@@ -64,7 +64,7 @@ export function EmergencyPanel({ plan, resources }: { plan: Plan | null; resourc
           )}
           {resources.length > 0 && (
             <div className="rounded-2xl bg-teal-50/80 p-4">
-              <p className="text-sm font-semibold text-teal-900">From your care team and SynQ</p>
+              <p className="text-sm  text-teal-900">From your care team and SynQ</p>
               <ul className="mt-1.5 space-y-1 text-sm text-teal-900">
                 {resources.map((line) => {
                   const href = telHref(line);
@@ -79,7 +79,7 @@ export function EmergencyPanel({ plan, resources }: { plan: Plan | null; resourc
                 const href = telLink(c.phone);
                 return (
                   <li key={`${c.name}${c.phone}`} className="flex items-center gap-3 px-4 py-2.5">
-                    <span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-ink" dir="auto">{c.name}</span><span className="block text-xs text-ink-muted">{ROLE_LABELS[c.role]}{c.relation ? ` · ${c.relation}` : ""}</span></span>
+                    <span className="min-w-0 flex-1"><span className="block text-sm  text-ink" dir="auto">{c.name}</span><span className="block text-xs text-ink-muted">{ROLE_LABELS[c.role]}{c.relation ? ` · ${c.relation}` : ""}</span></span>
                     {href && <Button asChild size="sm" variant="outline"><a href={href} aria-label={`Call ${c.name}`}><Phone aria-hidden />{c.phone}</a></Button>}
                   </li>
                 );
@@ -91,14 +91,14 @@ export function EmergencyPanel({ plan, resources }: { plan: Plan | null; resourc
         <div className="space-y-4">
           {plan && plan.agreedActions.length > 0 && (
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <h3 className="flex items-center gap-2 text-sm  text-ink">
                 Steps agreed with the care team {plan.reviewedWithProfessional && <span className="inline-flex items-center gap-1 text-xs font-medium text-teal-700"><ShieldCheck className="size-3.5" aria-hidden />reviewed</span>}
               </h3>
               <ol className="mt-1.5 list-decimal space-y-1 ps-5 text-sm text-ink">{plan.agreedActions.map((a) => <li key={a} dir="auto">{a}</li>)}</ol>
             </div>
           )}
           <div>
-            <h3 className="text-sm font-semibold text-ink">A calmer space, when it is safe</h3>
+            <h3 className="text-sm  text-ink">A calmer space, when it is safe</h3>
             <ul className="mt-1.5 space-y-1 text-sm text-ink-soft">{CALMER_SPACE.map((t) => <li key={t} className="flex gap-2"><span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-teal-500" />{t}</li>)}</ul>
             <p className="mt-2 text-xs text-ink-muted">General guidance only. It never replaces emergency services or your care team&apos;s instructions.</p>
           </div>
@@ -118,7 +118,7 @@ function ListEditor({ label, hint, items, onChange, max = 10 }: { label: string;
   };
   return (
     <fieldset>
-      <legend className="text-sm font-semibold text-ink">{label}</legend>
+      <legend className="text-sm  text-ink">{label}</legend>
       <p className="text-xs text-muted-foreground">{hint}</p>
       {items.length > 0 && (
         <ul className="mt-2 space-y-1.5">
@@ -169,16 +169,16 @@ function PlanEditor({ initial, onSaved, note, setNote }: { initial: Plan | null;
 
   return (
     <GlassCard className="space-y-6 p-5 sm:p-6" aria-labelledby="pp-plan">
-      <h2 id="pp-plan" className="text-lg font-semibold text-ink">Your safety plan</h2>
+      <h2 id="pp-plan" className="text-lg  text-ink">Your safety plan</h2>
 
       <label className="block max-w-sm">
-        <span className="text-sm font-semibold text-ink">Local emergency number</span>
+        <span className="text-sm  text-ink">Local emergency number</span>
         <span className="block text-xs text-muted-foreground">Type the number for where you live. SynQ never fills it in for you.</span>
         <Input className="mt-2" inputMode="tel" dir="ltr" value={plan.emergencyNumber ?? ""} onChange={(e) => setPlan({ ...plan, emergencyNumber: e.target.value })} aria-invalid={emergencyInvalid} />
       </label>
 
       <fieldset>
-        <legend className="text-sm font-semibold text-ink">Contacts</legend>
+        <legend className="text-sm  text-ink">Contacts</legend>
         <p className="text-xs text-muted-foreground">Trusted people, the treating professional and other emergency contacts.</p>
         {plan.contacts.length > 0 && (
           <ul className="mt-2 space-y-1.5">
@@ -206,7 +206,7 @@ function PlanEditor({ initial, onSaved, note, setNote }: { initial: Plan | null;
       <ListEditor label="Agreed safety steps" hint="What to do, in order, as agreed with the care team." items={plan.agreedActions} onChange={(agreedActions) => setPlan({ ...plan, agreedActions })} />
 
       <label className="block">
-        <span className="text-sm font-semibold text-ink">Communication preferences</span>
+        <span className="text-sm  text-ink">Communication preferences</span>
         <span className="block text-xs text-muted-foreground">What helps your child in a hard moment, what to avoid saying, who they prefer to talk to.</span>
         <Textarea className="mt-2" dir="auto" rows={3} maxLength={1000} value={plan.communication ?? ""} onChange={(e) => setPlan({ ...plan, communication: e.target.value })} />
       </label>

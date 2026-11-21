@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, HeartPulse, NotebookPen, ShieldCheck, Target, Volume2, VolumeX } from "lucide-react";
 import { homeSerif } from "@/components/home/fonts";
-import { BODY, LABEL, SERIF } from "@/components/home/typography";
+import { BODY, SERIF } from "@/components/home/typography";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { PatientLoading } from "@/components/patient/shell/PatientShell";
+import { HelpNow } from "@/components/help/HelpNow";
 import { LuminaHero3D } from "@/components/patient/welcome/LuminaHero3D";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -153,6 +154,7 @@ export function WelcomeExperience() {
       <header className="relative z-10 flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
         <BrandLogo size="sm" href={null} />
         <div className="flex items-center gap-3">
+          <HelpNow label="short" />
           {phase === "intro" && <LanguageSwitcher />}
           <Button variant="ghost" size="sm" onClick={go}>{w.skip}</Button>
         </div>
@@ -190,12 +192,7 @@ export function WelcomeExperience() {
           <AnimatePresence mode="wait">
             {phase === "intro" ? (
               <motion.div key="intro" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.5, ease: EASE_OUT }} className="flex w-full flex-col items-center">
-                <p className={cn(LABEL, "flex items-center gap-3 text-teal-700")}>
-                  <span aria-hidden className="h-px w-8 bg-gold-300" />
-                  {w.eyebrow}
-                  <span aria-hidden className="h-px w-8 bg-gold-300" />
-                </p>
-                <h1 className={cn(SERIF, "mt-4 max-w-[18ch] text-[clamp(2.125rem,2.4vw+1.4rem,3.5rem)] font-light leading-[1.06] tracking-[-0.03em] text-ink rtl:font-semibold rtl:tracking-normal")}>
+                <h1 className={cn(SERIF, "mt-4 max-w-[18ch] text-[clamp(2.125rem,2.4vw+1.4rem,3.5rem)] font-light leading-[1.06] tracking-[-0.03em] text-ink  rtl:tracking-normal")}>
                   {w.tap}
                 </h1>
                 <p className={cn(BODY, "mt-4 max-w-xl")}>{w.intro}</p>
@@ -213,7 +210,7 @@ export function WelcomeExperience() {
                           <Icon className="size-4 sm:size-[1.125rem]" />
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-[0.9375rem] font-semibold text-ink">{pillar.title}</span>
+                          <span className="block text-[0.9375rem]  text-ink">{pillar.title}</span>
                           <span className="mt-0.5 block text-[0.875rem] leading-6 text-ink-soft max-sm:hidden">{pillar.body}</span>
                         </span>
                       </li>
@@ -244,7 +241,7 @@ export function WelcomeExperience() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: index === visible - 1 || phase === "done" ? 1 : 0.7, y: 0 }}
                       transition={{ duration: 0.7, ease: EASE_OUT }}
-                      className={index === 0 ? cn(SERIF, "text-[clamp(1.875rem,1.8vw+1.3rem,2.75rem)] font-light leading-[1.1] text-ink rtl:font-semibold") : cn(BODY, "max-w-xl")}
+                      className={index === 0 ? cn(SERIF, "text-[clamp(1.875rem,1.8vw+1.3rem,2.75rem)] font-light leading-[1.1] text-ink ") : cn(BODY, "max-w-xl")}
                       dir="auto"
                     >
                       {line}

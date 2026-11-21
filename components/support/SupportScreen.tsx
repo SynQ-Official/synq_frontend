@@ -4,13 +4,17 @@ import { WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
 import { DrawCheck } from "@/components/home/DrawCheck";
 import { homeSerif } from "@/components/home/fonts";
-import { ACCENT_LIGHT, BODY, BODY_SM, DISPLAY_L, DISPLAY_S, LABEL, SERIF } from "@/components/home/typography";
+import { ACCENT_LIGHT, BODY, BODY_SM, DISPLAY_L, DISPLAY_S, SERIF } from "@/components/home/typography";
 import { SiteHeader } from "@/components/layout/site-header";
 import { MinimalFooter } from "@/components/layout/MinimalFooter";
 import { FormField, IconInput } from "@/components/shared/FormField";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { EmergencyNumbers } from "@/components/help/EmergencyNumbers";
+import { PendingLegalField } from "@/components/legal/PendingLegalField";
+import { CONTACT } from "@/lib/config/brand";
 import { ROUTES } from "@/lib/config/routes";
+import { fillHelpAnswer } from "@/lib/i18n/help";
 import { EASE_OUT, REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
@@ -77,7 +81,7 @@ function FaqItem({ item, index, open, onToggle }: { item: { question: string; an
 }
 
 export function SupportScreen() {
-    const { dictionary, direction } = useLanguage();
+    const { dictionary, direction, language } = useLanguage();
     const copy = dictionary.support;
     const [openFaq, setOpenFaq] = useState(0);
     const [sent, setSent] = useState(false);
@@ -98,6 +102,11 @@ export function SupportScreen() {
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        // No support API exists: the message goes out through the visitor's own e-mail app, never silently dropped.
+        if (!CONTACT.email) return;
+        const form = new FormData(event.currentTarget);
+        const body = `${form.get("message") ?? ""}\n\n${form.get("name") ?? ""} <${form.get("email") ?? ""}>`;
+        window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(String(form.get("subject") ?? ""))}&body=${encodeURIComponent(body)}`;
         setSent(true);
         event.currentTarget.reset();
         setSubject("");
@@ -118,10 +127,6 @@ export function SupportScreen() {
                     {/* ── Opening: the question, and what to expect ─────────────────────── */}
                     <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
                         <motion.header variants={stagger(0.08)} initial="hidden" animate="show" className="lg:col-span-7">
-                            <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3 text-teal-700")}>
-                                <span aria-hidden className="h-px w-8 bg-gold" />
-                                {copy.eyebrow}
-                            </motion.p>
 
                             <h1 aria-label={copy.title} className={cn(DISPLAY_L, "mt-6 text-ink")}>
                                 <span aria-hidden>
@@ -150,7 +155,7 @@ export function SupportScreen() {
                                             <Icon className="size-5" strokeWidth={1.5} aria-hidden />
                                         </span>
                                         <span className="min-w-0">
-                                            <span className="block text-[1rem] font-semibold text-ink">{channel.title}</span>
+                                            <span className="block text-[1rem]  text-ink">{channel.title}</span>
                                             <span className="mt-1 block text-[0.9375rem] leading-6 text-ink-soft">{channel.body}</span>
                                         </span>
                                     </motion.li>
@@ -238,10 +243,11 @@ export function SupportScreen() {
                                 </div>
 
                                 <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <Button type="submit" size="lg" className="group w-full min-h-13 px-7 sm:w-auto">
+                                    <Button type="submit" size="lg" disabled={!CONTACT.email} className="group w-full min-h-13 px-7 sm:w-auto">
                                         <Send className="size-4 transition-transform duration-300 ease-out-soft group-hover:-translate-y-0.5 group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden />
                                         {copy.send}
                                     </Button>
+                                    {CONTACT.email ? null : <PendingLegalField label={copy.sendPending} />}
 
                                     <AnimatePresence initial={false}>
                                         {sent && (
@@ -264,10 +270,6 @@ export function SupportScreen() {
 
                         <motion.section variants={stagger(0.08)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} aria-labelledby="support-faq-title" className="lg:sticky lg:top-28 lg:col-span-5">
                             <motion.div variants={fadeUp(0, 14)}>
-                                <p className={cn(LABEL, "flex items-center gap-3 text-teal-700")}>
-                                    <span aria-hidden className="h-px w-8 bg-gold" />
-                                    {copy.faqEyebrow}
-                                </p>
                                 <h2 id="support-faq-title" className={cn(DISPLAY_S, "mt-4 text-[clamp(1.75rem,1.2vw+1.4rem,2.25rem)] text-ink")}>
                                     {copy.faqTitle}
                                 </h2>
@@ -275,12 +277,12 @@ export function SupportScreen() {
 
                             <motion.ul variants={fadeUp(0, 14)} className="mt-6 border-y border-line-strong/60">
                                 {copy.faq.map((item, i) => (
-                                    <FaqItem key={item.question} item={item} index={i} open={openFaq === i} onToggle={() => setOpenFaq(openFaq === i ? -1 : i)} />
+                                    <FaqItem key={item.question} item={{ question: item.question, answer: fillHelpAnswer(item.answer, language) }} index={i} open={openFaq === i} onToggle={() => setOpenFaq(openFaq === i ? -1 : i)} />
                                 ))}
                             </motion.ul>
 
                             <motion.p variants={fadeUp(0, 14)} className="mt-5">
-                                <Link href={ROUTES.privacy} className="inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
+                                <Link href={ROUTES.privacy} className="inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem]  text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
                                     <span className="home-link-line">{copy.faqMore}</span>
                                     <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
                                 </Link>
@@ -291,8 +293,9 @@ export function SupportScreen() {
                                     <LifeBuoy className="size-5" strokeWidth={1.5} aria-hidden />
                                 </span>
                                 <div className="min-w-0">
-                                    <p className="text-[1rem] font-semibold text-ink">{copy.urgentTitle}</p>
+                                    <p className="text-[1rem] text-ink">{copy.urgentTitle}</p>
                                     <p className="mt-1.5 text-[0.9375rem] leading-6 text-ink-soft">{copy.urgentBody}</p>
+                                    <EmergencyNumbers language={language} className="mt-4" />
                                 </div>
                             </motion.aside>
                         </motion.section>

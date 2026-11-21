@@ -11,10 +11,10 @@ import Link from "next/link";
 import { useRef } from "react";
 import { Magnetic, WordReveal } from "./AnimationUtilities";
 import { CURTAIN } from "./HomeSection";
-import { LABEL, SERIF } from "./typography";
+import { SERIF } from "./typography";
 
 /** The one italic word of the closing headline, in champagne. */
-const ACCENT_CHAMPAGNE = "italic text-gold-100 rtl:not-italic";
+const ACCENT_CHAMPAGNE = " text-white";
 
 /**
  * A sunrise behind the horizon: a warm disc of champagne and gold climbs from below as the section arrives, and its light
@@ -70,10 +70,6 @@ export const CTASection = () => {
                 <motion.div variants={stagger(0.09, 0.05)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT}>
                     <div className="grid grid-cols-1 items-end gap-14 lg:grid-cols-12 lg:gap-10">
                         <div className="lg:col-span-8">
-                            <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3 text-teal-200")}>
-                                <span aria-hidden className="h-px w-10 bg-gold-300" />
-                                {copy.eyebrow}
-                            </motion.p>
 
                             <h2 className={cn(SERIF, "mt-8 text-[clamp(3.25rem,8.2vw+0.5rem,8.5rem)] font-light leading-[0.96] tracking-[-0.04em] text-white rtl:tracking-normal")}>
                                 <span className="block">
@@ -107,7 +103,7 @@ export const CTASection = () => {
                                     >
                                         {/* Warmth floods in from the pointer's side of the disc */}
                                         <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 rounded-full bg-gold-300 transition-transform duration-700 ease-out-soft group-hover:scale-y-100" />
-                                        <span className="relative z-10 flex flex-col items-center gap-3 px-6 text-center text-[0.9375rem] font-semibold leading-snug">
+                                        <span className="relative z-10 flex flex-col items-center gap-3 px-6 text-center text-[0.9375rem]  leading-snug">
                                             {copy.primary}
                                             <ArrowRight className="size-5 transition-transform duration-500 ease-out-soft group-hover:translate-x-1 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
                                         </span>

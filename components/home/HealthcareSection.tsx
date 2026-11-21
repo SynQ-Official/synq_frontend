@@ -27,22 +27,20 @@ export const HealthcareSection = () => {
     <HomeSection id="healthcare" labelledBy="healthcare-title" tone="tint">
       <SectionHeader variant="editorial" id="healthcare-title" layout="split" eyebrow={copy.eyebrow} titleA={copy.titleA} titleB={copy.titleB} intro={copy.intro} />
 
-      <motion.ul variants={stagger(0.12, 0.1)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} className="mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-3 lg:gap-6">
+      <motion.ul variants={stagger(0.12, 0.1)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} className="mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-3 md:gap-8 lg:gap-12">
         {copy.pillars.map(([title, line], index) => {
           const Icon = ICONS[index];
           return (
-            <motion.li key={index} variants={fadeUp(0, 20)} className="flex flex-col rounded-panel border border-line bg-white p-6 shadow-card sm:p-8">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-teal-50 text-teal-700">
-                <Icon className="size-6" strokeWidth={1.75} aria-hidden />
-              </span>
-              <h3 className={cn(DISPLAY_S, "mt-6 text-ink")}>{title}</h3>
-              <p className="mt-3 text-[0.9375rem] leading-[1.7] text-ink-soft">{line}</p>
+            <motion.li key={index} variants={fadeUp(0, 20)} className="flex flex-col border-t-2 border-teal-900 pt-6">
+              <Icon className="size-5 text-teal-700" strokeWidth={1.75} aria-hidden />
+              <h3 className={cn(DISPLAY_S, "mt-5 text-balance text-ink")}>{title}</h3>
+              <p className="mt-3 max-w-[38ch] text-pretty text-[1rem] leading-[1.7] text-ink-soft">{line}</p>
             </motion.li>
           );
         })}
       </motion.ul>
 
-      <Link href={ROUTES.privacy} className="mt-8 inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
+      <Link href={ROUTES.privacy} className="mt-8 inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem]  text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
         <span className="home-link-line">{copy.link}</span>
         <ArrowRight className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
       </Link>

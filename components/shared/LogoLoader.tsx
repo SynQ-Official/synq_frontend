@@ -2,7 +2,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /** The official SynQ 3D mark (two profiles, leaves and the gold ring), background removed. */
-export const VITAMIND_MARK_SRC = "/assets/vitamind-mark-3d.png";
+export const SYNQ_MARK_SRC = "/assets/synq-mark.png";
 
 /**
  * Inline loading indicator: the 3D logo floating and breathing. Replaces generic circular
@@ -18,7 +18,7 @@ export function LogoSpinner({ size = 20, label, className }: { size?: number; la
       className={cn("relative inline-flex shrink-0 items-center justify-center", className)}
       style={{ width: size, height: size }}
     >
-      <Image src={VITAMIND_MARK_SRC} alt="" width={Math.min(128, size * 2)} height={Math.min(128, size * 2)} className="vm-loader-mark size-full object-contain" />
+      <Image src={SYNQ_MARK_SRC} alt="" width={Math.min(128, size * 2)} height={Math.min(128, size * 2)} className="vm-loader-mark size-full object-contain" />
     </span>
   );
 }
@@ -32,7 +32,7 @@ export function LogoLoader({ label, size = 72, className }: { label?: string; si
     <div role="status" aria-live="polite" className={cn("flex flex-col items-center justify-center gap-4", className)}>
       <span className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
         <span aria-hidden className="vm-loader-halo absolute inset-[-18%] rounded-full" />
-        <Image src={VITAMIND_MARK_SRC} alt="" width={Math.min(256, size * 2)} height={Math.min(256, size * 2)} priority className="vm-loader-mark relative size-full object-contain" />
+        <Image src={SYNQ_MARK_SRC} alt="" width={Math.min(256, size * 2)} height={Math.min(256, size * 2)} priority className="vm-loader-mark relative size-full object-contain" />
       </span>
       {label ? <p className="text-sm font-medium text-ink-muted">{label}</p> : <span className="sr-only">Loading</span>}
     </div>

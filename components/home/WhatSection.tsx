@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { HomeSection } from "./HomeSection";
 import { StageRise } from "./Interactions";
 import { SectionHeader } from "./SectionHeader";
-import { ACCENT_LIGHT, BODY, DISPLAY_S, SERIF } from "./typography";
+import { BODY, DISPLAY_S, SERIF } from "./typography";
 
 /** The web encodes in `public/media/web` (shipped with the app), in the order of `copy.films`. */
 const FILMS = ["/media/web/SynQ_Patient_2K.web.mp4", "/media/web/SynQ_Parent_2K.web.mp4", "/media/web/SynQ_Clinician_2K.web.mp4"] as const;
@@ -94,7 +94,7 @@ export const WhatSection = () => {
         >
           {copy.statement.split(" ").map((word, index) => (
             // Reading-size text needs more contrast than the display accent's gold-600.
-            <span key={`${word}-${index}`} className={copy.highlight.includes(word) ? cn(ACCENT_LIGHT, "text-gold-700") : undefined}>
+            <span key={`${word}-${index}`} className={copy.highlight.includes(word) ? " text-ink" : undefined}>
               {word}{" "}
             </span>
           ))}
@@ -115,7 +115,7 @@ export const WhatSection = () => {
             className={cn("flex flex-col-reverse justify-end gap-2 px-3 py-6 first:ps-0 sm:px-6 md:flex-row-reverse md:items-center md:gap-4 md:py-8 lg:px-10", index > 0 && "border-s border-line")}
           >
             <dt className="text-[0.8125rem] leading-snug text-ink-soft sm:text-[0.9375rem]">{label}</dt>
-            <dd className={cn(SERIF, "shrink-0 text-[clamp(2.5rem,4vw+1rem,4rem)] font-light leading-none text-gold-600")}>{value}</dd>
+            <dd className={cn(SERIF, "shrink-0 text-[clamp(2.5rem,4vw+1rem,4rem)] font-light leading-none text-ink")}>{value}</dd>
           </motion.div>
         ))}
       </motion.dl>
@@ -133,7 +133,7 @@ export const WhatSection = () => {
                   aria-pressed={current}
                   onClick={() => choose(index)}
                   className={cn(
-                    "relative isolate flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-2 text-center text-[0.8125rem] font-semibold leading-tight transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 sm:flex-row sm:gap-2 sm:rounded-full sm:px-4 sm:text-[0.9375rem]",
+                    "relative isolate flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-2 text-center text-[0.8125rem]  leading-tight transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 sm:flex-row sm:gap-2 sm:rounded-full sm:px-4 sm:text-[0.9375rem]",
                     current ? "text-white" : "text-ink-soft hover:bg-canvas hover:text-ink",
                   )}
                 >

@@ -45,7 +45,7 @@ export function ParentWellbeing() {
       <div className="grid items-start gap-5 xl:grid-cols-[1fr_1fr]">
         <ParentCheckIn key={history.data ? today?.id ?? "new" : "loading"} today={today} note={note} setNote={setNote} onSaved={(saved) => history.setData((list = []) => [...list.filter((c) => c.date.slice(0, 10) !== saved.date.slice(0, 10)), saved].sort((a, b) => a.date.localeCompare(b.date)))} />
         <GlassCard className="p-5" aria-labelledby="pp-mytrend">
-          <h2 id="pp-mytrend" className="text-base font-semibold text-ink">Your last 30 days</h2>
+          <h2 id="pp-mytrend" className="text-base  text-ink">Your last 30 days</h2>
           {history.error && !history.data ? <ErrorState onRetry={() => void history.refresh()} /> : !history.data ? <Skeleton className="mt-3 h-48" /> : history.data.length === 0 ? (
             <EmptyState icon={HeartHandshake} title="No check-ins yet" body="Your stress and fatigue will appear here, only for you." />
           ) : (
@@ -67,7 +67,7 @@ export function ParentWellbeing() {
             <li key={a.id}>
               <button type="button" onClick={() => setActivity(a)} className="lm-glass lm-card lm-card-lift flex h-full w-full flex-col items-start gap-2 p-4 text-start focus-visible:outline-2 focus-visible:outline-teal-500">
                 <span className="stat-tile stat-tile-sage"><Wind className="size-5" aria-hidden /></span>
-                <span className="text-sm font-semibold text-ink">{a.title}</span>
+                <span className="text-sm  text-ink">{a.title}</span>
                 <span className="text-xs text-muted-foreground">{a.description} · {a.minutes} min</span>
               </button>
             </li>
@@ -79,7 +79,7 @@ export function ParentWellbeing() {
       <section className="mt-8" aria-labelledby="pp-burnout">
         <SectionTitle id="pp-burnout" title="About parental burnout" subtitle="Educational content, pending clinical review." />
         <div className="grid gap-3 md:grid-cols-3">
-          {BURNOUT.map((b) => <div key={b.title} className="rounded-2xl border border-line bg-white/60 p-4"><h3 className="text-sm font-semibold text-ink">{b.title}</h3><p className="mt-1 text-sm leading-relaxed text-ink-soft">{b.body}</p></div>)}
+          {BURNOUT.map((b) => <div key={b.title} className="rounded-2xl border border-line bg-white/60 p-4"><h3 className="text-sm  text-ink">{b.title}</h3><p className="mt-1 text-sm leading-relaxed text-ink-soft">{b.body}</p></div>)}
         </div>
       </section>
 
@@ -116,7 +116,7 @@ function ParentCheckIn({ today, onSaved, note, setNote }: { note: Note; setNote:
   const heavy = form.stress >= 8 || form.fatigue >= 8;
   return (
     <GlassCard className="space-y-4 p-5" aria-labelledby="pp-mycheck">
-      <h2 id="pp-mycheck" className="text-base font-semibold text-ink">How are you today?</h2>
+      <h2 id="pp-mycheck" className="text-base  text-ink">How are you today?</h2>
       {range("fatigue", "Fatigue")}
       {range("stress", "Perceived stress")}
       {range("load", "Emotional workload")}
@@ -155,7 +155,7 @@ function CommunityResources() {
         {slots.map(({ icon: Icon, title, body }) => (
           <li key={title} className="flex gap-3 rounded-2xl border border-dashed border-line-strong bg-white/40 p-4">
             <span className="stat-tile stat-tile-sage shrink-0"><Icon className="size-5" aria-hidden /></span>
-            <span><span className="block text-sm font-semibold text-ink">{title}</span><span className="mt-0.5 block text-sm leading-relaxed text-ink-soft">{body}</span></span>
+            <span><span className="block text-sm  text-ink">{title}</span><span className="mt-0.5 block text-sm leading-relaxed text-ink-soft">{body}</span></span>
           </li>
         ))}
       </ul>

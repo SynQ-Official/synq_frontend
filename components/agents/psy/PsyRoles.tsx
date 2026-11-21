@@ -24,11 +24,12 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
     case 0:
       return (
         <ul className="space-y-2.5">
-          {requests.items.map(([name, code, , wait], row) => (
+          {requests.items.map(([, code, , wait], row) => (
             <motion.li key={code} {...rise(0.1 + row * 0.1)} className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-sm">
-              <Avatar name={name} />
+              <Avatar name={code} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[0.8125rem] font-semibold text-slate-900">{name}</span>
+                {/* A request shows a pseudonymous code until the clinician accepts it. */}
+                <span dir="ltr" className="block truncate text-start text-[0.8125rem] text-slate-900 rtl:text-end">{code}</span>
                 <span className="block truncate text-[0.6875rem] font-medium text-amber-700">{wait}</span>
               </span>
               <span className={cn("shrink-0 rounded-lg px-3 py-1.5 text-[0.75rem] font-medium", row === 0 ? "bg-slate-900 text-white" : "border border-slate-200 bg-white text-slate-700")}>{requests.accept}</span>
@@ -58,14 +59,14 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
           <p className="mb-3 flex items-center gap-3">
             <Avatar name={patient.name} size="lg" />
             <span className="min-w-0">
-              <span className="block truncate text-[1rem] font-semibold tracking-tight text-slate-900">{patient.name}</span>
+              <span className="block truncate text-[1rem]  tracking-tight text-slate-900">{patient.name}</span>
               <span className="mt-1 flex flex-wrap gap-1.5">
                 <TrafficChip light={0} label={preview.risk.labels[0]} />
               </span>
             </span>
           </p>
           <LifeChart band={patient.baseline} />
-          <p className="mt-2 flex items-center gap-2 text-[0.75rem] font-semibold text-[#0f766e]">
+          <p className="mt-2 flex items-center gap-2 text-[0.75rem]  text-[#0f766e]">
             <span className="size-2 rounded-full bg-[#0d9488]" />
             {patient.verdict}
           </p>
@@ -76,7 +77,7 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
         <ol className="space-y-2">
           {preview.agenda.items.map(([time, name, line], row) => (
             <motion.li key={time} {...rise(0.1 + row * 0.08)} className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-sm">
-              <span dir="ltr" className="w-11 shrink-0 text-[0.75rem] font-semibold tabular-nums text-slate-900">
+              <span dir="ltr" className="w-11 shrink-0 text-[0.75rem]  tabular-nums text-slate-900">
                 {time}
               </span>
               <span aria-hidden className={cn("h-7 w-0.5 shrink-0 rounded-full", row === 0 ? "bg-[#0d9488]" : "bg-[#99f6e4]")} />
@@ -107,7 +108,7 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
             ))}
           </div>
           <div className="min-w-0 space-y-2">
-            <p className="text-[0.9375rem] font-semibold text-ink">{report.headline}</p>
+            <p className="text-[0.9375rem]  text-ink">{report.headline}</p>
             <TrafficChip light={0} label={preview.risk.labels[0]} />
             <SharedTag label={preview.shared} />
           </div>
@@ -116,7 +117,7 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
     default:
       return (
         <div className="space-y-3">
-          <p className="flex items-center gap-2 text-[0.8125rem] font-semibold text-[#115e59]">
+          <p className="flex items-center gap-2 text-[0.8125rem]  text-[#115e59]">
             <NotebookPen className="size-4" aria-hidden />
             {report.annotate}
           </p>
@@ -144,7 +145,7 @@ function RoleVisual({ index, preview }: { index: number; preview: PsyPreviewCopy
 /** "Shared by the patient": the one rule behind every screen, as a small lock-and-check tag. */
 function SharedTag({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.6875rem] font-semibold text-sage-700 ring-1 ring-sage-100">
+    <span className="inline-flex items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.6875rem]  text-sage-700 ring-1 ring-sage-100">
       <ShieldCheck className="size-3" strokeWidth={2.25} aria-hidden />
       {label}
     </span>

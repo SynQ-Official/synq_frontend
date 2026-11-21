@@ -25,7 +25,7 @@ function Tile({ label, value, hint }: { label: string; value: string; hint?: str
   return (
     <div className="rounded-2xl bg-white/70 p-3.5">
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-2xl font-semibold tabular-nums text-ink">{value}</p>
+      <p className="mt-0.5 text-2xl  tabular-nums text-ink">{value}</p>
       {hint && <p className="text-xs text-teal-700">{hint}</p>}
     </div>
   );
@@ -84,7 +84,7 @@ function Body({ report }: { report: ReportDetail }) {
       <header className="flex flex-wrap items-start justify-between gap-3 pe-10">
         <div>
           <p className="lm-eyebrow">{report.status === "IN_PROGRESS" ? copy.reports.inProgress : copy.reports.ready}</p>
-          <h2 className="mt-1 text-xl font-semibold text-ink sm:text-2xl">{fill(copy.reports.weekOf, { range: formatRange(report.weekStart, report.weekEnd, language) })}</h2>
+          <h2 className="mt-1 text-xl  text-ink sm:text-2xl">{fill(copy.reports.weekOf, { range: formatRange(report.weekStart, report.weekEnd, language) })}</h2>
         </div>
         <Button variant="outline" size="sm" onClick={print} className="print:hidden"><Printer aria-hidden />{d.print}</Button>
       </header>
@@ -102,7 +102,7 @@ function Body({ report }: { report: ReportDetail }) {
 
       {report.insights.length > 0 && (
         <section aria-label={d.highlights}>
-          <h3 className="mb-2.5 flex items-center gap-2 text-sm font-semibold text-ink"><Sparkles className="size-4 text-teal-600" aria-hidden />{d.highlights}</h3>
+          <h3 className="mb-2.5 flex items-center gap-2 text-sm  text-ink"><Sparkles className="size-4 text-teal-600" aria-hidden />{d.highlights}</h3>
           <ul className="space-y-2">
             {report.insights.map((insight) => (
               <li key={insight.code} className={cn("rounded-2xl border px-4 py-3 text-sm leading-snug", TONE[insight.tone])} dir="auto">{insightText(insight, copy)}</li>
@@ -112,7 +112,7 @@ function Body({ report }: { report: ReportDetail }) {
       )}
 
       <section aria-label={d.moodChart}>
-        <h3 className="mb-2 text-sm font-semibold text-ink">{d.moodChart}</h3>
+        <h3 className="mb-2 text-sm  text-ink">{d.moodChart}</h3>
         {hasMood ? <TrendChart data={chart} height={200} domain={[1, 5]} ticks={[1, 3, 5]} /> : <p className="rounded-xl bg-white/60 px-4 py-8 text-center text-sm text-muted-foreground">{d.noMood}</p>}
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
           {best && <span className="chip chip-success">{d.bestDay}: {formatDay(best.date, language, { weekday: "long" })} {moodForLevel(best.mood)?.emoji}</span>}
@@ -131,7 +131,7 @@ function Body({ report }: { report: ReportDetail }) {
 
       {(shown.length > 0 || report.averages.sleepHours !== null) && (
         <section aria-label={d.dimensions}>
-          <h3 className="mb-2.5 text-sm font-semibold text-ink">{d.dimensions}</h3>
+          <h3 className="mb-2.5 text-sm  text-ink">{d.dimensions}</h3>
           <ul className="grid gap-3 sm:grid-cols-2">
             {shown.map((item) => (
               <li key={item.key} className="rounded-2xl bg-white/70 p-3.5">
@@ -159,19 +159,19 @@ function Body({ report }: { report: ReportDetail }) {
         <section className="grid gap-3 sm:grid-cols-3">
           {report.topEmotions.length > 0 && (
             <div className="rounded-2xl bg-white/70 p-3.5">
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-ink-soft"><HeartHandshake className="size-3.5" aria-hidden />{d.emotions}</p>
+              <p className="mb-2 flex items-center gap-1.5 text-xs  text-ink-soft"><HeartHandshake className="size-3.5" aria-hidden />{d.emotions}</p>
               <div className="flex flex-wrap gap-1.5">{report.topEmotions.map((item) => <span key={item.emotion} className="chip">{copy.journal.emotions[item.emotion as EmotionKey] ?? item.emotion}</span>)}</div>
             </div>
           )}
           {report.exercisesCompleted > 0 && (
             <div className="rounded-2xl bg-white/70 p-3.5">
-              <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-ink-soft"><Dumbbell className="size-3.5" aria-hidden />{d.exercises}</p>
-              <p className="text-2xl font-semibold tabular-nums text-ink">{report.exercisesCompleted}</p>
+              <p className="mb-1 flex items-center gap-1.5 text-xs  text-ink-soft"><Dumbbell className="size-3.5" aria-hidden />{d.exercises}</p>
+              <p className="text-2xl  tabular-nums text-ink">{report.exercisesCompleted}</p>
             </div>
           )}
           {report.medication.adherence !== null && (
             <div className="rounded-2xl bg-white/70 p-3.5">
-              <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-ink-soft"><Pill className="size-3.5" aria-hidden />{d.medication}</p>
+              <p className="mb-1 flex items-center gap-1.5 text-xs  text-ink-soft"><Pill className="size-3.5" aria-hidden />{d.medication}</p>
               <p className="text-sm text-ink">{fill(d.taken, { taken: report.medication.taken, total: report.medication.taken + report.medication.missed + report.medication.skipped })}</p>
             </div>
           )}
@@ -180,12 +180,12 @@ function Body({ report }: { report: ReportDetail }) {
 
       {report.clinician && (
         <section className="rounded-2xl border border-teal-200 bg-teal-50/70 p-4" aria-label={d.clinician}>
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-teal-800"><CalendarCheck2 className="size-4" aria-hidden />{d.clinician}</h3>
+          <h3 className="flex items-center gap-2 text-sm  text-teal-800"><CalendarCheck2 className="size-4" aria-hidden />{d.clinician}</h3>
           {report.clinician.headline && <p className="mt-2 text-sm text-ink" dir="auto">{report.clinician.headline}</p>}
           {facts.length > 0 && <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-ink-soft" dir="auto">{facts.map((fact) => <li key={fact}>{fact}</li>)}</ul>}
           {report.clinician.note && (
             <div className="mt-3 rounded-xl bg-white/80 p-3">
-              <p className="text-xs font-semibold text-teal-800">{d.clinicianNote}</p>
+              <p className="text-xs  text-teal-800">{d.clinicianNote}</p>
               <p className="mt-1 whitespace-pre-wrap text-sm text-ink" dir="auto">{report.clinician.note}</p>
             </div>
           )}

@@ -97,7 +97,7 @@ export function UserMenu({ name, onOpenChange }: { name: string; onOpenChange?: 
         onPointerEnter={warmDashboard}
         onFocus={warmDashboard}
         onClick={() => setOpen(!open)}
-        className="group inline-flex min-h-11 cursor-pointer items-center gap-2.5 rounded-full border border-line bg-white/80 py-1 ps-1 pe-3 text-sm font-semibold text-ink shadow-xs backdrop-blur transition-[border-color,box-shadow] duration-300 ease-out-soft hover:border-teal-200 hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+        className="group inline-flex min-h-11 cursor-pointer items-center gap-2.5 rounded-full border border-line bg-white/80 py-1 ps-1 pe-3 text-sm  text-ink shadow-xs backdrop-blur transition-[border-color,box-shadow] duration-300 ease-out-soft hover:border-teal-200 hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
       >
         <span className="flex size-9 items-center justify-center rounded-full bg-[radial-gradient(circle_at_30%_25%,var(--color-teal-600),var(--color-teal-900))] text-[0.9375rem] font-medium text-white ring-2 ring-gold/40">
           {initialOf(name)}
@@ -124,7 +124,7 @@ export function UserMenu({ name, onOpenChange }: { name: string; onOpenChange?: 
                 <span className="flex size-10 items-center justify-center rounded-full bg-[radial-gradient(circle_at_30%_25%,var(--color-teal-600),var(--color-teal-900))] font-medium text-white ring-2 ring-gold/40">
                   {initialOf(name)}
                 </span>
-                <span className="min-w-0 truncate text-[1rem] font-semibold text-ink">{name}</span>
+                <span className="min-w-0 truncate text-[1rem]  text-ink">{name}</span>
               </p>
               <ul className="border-t border-line pt-2">
                 <li>

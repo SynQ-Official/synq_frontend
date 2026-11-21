@@ -2,19 +2,21 @@ import { BookHeart, BookOpen, FileText, HeartHandshake, HeartPulse, Headphones, 
 
 import { showsReads, type HomeTrack } from "@/lib/patient/content";
 
+export type PatientNavGroup = "daily" | "care" | "account";
+
 export type PatientNavKey = "home" | "checkin" | "journal" | "spark" | "library" | "ambiances" | "care" | "reports" | "settings";
 
-/** The patient screens, in the order they appear. */
-export const PATIENT_NAV: { key: PatientNavKey; href: string; icon: LucideIcon }[] = [
-  { key: "home", href: "/dashboard", icon: House },
-  { key: "checkin", href: "/dashboard/check-in", icon: HeartPulse },
-  { key: "journal", href: "/dashboard/journal", icon: BookOpen },
-  { key: "spark", href: "/dashboard/spark", icon: Zap },
-  { key: "library", href: "/dashboard/library", icon: BookHeart },
-  { key: "ambiances", href: "/dashboard/ambiances", icon: Headphones },
-  { key: "care", href: "/dashboard/care", icon: HeartHandshake },
-  { key: "reports", href: "/dashboard/reports", icon: FileText },
-  { key: "settings", href: "/dashboard/settings", icon: Settings },
+/** The patient screens, in the order they appear. `group` is the section of the sidebar they sit under. */
+export const PATIENT_NAV: { key: PatientNavKey; href: string; icon: LucideIcon; group: PatientNavGroup }[] = [
+  { key: "home", href: "/dashboard", icon: House, group: "daily" },
+  { key: "checkin", href: "/dashboard/check-in", icon: HeartPulse, group: "daily" },
+  { key: "journal", href: "/dashboard/journal", icon: BookOpen, group: "daily" },
+  { key: "spark", href: "/dashboard/spark", icon: Zap, group: "daily" },
+  { key: "library", href: "/dashboard/library", icon: BookHeart, group: "care" },
+  { key: "ambiances", href: "/dashboard/ambiances", icon: Headphones, group: "care" },
+  { key: "care", href: "/dashboard/care", icon: HeartHandshake, group: "care" },
+  { key: "reports", href: "/dashboard/reports", icon: FileText, group: "care" },
+  { key: "settings", href: "/dashboard/settings", icon: Settings, group: "account" },
 ];
 
 export function isActive(pathname: string, href: string) {

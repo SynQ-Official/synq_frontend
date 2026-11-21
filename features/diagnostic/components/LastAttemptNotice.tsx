@@ -62,7 +62,7 @@ export function LastAttemptNotice({ chatId, title, body, closeLabel, show, class
             >
               <Info className="mt-0.5 size-4 shrink-0 text-gold-700" aria-hidden />
               <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold text-ink">{title}</span>
+                <span className="block truncate text-sm  text-ink">{title}</span>
                 <span className={cn("mt-0.5 text-[0.8125rem] leading-5 text-ink-soft", open ? "block" : "hidden sm:block")}>{body}</span>
               </span>
             </button>

@@ -95,7 +95,7 @@ function SavedResult({ entry, onDismiss, onOpenInsights }: { entry: JournalEntry
       <div className="flex items-start gap-3 p-5">
         <motion.span initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="stat-tile stat-tile-sage size-12 shrink-0"><Check className="size-5" aria-hidden /></motion.span>
         <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-ink">{affirm}</p>
+          <p className="text-base  text-ink">{affirm}</p>
           <p className="text-xs text-ink-muted">{j.saved}</p>
           <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-soft">
             {current.analysisStatus === "PENDING" ? <LogoSpinner size={14} /> : <Sparkles className="size-3.5 text-teal-600" aria-hidden />}
@@ -114,14 +114,14 @@ function SavedResult({ entry, onDismiss, onOpenInsights }: { entry: JournalEntry
         <div role="alert" className="mx-5 mb-5 flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
           <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
           <div>
-            <p className="font-semibold">{j.crisis.title}</p>
+            <p className="">{j.crisis.title}</p>
             <p className="mt-0.5">{crisisBodyFor(j.crisis, current.support?.emergencyResources)}</p>
             {current.support?.emergencyResources?.length ? (
               <ul className="mt-1.5 list-inside list-disc" dir="auto">{current.support.emergencyResources.map((item) => <li key={item}>{item}</li>)}</ul>
             ) : null}
-            <p className="mt-3 font-semibold">{j.crisis.stepsTitle}</p>
+            <p className="mt-3 ">{j.crisis.stepsTitle}</p>
             <ul className="mt-1 list-inside list-disc space-y-0.5">{j.crisis.steps.map((step) => <li key={step}>{step}</li>)}</ul>
-            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-semibold">
+            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 ">
               <a href={j.crisis.helplineUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{j.crisis.helpline}</a>
               <Link href="/support" className="underline underline-offset-2">{j.crisis.careTeam}</Link>
             </p>
@@ -132,7 +132,7 @@ function SavedResult({ entry, onDismiss, onOpenInsights }: { entry: JournalEntry
           <div className="flex min-w-0 items-start gap-3">
             <HeartHandshake className="mt-0.5 size-5 shrink-0 text-gold-700" aria-hidden />
             <div>
-              <p className="text-sm font-semibold text-ink">{j.heavy.title}</p>
+              <p className="text-sm  text-ink">{j.heavy.title}</p>
               <p className="mt-0.5 text-sm text-ink-soft">{j.heavy.body}</p>
             </div>
           </div>
@@ -142,7 +142,7 @@ function SavedResult({ entry, onDismiss, onOpenInsights }: { entry: JournalEntry
 
       {noticed.length > 0 && !crisis && (
         <div className="mx-5 mb-5">
-          <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-teal-800"><Lightbulb className="size-3.5" aria-hidden />{j.result.noticed}</p>
+          <p className="mb-2 flex items-center gap-1.5 text-xs  text-teal-800"><Lightbulb className="size-3.5" aria-hidden />{j.result.noticed}</p>
           <ul className="flex flex-wrap gap-2">
             {noticed.map((label) => <li key={label} className="chip" dir="auto">{label}</li>)}
           </ul>
@@ -151,7 +151,7 @@ function SavedResult({ entry, onDismiss, onOpenInsights }: { entry: JournalEntry
 
       <div className="border-t border-white/80 bg-white/50 p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-ink">{j.result.title}</p>
+          <p className="text-sm  text-ink">{j.result.title}</p>
           <Button size="sm" variant="ghost" onClick={onOpenInsights}>{j.result.openInsights}<ArrowRight className="rtl:-scale-x-100" aria-hidden /></Button>
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">{j.result.perDay}</p>
@@ -178,7 +178,7 @@ function SavedResult({ entry, onDismiss, onOpenInsights }: { entry: JournalEntry
 function Stat({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
     <div className="rounded-2xl bg-white/75 px-3 py-3">
-      <p className="flex items-center gap-1 text-xl font-semibold tabular-nums text-ink">{icon}{value}</p>
+      <p className="flex items-center gap-1 text-xl  tabular-nums text-ink">{icon}{value}</p>
       <p className="mt-0.5 text-[0.6875rem] leading-tight text-muted-foreground">{label}</p>
     </div>
   );

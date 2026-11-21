@@ -93,7 +93,7 @@ export function SupportCard({ resources, labels, onHide, className = "" }: { res
           <HeartHandshake className="size-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-base font-semibold text-ink sm:text-[1.0625rem]">{labels.title}</h2>
+          <h2 className="text-base  text-ink sm:text-[1.0625rem]">{labels.title}</h2>
           <p className="mt-1 text-sm leading-6 text-ink-soft">{resources.length > 0 ? labels.body : labels.bodyShort}</p>
           {resources.length > 0 && (
             <ul className="mt-3 space-y-2">

@@ -39,7 +39,7 @@ export function ChildCheckin({ childId, onSaved }: { childId: string; onSaved: (
       {/* key: the form starts from the saved answer of today (or empty), and restarts after a save */}
       <CheckinFormCard key={todays?.updatedAt ?? todays?.id ?? "new"} childId={childId} saved={todays} onSaved={() => { history.reload(); onSaved(); }} />
       <Card>
-        <h2 className="text-base font-semibold">{t.checkin.history}</h2>
+        <h2 className="text-base ">{t.checkin.history}</h2>
         <HistoryList parent={history.data.parent} child={history.data.child} lang={lang} />
       </Card>
     </div>
@@ -73,7 +73,7 @@ function CheckinFormCard({ childId, saved, onSaved }: { childId: string; saved?:
     <Card>
       <form onSubmit={save} className="space-y-5">
         <div>
-          <h2 className="text-base font-semibold">{t.checkin.title}</h2>
+          <h2 className="text-base ">{t.checkin.title}</h2>
           <p className="mt-1 text-sm text-ink-muted">{t.checkin.lead}</p>
         </div>
         {SCALES.map((field) => (
@@ -82,7 +82,7 @@ function CheckinFormCard({ childId, saved, onSaved }: { childId: string; saved?:
             <div className="flex flex-wrap items-center gap-2">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button key={n} type="button" aria-pressed={form[field].value === n} onClick={() => setField(field, { value: n })}
-                  className={cn("size-11 rounded-full border text-sm font-semibold", form[field].value === n ? "border-teal-700 bg-teal-700 text-white" : "border-line-strong bg-white")}>
+                  className={cn("size-11 rounded-full border text-sm ", form[field].value === n ? "border-teal-700 bg-teal-700 text-white" : "border-line-strong bg-white")}>
                   {n}
                 </button>
               ))}
@@ -145,7 +145,7 @@ function HistoryList({ parent, child, lang }: { parent: Observation[]; child: { 
         const c = child?.find((o) => o.date.slice(0, 10) === d);
         return (
           <li key={d} className="py-3 text-sm">
-            <p className="font-semibold">{new Date(`${d}T12:00:00Z`).toLocaleDateString(lang === "ar" ? "ar" : "en", { weekday: "short", day: "numeric", month: "short" })}</p>
+            <p className="">{new Date(`${d}T12:00:00Z`).toLocaleDateString(lang === "ar" ? "ar" : "en", { weekday: "short", day: "numeric", month: "short" })}</p>
             {p && <p className="mt-1"><span className="me-2 rounded bg-teal-50 px-1.5 py-0.5 text-xs text-teal-800">{t.checkin.yours}</span>{t.checkin.fields.mood} {value(p.mood)} · {t.checkin.fields.energy} {value(p.energy)} · {t.checkin.fields.focus} {value(p.focus)} · {t.checkin.fields.sleepHours} {value(p.sleepHours)}</p>}
             {c && <p className="mt-1"><span className="me-2 rounded bg-gold-50 px-1.5 py-0.5 text-xs text-gold-700">{t.checkin.childOwn}</span>{t.checkin.fields.mood} {c.mood} · {t.checkin.fields.energy} {c.energy} · {t.checkin.fields.focus} {c.focus} · {t.checkin.fields.sleepHours} {c.sleepHours}</p>}
           </li>
@@ -183,7 +183,7 @@ export function ChildJournal({ childId }: { childId: string }) {
     <div className="space-y-5">
       <Card>
         <form onSubmit={save} className="space-y-3">
-          <h2 className="text-base font-semibold">{t.journal.title}</h2>
+          <h2 className="text-base ">{t.journal.title}</h2>
           <p className="text-sm text-ink-muted">{t.journal.lead}</p>
           <textarea className={inputClass} rows={4} maxLength={6000} placeholder={t.journal.placeholder} value={text} onChange={(e) => setText(e.target.value)} />
           {error && <Notice kind="error">{error}</Notice>}
@@ -198,10 +198,10 @@ export function ChildJournal({ childId }: { childId: string }) {
           <li key={n.id}>
             <Card>
               <p className="text-xs text-ink-muted">{new Date(n.createdAt).toLocaleString(lang === "ar" ? "ar" : "en")}</p>
-              <h3 className="mt-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">{t.journal.youWrote}</h3>
+              <h3 className="mt-2 text-xs  uppercase tracking-wide text-ink-muted">{t.journal.youWrote}</h3>
               <p className="mt-1 whitespace-pre-wrap text-sm">{n.reported.content}</p>
               <div className="mt-3 rounded-xl bg-canvas p-3 text-sm">
-                <h4 className="text-xs font-semibold text-ink-muted">{t.journal.aiReading}</h4>
+                <h4 className="text-xs  text-ink-muted">{t.journal.aiReading}</h4>
                 {n.analysisStatus === "PENDING" && <p className="mt-1 text-ink-muted">{t.journal.pending}</p>}
                 {n.analysisStatus === "FAILED" && <p className="mt-1 text-ink-muted">{t.journal.failed}</p>}
                 {n.aiReading && <p className="mt-1">{t.journal.themes}: {n.aiReading.themes.length ? n.aiReading.themes.join(", ") : "—"}</p>}
@@ -221,7 +221,7 @@ function CrisisBanner({ note, compact }: { note: FamilyNote; compact?: boolean }
   const c = note.crisis!;
   return (
     <div role="alert" className={cn("rounded-xl border border-rose-100 bg-rose-50 p-3 text-sm text-rose-700", compact ? "mt-3" : "")}>
-      <p className="font-semibold">{c.careTeamAlerted ? t.journal.crisis[c.status] : t.journal.crisisNoAlert}</p>
+      <p className="">{c.careTeamAlerted ? t.journal.crisis[c.status] : t.journal.crisisNoAlert}</p>
       <p className="mt-1">{t.journal.emergency}</p>
       {note.support?.emergencyResources?.length ? <ul className="mt-1 list-disc ps-5">{note.support.emergencyResources.map((r) => <li key={r} dir="ltr">{r}</li>)}</ul> : null}
     </div>
@@ -239,7 +239,7 @@ export function ChildProgress({ childId }: { childId: string }) {
     <Card className="space-y-4 print:border-0">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">{t.progress.title}</h2>
+          <h2 className="text-base ">{t.progress.title}</h2>
           <p className="text-sm text-ink-muted">{t.progress.lead} ({report.data.from} → {report.data.to})</p>
         </div>
         <SecondaryButton type="button" onClick={() => window.print()} className="print:hidden">{t.progress.print}</SecondaryButton>
@@ -251,7 +251,7 @@ export function ChildProgress({ childId }: { childId: string }) {
             {(["mood", "energy", "focus", "sleepHours"] as const).map((f) => (
               <div key={f} className="rounded-xl bg-canvas p-3">
                 <dt className="text-xs text-ink-muted">{t.checkin.fields[f]} · {t.progress.average}</dt>
-                <dd className="text-lg font-semibold">{summary.averages[f] ?? "—"}</dd>
+                <dd className="text-lg ">{summary.averages[f] ?? "—"}</dd>
                 <dd className="text-xs text-ink-muted">{t.progress.unknown}: {summary.unknownAnswers[f] ?? 0}</dd>
               </div>
             ))}
@@ -259,7 +259,7 @@ export function ChildProgress({ childId }: { childId: string }) {
           {summary.sleepRange && <p className="text-sm">{t.progress.sleepRange}: {summary.sleepRange.min}–{summary.sleepRange.max} h</p>}
           {summary.difficulties.length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold">{t.progress.difficulties}</h3>
+              <h3 className="text-sm ">{t.progress.difficulties}</h3>
               <ul className="mt-1 flex flex-wrap gap-2 text-sm">{summary.difficulties.map((d) => <li key={d.label} className="rounded-full bg-canvas px-3 py-1">{t.difficulty[d.label] ?? d.label} · {d.count}</li>)}</ul>
             </div>
           )}

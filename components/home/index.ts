@@ -1,11 +1,9 @@
-export { CinematicIntro } from "./CinematicIntro";
 export { CTASection } from "./CTASection";
-export { Footer as FooterSection } from "./Footer";
 export { HealthcareSection } from "./HealthcareSection";
+export { WhatSection } from "./WhatSection";
+export { Footer as FooterSection } from "./Footer";
 export { TeamSection } from "./TeamSection";
 export { Hero as HeroSection } from "./Hero";
-export { WhatSection } from "./WhatSection";
 export { MarketingHeader as Header } from "@/components/layout/site-header";
 export { CustomCursor, ProgressBar } from "./ProgressBar";
-export { LoadingScreen } from "./LoadingScreen";
 export { GLSLHills } from "./GLSLHills";

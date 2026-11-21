@@ -31,7 +31,7 @@ function WritingStats() {
   const totals = insights.data?.totals;
   return (
     <GlassCard aria-label={s.title}>
-      <p className="text-sm font-semibold text-ink">{s.title}</p>
+      <p className="text-sm  text-ink">{s.title}</p>
       {!totals ? (
         <div className="mt-3 grid grid-cols-3 gap-2"><Skeleton className="h-16" /><Skeleton className="h-16" /><Skeleton className="h-16" /></div>
       ) : totals.entries === 0 ? (
@@ -44,7 +44,7 @@ function WritingStats() {
             { label: s.days, value: totals.activeDays },
           ].map((stat) => (
             <div key={stat.label} className="rounded-2xl bg-white/70 px-2 py-3">
-              <dd className="flex items-center justify-center gap-1 text-xl font-semibold tabular-nums text-ink">{stat.icon}{stat.value}</dd>
+              <dd className="flex items-center justify-center gap-1 text-xl  tabular-nums text-ink">{stat.icon}{stat.value}</dd>
               <dt className="mt-0.5 text-[0.6875rem] leading-tight text-muted-foreground">{stat.label}</dt>
             </div>
           ))}
@@ -119,7 +119,7 @@ function BreathRitual() {
           <Wind className="relative size-5 text-teal-700" aria-hidden />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink">{r.title}</p>
+          <p className="text-sm  text-ink">{r.title}</p>
           <AnimatePresence mode="wait">
             <motion.p key={label} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-live="polite" className={cn("mt-0.5 text-sm leading-snug", running ? "font-medium text-teal-800" : "text-ink-soft")}>
               {label}{running && <span className="ms-1.5 text-xs text-ink-muted tabular-nums">{breath + 1}/{BREATHS}</span>}
@@ -143,7 +143,7 @@ function JournalPromise() {
   const p = copy.journal.promise;
   return (
     <section aria-label={p.title} className="rounded-[var(--radius-card)] border border-white/70 bg-white/40 p-5">
-      <p className="text-sm font-semibold text-ink">{p.title}</p>
+      <p className="text-sm  text-ink">{p.title}</p>
       <ul className="mt-3 space-y-3">
         {p.items.map((text, index) => {
           const Icon = PROMISE_ICONS[index] ?? Sparkles;

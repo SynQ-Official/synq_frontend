@@ -12,7 +12,7 @@ export const dynamic = "force-static";
  * Logo mark + name on the brand's white / teal / gold palette. Static: rendered once at build time.
  */
 export async function GET() {
-  const mark = await readFile(join(process.cwd(), "public", "assets", "vitamind-mark-3d.png"));
+  const mark = await readFile(join(process.cwd(), "public", "assets", "synq-mark.png"));
   const markSrc = `data:image/png;base64,${mark.toString("base64")}`;
 
   return new ImageResponse(

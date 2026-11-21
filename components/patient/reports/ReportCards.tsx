@@ -54,7 +54,7 @@ export function ReportCard({ item, onOpen, locked = false }: { item: ReportListI
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-ink">{fill(copy.reports.weekOf, { range: formatRange(item.weekStart, item.weekEnd, language) })}</p>
+            <p className="text-sm  text-ink">{fill(copy.reports.weekOf, { range: formatRange(item.weekStart, item.weekEnd, language) })}</p>
             <span className="chip chip-pending mt-1.5">
               <CalendarClock className="size-3" aria-hidden />
               {copy.reports.inProgress} · {fill(copy.reports.dayOf, { a: dayOfPeriod(item.weekStart) })}
@@ -63,8 +63,8 @@ export function ReportCard({ item, onOpen, locked = false }: { item: ReportListI
           <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700"><LockKeyhole className="size-4" /></span>
         </div>
         <p className="text-xs text-muted-foreground">
-          <span>{copy.reports.metrics.checkins}: <b className="font-semibold text-ink-soft">{item.checkinDays}/7</b></span>
-          <span className="ms-4">{copy.reports.metrics.journal}: <b className="font-semibold text-ink-soft">{item.journalEntries}</b></span>
+          <span>{copy.reports.metrics.checkins}: <b className=" text-ink-soft">{item.checkinDays}/7</b></span>
+          <span className="ms-4">{copy.reports.metrics.journal}: <b className=" text-ink-soft">{item.journalEntries}</b></span>
         </p>
         <p className="text-sm font-medium text-teal-800">{fill(copy.reports.locked, { date: opensOn })}</p>
         <p className="text-xs leading-relaxed text-muted-foreground">{copy.reports.lockedHint}</p>
@@ -96,7 +96,7 @@ export function ReportCard({ item, onOpen, locked = false }: { item: ReportListI
 
       <div className="flex items-start justify-between gap-3 pe-11">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink">{fill(copy.reports.weekOf, { range: formatRange(item.weekStart, item.weekEnd, language) })}</p>
+          <p className="text-sm  text-ink">{fill(copy.reports.weekOf, { range: formatRange(item.weekStart, item.weekEnd, language) })}</p>
           <span className={cn("chip mt-1.5", inProgress ? "chip-pending" : "chip-success")}>
             {inProgress && <CalendarClock className="size-3" aria-hidden />}
             {inProgress ? `${copy.reports.inProgress} · ${fill(copy.reports.dayOf, { a: dayOfPeriod(item.weekStart) })}` : copy.reports.ready}
@@ -108,7 +108,7 @@ export function ReportCard({ item, onOpen, locked = false }: { item: ReportListI
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs text-muted-foreground">{copy.reports.metrics.mood}</p>
-            <p className="flex items-center gap-2 text-3xl font-semibold tabular-nums text-ink">
+            <p className="flex items-center gap-2 text-3xl  tabular-nums text-ink">
               {mood && <MoodEmoji level={mood} className="text-3xl" />}
               {item.moodAverage ?? "—"}
               {(up || down) && (
@@ -126,8 +126,8 @@ export function ReportCard({ item, onOpen, locked = false }: { item: ReportListI
       )}
 
       <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        <span>{copy.reports.metrics.checkins}: <b className="font-semibold text-ink-soft">{item.checkinDays}/7</b></span>
-        <span>{copy.reports.metrics.journal}: <b className="font-semibold text-ink-soft">{item.journalEntries}</b></span>
+        <span>{copy.reports.metrics.checkins}: <b className=" text-ink-soft">{item.checkinDays}/7</b></span>
+        <span>{copy.reports.metrics.journal}: <b className=" text-ink-soft">{item.journalEntries}</b></span>
       </p>
 
       {inProgress && (

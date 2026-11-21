@@ -15,7 +15,7 @@ function Resources({ lines, title }: { lines: string[]; title: string }) {
   if (lines.length === 0) return null;
   return (
     <div className="mt-4 rounded-2xl border border-teal-100 bg-teal-50/80 p-4">
-      <p className="text-sm font-semibold text-teal-900">{title}</p>
+      <p className="text-sm  text-teal-900">{title}</p>
       <ul className="mt-2 space-y-1.5">
         {lines.map((line) => {
           const href = telHref(line);
@@ -65,7 +65,7 @@ export function SosButton({ variant }: { variant: "wide" | "compact" }) {
         aria-haspopup="dialog"
         className={cn(
           // Visible, never alarming: a rose outline with dark text, solid only on hover / press.
-          "group inline-flex items-center justify-center gap-2 rounded-full border border-rose-300 bg-white font-semibold text-ink transition-colors duration-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white active:bg-rose-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500",
+          "group inline-flex items-center justify-center gap-2 rounded-full border border-rose-300 bg-white  text-ink transition-colors duration-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white active:bg-rose-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500",
           variant === "wide" ? "min-h-11 w-full px-4 text-sm" : "min-h-11 px-3.5 text-xs",
         )}
       >

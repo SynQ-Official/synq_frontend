@@ -53,12 +53,12 @@ export function MonthlyReport() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-lg font-semibold text-ink">{m.title}</h2>
+          <h2 className="text-lg  text-ink">{m.title}</h2>
           <p className="text-sm text-ink-soft">{m.subtitle}</p>
         </div>
         <div className="flex items-center gap-1" role="group" aria-label={m.title}>
           <Button variant="outline" size="icon" aria-label={m.previous} onClick={() => shift(-1)}><ChevronLeft className="rtl:-scale-x-100" aria-hidden /></Button>
-          <span className="min-w-32 text-center text-sm font-semibold text-ink" aria-live="polite">{label}</span>
+          <span className="min-w-32 text-center text-sm  text-ink" aria-live="polite">{label}</span>
           <Button variant="outline" size="icon" aria-label={m.next} onClick={() => shift(1)} disabled={atCurrent}><ChevronRight className="rtl:-scale-x-100" aria-hidden /></Button>
         </div>
       </div>
@@ -117,7 +117,7 @@ function Body({ report }: { report: DailyReport }) {
               { label: copy.checkin.goalStatus.MISSED, value: g.missed, tone: "text-rose-700" },
             ].map((item) => (
               <div key={item.label} className="rounded-2xl bg-white/70 px-2 py-3">
-                <dd className={cn("text-2xl font-semibold tabular-nums", item.tone)}>{item.value}</dd>
+                <dd className={cn("text-2xl  tabular-nums", item.tone)}>{item.value}</dd>
                 <dt className="mt-0.5 text-xs text-muted-foreground">{item.label}</dt>
               </div>
             ))}
@@ -147,11 +147,11 @@ function MetricCard({ metric, name, icon: Icon, unit }: { metric: DailyMetricBlo
         <div className="flex min-w-0 items-center gap-3">
           <span className="stat-tile size-10 shrink-0"><Icon className="size-[1.125rem]" aria-hidden /></span>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-ink">{name}</p>
+            <p className="text-sm  text-ink">{name}</p>
             <p className="text-xs text-muted-foreground">{m.average}</p>
           </div>
         </div>
-        <p className="text-3xl font-semibold tabular-nums text-ink" dir="ltr">{mean}</p>
+        <p className="text-3xl  tabular-nums text-ink" dir="ltr">{mean}</p>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">

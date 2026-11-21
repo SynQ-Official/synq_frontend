@@ -2,7 +2,7 @@
 
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
-import { ACCENT_LIGHT, BODY, LABEL, SERIF } from "@/components/home/typography";
+import { ACCENT_LIGHT, BODY, SERIF } from "@/components/home/typography";
 import { AgentAvatar } from "@/components/layout/site-header";
 import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -68,7 +68,7 @@ function HeroWindow() {
         <Floater className="-start-1 top-1 sm:-start-6 sm:top-[3%]" delay={0.2} seconds={7}>
           <ul className="flex flex-wrap gap-1.5">
             {preview.views.journal.themes.map((theme) => (
-              <li key={theme} className="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-gold-700 ring-1 ring-gold-100">
+              <li key={theme} className="inline-flex items-center gap-1 rounded-full bg-gold-50 px-2.5 py-1 text-[0.6875rem]  text-gold-700 ring-1 ring-gold-100">
                 <span className="size-1.5 rounded-full bg-gold" />
                 {theme}
               </li>
@@ -78,14 +78,14 @@ function HeroWindow() {
 
         <Floater className="-end-1 top-[38%] hidden sm:block lg:-end-6" delay={0.7} seconds={8}>
           <p className="text-[0.6875rem] font-medium text-ink-muted">{preview.views.trend.baseline}</p>
-          <p className="mt-0.5 flex items-center gap-2 text-[0.8125rem] font-semibold text-ink">
+          <p className="mt-0.5 flex items-center gap-2 text-[0.8125rem]  text-ink">
             <span className="size-2 rounded-full bg-teal-500" />
             {preview.views.trend.verdict}
           </p>
         </Floater>
 
         <Floater className="-end-1 bottom-1 sm:-end-3 sm:bottom-[2%]" delay={0.4} seconds={7.5}>
-          <p className="flex items-center gap-2 text-[0.75rem] font-semibold text-ink">
+          <p className="flex items-center gap-2 text-[0.75rem]  text-ink">
             <FileText className="size-4 text-gold-600" aria-hidden />
             {preview.views.report.title}
             <LockKeyhole className="size-3.5 text-teal-600" aria-hidden />
@@ -130,10 +130,6 @@ export function LuminaHero() {
             <span className="text-[0.8125rem] font-medium text-ink-muted">{identity.meta}</span>
           </motion.div>
 
-          <motion.p variants={fadeUp()} className={cn(LABEL, "mt-8 flex items-center gap-3 text-teal-700")}>
-            <span aria-hidden className="h-px w-8 bg-gold" />
-            {page.hero.eyebrow}
-          </motion.p>
 
           <h1 id="agent-title" className={cn(SERIF, "mt-6 text-[clamp(2.75rem,4.2vw+1rem,4.75rem)] font-light leading-[1.02] tracking-[-0.035em] text-ink rtl:tracking-normal")}>
             <span className="block">
@@ -156,7 +152,7 @@ export function LuminaHero() {
             </Magnetic>
             <a
               href="#flow"
-              className="group inline-flex min-h-11 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 transition-colors duration-200 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500"
+              className="group inline-flex min-h-11 items-center gap-2 rounded-md text-[0.9375rem]  text-teal-700 transition-colors duration-200 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500"
             >
               <span className="home-link-line">{page.hero.secondary}</span>
               <ArrowDown className="size-4 transition-transform duration-300 ease-out-soft group-hover:translate-y-0.5" aria-hidden />

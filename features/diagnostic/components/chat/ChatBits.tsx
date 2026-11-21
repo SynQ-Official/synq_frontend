@@ -74,7 +74,7 @@ export function CompletedNote({ language }: { language: Lang }) {
     >
       <MiraAvatar size="xl" />
       <div className="min-w-0">
-        <p className="flex items-center justify-center gap-2 text-lg font-semibold text-ink">
+        <p className="flex items-center justify-center gap-2 text-lg  text-ink">
           <ShieldCheck className="h-5 w-5 shrink-0 text-teal-700" aria-hidden />
           {diagnostic.completed.title}
         </p>

@@ -15,7 +15,8 @@ import { useState } from "react";
  */
 export function LuminaMoodCard({ copy, className }: { copy: LuminaTracksCopy["mood"]; className?: string }) {
   const reduce = useReducedMotion();
-  const [index, setIndex] = useState(3);
+  // Starts on "Usual", the middle of a scale centred on the person's own usual.
+  const [index, setIndex] = useState(2);
   const level = MOOD_LEVELS[index];
 
   function onKeyDown(event: React.KeyboardEvent) {
@@ -37,7 +38,7 @@ export function LuminaMoodCard({ copy, className }: { copy: LuminaTracksCopy["mo
         transition={{ duration: 0.7 }}
       />
 
-      <p className="text-[1.0625rem] font-semibold text-ink">{copy.title}</p>
+      <p className="text-[1.0625rem]  text-ink">{copy.title}</p>
       <p className="mt-1 text-[0.875rem] leading-6 text-ink-soft">{copy.prompt}</p>
 
       {/* Faces read left to right in both languages, like the patient's own check-in. */}
@@ -84,7 +85,7 @@ export function LuminaMoodCard({ copy, className }: { copy: LuminaTracksCopy["mo
             {copy.messages[index]}
           </motion.p>
         </AnimatePresence>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sage-100 bg-sage-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-sage-700">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sage-100 bg-sage-50 px-2.5 py-1 text-[0.6875rem]  text-sage-700">
           <Check className="size-3" strokeWidth={3} aria-hidden />
           {copy.saved}
         </span>

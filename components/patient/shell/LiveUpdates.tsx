@@ -139,7 +139,7 @@ export function LiveUpdates() {
                 <AlarmClock className="size-[1.125rem]" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-ink">{reminder.title}</p>
+                <p className="text-sm  text-ink">{reminder.title}</p>
                 <p className="mt-0.5 text-sm text-ink-muted">{reminder.body}</p>
                 <Link
                   href={reminder.href}
@@ -175,7 +175,7 @@ export function LiveUpdates() {
                 <CalendarCheck className="size-[1.125rem]" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-ink">{live.report.title}</p>
+                <p className="text-sm  text-ink">{live.report.title}</p>
                 <p className="mt-0.5 text-sm text-ink-muted">{live.report.body}</p>
                 <Link
                   href="/dashboard/reports"

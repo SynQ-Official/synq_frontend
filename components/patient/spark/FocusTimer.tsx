@@ -86,7 +86,7 @@ export function FocusTimer({
           />
         </svg>
         <span className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-          <span className="text-2xl font-semibold tabular-nums text-ink" dir="ltr">{mm}:{ss}</span>
+          <span className="text-2xl  tabular-nums text-ink" dir="ltr">{mm}:{ss}</span>
           {running && <span className="size-1.5 animate-pulse rounded-full bg-teal-500" aria-hidden />}
         </span>
       </div>
@@ -100,7 +100,7 @@ export function FocusTimer({
               aria-pressed={minutes === value}
               title={value === suggested ? copy.suggested : undefined}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
+                "rounded-full border px-3 py-1 text-xs  transition-colors",
                 minutes === value ? "border-teal-600 bg-teal-600 text-white" : "border-line-strong bg-white/60 text-ink-soft hover:bg-white",
                 value === suggested && minutes !== value && "border-teal-300",
               )}

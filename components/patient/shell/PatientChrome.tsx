@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, type LucideIcon } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
@@ -11,6 +11,7 @@ import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { NotificationBell } from "@/components/patient/shell/NotificationBell";
 import { SosButton } from "@/components/patient/sos/SosButton";
+import { HelpNow } from "@/components/help/HelpNow";
 import { isActive, navFor, PATIENT_NAV } from "@/components/patient/shell/nav";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAmbiences } from "@/hooks/patient/useAmbiences";
@@ -23,16 +24,16 @@ import { cn } from "@/lib/utils";
 
 const MotionLink = motion.create(Link);
 
-/**
- * One rail item. The current page carries the pill, which glides between items as the patient moves
- * (on the calm tracks it fades in place instead of sliding).
- */
-function RailLink({ href, active, calm, tour, variants, children }: {
+/** One rail item: an icon tile and its label. The current page carries the pill, which glides between items. */
+function RailLink({ href, active, calm, tour, variants, icon: Icon, tile = true, children }: {
   href: string;
   active: boolean;
   calm: boolean;
   tour?: string;
   variants: Variants;
+  icon: LucideIcon;
+  /** The tile sits behind the main screens' icons; utility links keep the bare icon. */
+  tile?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -47,12 +48,22 @@ function RailLink({ href, active, calm, tour, variants, children }: {
           className="lm-rail-pill"
         />
       )}
-      {children}
+      <span aria-hidden className={tile ? "lm-nav-icon" : "flex size-5 shrink-0 items-center justify-center"}>
+        <Icon className="size-[1.0625rem] shrink-0" />
+      </span>
+      <span className="min-w-0 flex-1 truncate">{children}</span>
     </MotionLink>
   );
 }
 
-/** Desktop rail: brand, profile, the screens, then help, settings and a clearly separate sign-out. */
+/** The sidebar's sections, in order: the day's screens, then care and practice. Settings sits with the account block. */
+const RAIL_GROUPS = ["daily", "care"] as const;
+
+/**
+ * Desktop rail, top to bottom: brand and language, the patient's own card (name and care path), the screens in two
+ * labelled groups, then, pinned to the bottom, the safety block (SOS and the numbers to call), settings, the tour and
+ * sign-out. If the window is short the whole rail scrolls as one: no tiny scroll area inside it.
+ */
 export function PatientRail() {
   const pathname = usePathname();
   const copy = usePatientCopy();
@@ -61,11 +72,11 @@ export function PatientRail() {
   const calm = useCalmTrack();
   const [signingOut, setSigningOut] = useState(false);
   const { available: hasAmbiences } = useAmbiences();
-  const main = navFor(profile.track, hasAmbiences, profile.careTeam.hasClinician).filter((item) => item.key !== "settings");
+  const screens = navFor(profile.track, hasAmbiences, profile.careTeam.hasClinician).filter((item) => item.group !== "account");
   const settings = PATIENT_NAV.find((item) => item.key === "settings")!;
 
   // Items arrive one after another from the rail's edge (a plain fade on the calm tracks; still under reduced motion).
-  const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.045, delayChildren: 0.12 } } };
+  const list: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.1 } } };
   const item: Variants = calm
     ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.5 } } }
     : { hidden: { opacity: 0, x: direction === "rtl" ? 12 : -12 }, show: { opacity: 1, x: 0, transition: { duration: 0.45, ease: EASE_OUT } } };
@@ -75,39 +86,49 @@ export function PatientRail() {
       initial="hidden"
       animate="show"
       variants={list}
-      className="lm-rail sticky top-4 m-4 me-0 hidden h-[calc(100dvh-2rem)] w-64 shrink-0 self-start lg:flex lg:flex-col"
+      className="lm-rail sticky top-4 m-4 me-0 hidden h-[calc(100dvh-2rem)] w-64 shrink-0 self-start overflow-y-auto overscroll-contain lg:flex lg:flex-col"
     >
-      <motion.div variants={item} className="px-5 pb-3 pt-6">
+      <motion.div variants={item} className="flex items-center justify-between gap-2 px-4 pb-3 pt-5">
         <span className="inline-flex rounded-2xl bg-white/90 px-3 py-1.5 shadow-sm">
           <BrandLogo size="sm" href={null} />
         </span>
+        <PatientLanguage />
       </motion.div>
 
-      <motion.div variants={item} className="border-b border-line/70 pb-3">
+      <motion.div variants={item} className="px-3">
         <RailProfile />
       </motion.div>
 
-      <motion.nav variants={list} aria-label={copy.shell.navLabel} className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {main.map(({ key, href, icon: Icon }) => (
-          <RailLink key={key} href={href} active={isActive(pathname, href)} calm={calm} tour={`nav-${key}`} variants={item}>
-            <Icon className="size-[1.125rem] shrink-0" aria-hidden />
-            {copy.shell.nav[key]}
-          </RailLink>
-        ))}
+      <motion.nav variants={list} aria-label={copy.shell.navLabel} className="flex-1 px-3 pb-3 pt-1">
+        {RAIL_GROUPS.map((group) => {
+          const rows = screens.filter((screen) => screen.group === group);
+          if (rows.length === 0) return null;
+          return (
+            <div key={group} role="group" aria-labelledby={`rail-group-${group}`}>
+              <motion.p variants={item} id={`rail-group-${group}`} className="lm-rail-group">
+                {copy.shell.groups[group]}
+              </motion.p>
+              <div className="space-y-0.5">
+                {rows.map(({ key, href, icon }) => (
+                  <RailLink key={key} href={href} icon={icon} active={isActive(pathname, href)} calm={calm} tour={`nav-${key}`} variants={item}>
+                    {copy.shell.nav[key]}
+                  </RailLink>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </motion.nav>
 
-      <motion.div variants={list} className="space-y-1 border-t border-white/10 px-3 pb-4 pt-3">
-        <motion.div variants={item} className="pb-1.5">
-          <SosButton variant="wide" />
-        </motion.div>
+      {/* Account links follow the screens and scroll with them... */}
+      <motion.div variants={list} className="space-y-0.5 px-3 pb-3 pt-1">
+        <RailLink href={settings.href} icon={settings.icon} tile={false} active={isActive(pathname, settings.href)} calm={calm} variants={item}>
+          {copy.shell.nav.settings}
+        </RailLink>
         <motion.div variants={item}>
           <TourReplayButton className="lm-nav-link w-full" />
         </motion.div>
-        <RailLink href={settings.href} active={isActive(pathname, settings.href)} calm={calm} variants={item}>
-          <settings.icon className="size-[1.125rem] shrink-0" aria-hidden />
-          {copy.shell.nav.settings}
-        </RailLink>
-        <motion.div variants={item} className="pt-2">
+        <motion.div variants={item}>
           <button
             type="button"
             disabled={signingOut}
@@ -127,6 +148,15 @@ export function PatientRail() {
           </button>
         </motion.div>
       </motion.div>
+
+      {/* ...but the safety block is pinned: SOS and the numbers to call stay in view whatever the window height. */}
+      <motion.div variants={item} className="lm-rail-footer sticky bottom-0 px-3 pb-4 pt-2">
+        <div className="lm-rail-safety space-y-2 p-2.5">
+          <p className="lm-rail-group !mt-0 !px-1">{copy.shell.safetyTitle}</p>
+          <SosButton variant="wide" />
+          <HelpNow className="w-full justify-center" />
+        </div>
+      </motion.div>
     </motion.aside>
   );
 }
@@ -137,29 +167,27 @@ function PatientLanguage() {
   return <LanguageSwitcher variant="menu" onChange={(language) => void profileApi.update({ language: language === "ar" ? "AR" : "EN" }).then(refreshProfile, () => undefined)} />;
 }
 
-/** Rail header: avatar, name and a settings hint, sitting straight on the rail (no box), with the language globe at the end. */
+/** The patient's own card at the top of the rail: avatar, name and care path. It opens Settings. */
 function RailProfile() {
-  const { name } = usePatient();
+  const { name, profile } = usePatient();
   const copy = usePatientCopy();
   const initial = (name.trim()[0] ?? "V").toUpperCase();
 
   return (
-    <div className="mx-3 flex items-center gap-1">
-      <Link
-        href="/dashboard/settings"
-        aria-label={copy.shell.nav.settings}
-        className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-2 transition-colors hover:bg-teal-50/70"
-      >
-        <span className="lm-avatar inline-flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
-          {initial}
+    <Link
+      href="/dashboard/settings"
+      aria-label={copy.shell.nav.settings}
+      className="lm-rail-profile flex items-center gap-3 p-2.5 transition-colors duration-200 hover:bg-teal-50/60 focus-visible:outline-2 focus-visible:outline-offset-2"
+    >
+      <span className="lm-avatar inline-flex size-11 shrink-0 items-center justify-center rounded-full text-base">{initial}</span>
+      <span className="min-w-0">
+        <span className="block truncate text-sm leading-tight text-ink" dir="auto">{name}</span>
+        <span className="mt-1 flex items-center gap-1.5 text-xs text-ink-muted">
+          <span aria-hidden className="size-1.5 shrink-0 rounded-full" style={{ background: "var(--cond)" }} />
+          <span className="truncate">{copy.home.welcome.motif[profile.track]}</span>
         </span>
-        <span className="min-w-0">
-          <span className="block truncate text-sm font-semibold leading-tight text-ink" dir="auto">{name}</span>
-          <span className="mt-0.5 block truncate text-xs text-ink-muted">{copy.shell.nav.settings}</span>
-        </span>
-      </Link>
-      <PatientLanguage />
-    </div>
+      </span>
+    </Link>
   );
 }
 
@@ -186,13 +214,14 @@ export function PatientMobileStrip() {
       <BrandLogo size="md" href={null} />
       <div className="flex items-center gap-1.5 sm:gap-2.5">
         {/* No rail on small screens, so SOS sits here. */}
+        <HelpNow label="short" />
         <SosButton variant="compact" />
         <PatientLanguage />
         <NotificationBell placement="strip" />
         <Link
           href="/dashboard/settings"
           aria-label={copy.shell.nav.settings}
-          className="inline-flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-teal-800 text-sm font-semibold text-white shadow-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+          className="inline-flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-teal-800 text-sm  text-white shadow-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
         >
           {initial}
         </Link>

@@ -134,13 +134,13 @@ ${insert.text} ` : `${insert.text} ` }));
         </header>
       )}
       <fieldset>
-        <legend className="text-base font-semibold text-ink">{page ? j.page.feel : j.mood.title}</legend>
+        <legend className="text-base  text-ink">{page ? j.page.feel : j.mood.title}</legend>
         <p className="mb-3 mt-0.5 text-sm text-muted-foreground">{j.mood.hint}</p>
         <MoodPicker value={values.moodScore} onChange={(score) => update({ moodScore: score })} labels={j.mood.labels} ariaLabel={j.mood.title} />
       </fieldset>
 
       <fieldset>
-        <legend className="text-base font-semibold text-ink">{j.emotions.title}</legend>
+        <legend className="text-base  text-ink">{j.emotions.title}</legend>
         <p className="mb-3 mt-0.5 text-sm text-muted-foreground">{j.emotions.hint}</p>
         <div className="flex flex-wrap gap-2">
           {EMOTION_KEYS.map((emotion) => {
@@ -164,7 +164,7 @@ ${insert.text} ` : `${insert.text} ` }));
       </fieldset>
 
       <div>
-        <label htmlFor="journal-text" className="text-base font-semibold text-ink">{page ? j.page.words : j.describe.title}</label>
+        <label htmlFor="journal-text" className="text-base  text-ink">{page ? j.page.words : j.describe.title}</label>
         {page && <p className="mt-0.5 text-sm text-muted-foreground">{j.page.wordsHint}</p>}
         <div className="mb-3 mt-2 flex flex-wrap gap-2">
           {j.describe.prompts.map((prompt) => (
@@ -202,7 +202,7 @@ ${insert.text} ` : `${insert.text} ` }));
       </div>
 
       <fieldset>
-        <legend className="text-base font-semibold text-ink">{j.goals.title}</legend>
+        <legend className="text-base  text-ink">{j.goals.title}</legend>
         <p className="mb-4 mt-0.5 text-sm text-muted-foreground">{j.goals.hint}</p>
         <ScaleSlider
           value={values.goalScore ?? 5}
@@ -223,7 +223,7 @@ ${insert.text} ` : `${insert.text} ` }));
         <div className="flex min-w-0 items-start gap-3">
           <span className="stat-tile stat-tile-sage size-10 shrink-0"><LockKeyhole className="size-4" aria-hidden /></span>
           <div>
-            <label htmlFor="journal-private" className="text-sm font-semibold text-ink">{j.private.title}</label>
+            <label htmlFor="journal-private" className="text-sm  text-ink">{j.private.title}</label>
             <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{j.private.body}</p>
           </div>
         </div>

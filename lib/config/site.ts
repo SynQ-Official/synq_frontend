@@ -18,7 +18,7 @@ export const SITE = {
   title: `${BRAND.name} — Guided mental wellbeing`,
   /** Plain, claim-free definition (<= 160 chars so it is not cut in results): orientation is never a diagnosis. */
   description:
-    "SynQ is a guided mental wellbeing platform for people living with ADHD, bipolar disorder or psychosis: orientation, daily follow-up and clinician support.",
+    "Support between appointments for people living with ADHD, bipolar disorder or psychosis. Your clinic invites you; your clinician stays in charge.",
 } as const;
 
 export const NO_INDEX: Metadata["robots"] = { index: false, follow: false };
@@ -88,7 +88,8 @@ function social(title: string, description: string, path: string): Pick<Metadata
       type: "website",
       siteName: BRAND.name,
       locale: "en_US",
-      alternateLocale: ["ar_AR"],
+      // Open Graph wants underscores (ar_AE); <html lang> uses the BCP 47 hyphen form.
+      alternateLocale: ["ar_AE"],
       title,
       description,
       url: path,
@@ -129,7 +130,9 @@ export const SITEMAP_ROUTES: ReadonlyArray<{ path: string; priority: number; cha
   { path: ROUTES.psy, priority: 0.7, changeFrequency: "monthly" },
   { path: ROUTES.tracks, priority: 0.8, changeFrequency: "monthly" },
   { path: ROUTES.privacy, priority: 0.7, changeFrequency: "monthly" },
-  { path: ROUTES.terms, priority: 0.4, changeFrequency: "monthly" },
+  { path: ROUTES.help, priority: 0.5, changeFrequency: "monthly" },
+  { path: ROUTES.invite, priority: 0.6, changeFrequency: "monthly" },
+  { path: ROUTES.clinicAccess, priority: 0.6, changeFrequency: "monthly" },
   { path: ROUTES.support, priority: 0.6, changeFrequency: "monthly" },
 ];
 

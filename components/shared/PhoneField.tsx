@@ -26,10 +26,9 @@ function buildCountries(language: Lang): CountryOption[] {
 }
 
 /** A sensible starting country: the browser's own region, else a regional default by language. */
-export function defaultCountry(language: Lang): CountryCode {
-  const region = typeof navigator === "undefined" ? undefined : new Intl.Locale(navigator.language).region;
-  if (region && getCountries().includes(region as CountryCode)) return region as CountryCode;
-  return language === "ar" ? "SA" : "US";
+/** Forms open on +216 (Tunisia); the picker still offers every country, the UAE (+971) included. */
+export function defaultCountry(): CountryCode {
+  return "TN";
 }
 
 /** Checks the number for its country (length, prefix, line type ranges) and returns it as E.164, or null when it is not valid. */

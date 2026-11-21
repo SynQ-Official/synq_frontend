@@ -92,7 +92,7 @@ function StatusPill({ tone, children }: { tone: "ok" | "info" | "alert"; childre
   return (
     <p
       className={cn(
-        "inline-flex max-w-full items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.9375rem] font-semibold",
+        "inline-flex max-w-full items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.9375rem] ",
         tone === "alert" ? "bg-rose-50 text-rose-700" : "bg-white/10 text-white",
       )}
     >
@@ -293,7 +293,7 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
           <motion.div {...reveal} role="alert" className="flex items-start gap-4 rounded-panel border border-rose-100 bg-rose-50 p-5 sm:p-6">
             <AlertTriangle className="mt-0.5 size-5 shrink-0 text-rose-700" aria-hidden />
             <div className="min-w-0">
-              <p className="text-[1rem] font-semibold text-rose-700">{reportDictionary.urgentTitle}</p>
+              <p className="text-[1rem]  text-rose-700">{reportDictionary.urgentTitle}</p>
               <p className="mt-1.5 text-[0.9375rem] leading-7 text-rose-700/90">{reportDictionary.urgentBody}</p>
               {result.safety.flags.length > 0 && (
                 <p className="mt-2 text-[0.8125rem] text-rose-700/85">
@@ -346,7 +346,7 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
                     {levelRows.map((row) => (
                       <li key={row.area} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
                         <span className="min-w-0 text-[1rem] text-ink">{mira.signalAreas[row.area]}</span>
-                        <span className="text-[0.9375rem] font-semibold text-teal-800">
+                        <span className="text-[0.9375rem]  text-teal-800">
                           {mira.signalLevels[row.level]}
                           {!row.inDepth && <span className="font-normal text-ink-soft"> · {mira.notInDepth}</span>}
                         </span>
@@ -382,14 +382,14 @@ export function MiraResult({ result, sessionId, onDownload, isFinalizing, viewer
           <div className="flex items-start gap-4 md:pe-8">
             <Info className="mt-0.5 size-5 shrink-0 text-gold-700" aria-hidden />
             <div className="min-w-0 text-[0.9375rem] leading-7 text-ink-soft">
-              <p className="text-[1rem] font-semibold text-ink">{mira.noteTitle}</p>
+              <p className="text-[1rem]  text-ink">{mira.noteTitle}</p>
               <p className="mt-1.5">{result.disclaimer || mira.screeningNote}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 border-gold-100 md:border-s md:ps-8 print:hidden">
             <ShieldCheck className="mt-0.5 size-5 shrink-0 text-sage-700" aria-hidden />
             <div className="min-w-0 text-[0.9375rem] leading-7 text-ink-soft">
-              <p className="text-[1rem] font-semibold text-ink">{mira.privacyTitle}</p>
+              <p className="text-[1rem]  text-ink">{mira.privacyTitle}</p>
               <p className="mt-1.5">{mira.privacyBody}</p>
             </div>
           </div>

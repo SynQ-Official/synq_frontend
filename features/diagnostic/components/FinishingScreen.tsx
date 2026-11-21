@@ -75,7 +75,7 @@ export function FinishingScreen({ total = ESTIMATED_QUESTIONS, href }: { total?:
           {total}
           <span className="text-ink-subtle"> / {total}</span>
         </p>
-        <p className="mt-2 text-[0.8125rem] font-semibold uppercase tracking-[0.16em] text-teal-700 rtl:normal-case rtl:tracking-normal">{copy.eyebrow}</p>
+        <p className="mt-2 text-[0.8125rem]  uppercase tracking-[0.16em] text-teal-700 rtl:normal-case rtl:tracking-normal">{copy.eyebrow}</p>
         <h2 className={cn(SERIF, "mt-4 text-[1.625rem] font-light leading-tight tracking-[-0.02em] text-ink rtl:font-normal rtl:tracking-normal")}>
           {ready ? copy.ready : copy.title}
         </h2>

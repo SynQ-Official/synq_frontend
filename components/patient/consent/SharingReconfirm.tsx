@@ -35,7 +35,7 @@ export function SharingReconfirmBanner() {
       <div className="flex items-start gap-3">
         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden />
         <div>
-          <p className="text-sm font-semibold text-ink">{s.bannerTitle}</p>
+          <p className="text-sm  text-ink">{s.bannerTitle}</p>
           <p className="text-sm text-ink-soft">{s.bannerBody}{due ? ` ${fill(s.dueNote, { date: formatDay(due as string, language) })}` : ""}</p>
         </div>
       </div>
@@ -61,7 +61,7 @@ export function CareTeamInvitationBanner() {
       <div className="flex items-start gap-3">
         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden />
         <div>
-          <p className="text-sm font-semibold text-ink" dir="auto">{fill(s.bannerTitle, { name: names })}</p>
+          <p className="text-sm  text-ink" dir="auto">{fill(s.bannerTitle, { name: names })}</p>
           <p className="text-sm text-ink-soft">{s.bannerBody}</p>
         </div>
       </div>
@@ -81,7 +81,7 @@ function GateRow({ consent }: { consent: Consent }) {
   const name = `${consent.clinician.firstName} ${consent.clinician.lastName}`.trim();
   return (
     <li className="rounded-2xl border border-line bg-white/70 p-4">
-      <p className="text-sm font-semibold text-ink" dir="auto">{name}</p>
+      <p className="text-sm  text-ink" dir="auto">{name}</p>
       <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-ink-soft">
         {CATEGORIES.map((key) => (
           <li key={key} className="flex justify-between gap-2">

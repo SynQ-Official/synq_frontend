@@ -4,7 +4,7 @@ import { PillLink } from "@/components/agents/shared";
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
 import { CURTAIN } from "@/components/home/HomeSection";
-import { LABEL, SERIF } from "@/components/home/typography";
+import { SERIF } from "@/components/home/typography";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import { agentEntryHref } from "@/lib/config/routes";
@@ -26,16 +26,12 @@ export function TracksCta() {
       <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
       <div className="page-container">
         <motion.div variants={stagger(0.09, 0.05)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3 text-teal-200")}>
-            <span aria-hidden className="h-px w-8 bg-gold-300" />
-            {cta.eyebrow}
-          </motion.p>
           <h2 id="tracks-start-title" className={cn(SERIF, "mt-8 text-[clamp(3rem,6.6vw+0.5rem,7rem)] font-light leading-[0.98] tracking-[-0.04em] text-white rtl:tracking-normal")}>
             <span className="block">
               <WordReveal>{cta.titleA}</WordReveal>
             </span>
             <span className="block">
-              <WordReveal className="italic text-gold-100 rtl:not-italic" delay={0.15}>
+              <WordReveal className=" text-white" delay={0.15}>
                 {cta.titleB}
               </WordReveal>
             </span>
