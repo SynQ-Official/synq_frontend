@@ -20,7 +20,7 @@ function PanelHeader({ title, subtitle, badge }: { title: string; subtitle: stri
     <div className="flex items-center gap-3">
       <LuminaLogo size={44} presence />
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-semibold leading-tight text-ink">{title}</h2>
+        <h2 className="text-base  leading-tight text-ink">{title}</h2>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </div>
       {badge && <span className="chip shrink-0"><Sparkles className="size-3" aria-hidden />{badge}</span>}

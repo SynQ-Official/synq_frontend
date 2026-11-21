@@ -36,7 +36,7 @@ export function SectionTitle({ id, title, subtitle, action }: { id?: string; tit
   return (
     <div className="mb-5 flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <h2 id={id} className="text-lg font-semibold leading-snug tracking-[-0.015em] text-ink sm:text-[1.1875rem] rtl:tracking-normal">{title}</h2>
+        <h2 id={id} className="text-lg  leading-snug tracking-[-0.015em] text-ink sm:text-[1.1875rem] rtl:tracking-normal">{title}</h2>
         {subtitle && <p className="mt-0.5 text-[0.8125rem] leading-snug text-muted-foreground">{subtitle}</p>}
       </div>
       {action}
@@ -74,7 +74,7 @@ export function PageIntro({
             {eyebrow}
           </p>
         )}
-        <h1 className={cn("text-[clamp(1.75rem,1.2rem+1.6vw,2.5rem)] font-semibold leading-[1.1] tracking-[-0.025em] text-ink rtl:tracking-normal", hideTitle && "sr-only")}>{title}</h1>
+        <h1 className={cn("text-[clamp(1.75rem,1.2rem+1.6vw,2.5rem)]  leading-[1.1] tracking-[-0.025em] text-ink rtl:tracking-normal", hideTitle && "sr-only")}>{title}</h1>
         {subtitle && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">{subtitle}</p>}
       </div>
       {action && <div className="flex flex-wrap items-center gap-2">{action}</div>}
@@ -86,7 +86,7 @@ export function EmptyState({ icon: Icon = Inbox, title, body, action }: { icon?:
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-line-strong bg-white/40 px-6 py-10 text-center">
       <span className="stat-tile stat-tile-sage"><Icon className="size-5" aria-hidden /></span>
-      <p className="text-sm font-semibold text-ink">{title}</p>
+      <p className="text-sm  text-ink">{title}</p>
       {body && <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">{body}</p>}
       {action}
     </div>

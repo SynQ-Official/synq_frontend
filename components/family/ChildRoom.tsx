@@ -102,7 +102,7 @@ function RoomEditor({ childId, saved, onSaved }: { childId: string; saved: Saved
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="text-xl font-semibold tracking-[-0.01em]">{copy.title}</h2>
+          <h2 className="text-xl  tracking-[-0.01em]">{copy.title}</h2>
           <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">{copy.lead}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -140,7 +140,7 @@ function RoomEditor({ childId, saved, onSaved }: { childId: string; saved: Saved
       </div>
 
       <section aria-label={copy.presets}>
-        <h3 className="mb-2.5 text-sm font-semibold">{copy.presets}</h3>
+        <h3 className="mb-2.5 text-sm ">{copy.presets}</h3>
         <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-5">
           {ROOM_PRESETS.map((p) => (
             <button key={p.id} type="button" aria-pressed={presetId === p.id} onClick={() => { setRoom(p.config); setPresetId(p.id); }}
@@ -148,7 +148,7 @@ function RoomEditor({ childId, saved, onSaved }: { childId: string; saved: Saved
                 presetId === p.id && "border-teal-600 bg-white shadow-[0_14px_28px_-20px_rgb(36_107_112/0.45)]")}>
               <span className="flex items-center gap-2">
                 <span aria-hidden className="size-3 shrink-0 rounded-full ring-1 ring-black/5" style={{ background: kelvinToHex(p.config.light.temperature) }} />
-                <span className="text-sm font-semibold">{copy.preset[p.id].name}</span>
+                <span className="text-sm ">{copy.preset[p.id].name}</span>
                 {presetId === p.id && <Check aria-hidden className="ms-auto size-4 text-teal-700" />}
               </span>
               <span className="mt-1 block text-xs leading-snug text-ink-muted">{copy.preset[p.id].description}</span>
@@ -176,7 +176,7 @@ function RoomStats({ room, className }: { room: RoomConfig; className?: string }
       {stats.map(({ icon: Icon, label, value }) => (
         <div key={label} className="min-w-0 px-3 py-3 sm:px-5">
           <dt className="flex items-center gap-1.5 text-xs leading-tight text-ink-muted"><Icon aria-hidden className="size-3.5 shrink-0" /><span>{label}</span></dt>
-          <dd className="mt-1 text-sm font-semibold leading-snug tabular-nums">{value}</dd>
+          <dd className="mt-1 text-sm  leading-snug tabular-nums">{value}</dd>
         </div>
       ))}
     </dl>
@@ -194,7 +194,7 @@ export function RoomPreviewCard({ childId, onOpen, className }: { childId: strin
     <Card className={cn("flex min-w-0 flex-col overflow-hidden p-0 sm:p-0", className)}>
       <div className="flex flex-wrap items-start justify-between gap-3 px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
         <div className="min-w-0">
-          <h2 className="flex items-center gap-2 text-base font-semibold"><BedDouble aria-hidden className="size-[1.1rem] text-teal-700" />{copy.title}</h2>
+          <h2 className="flex items-center gap-2 text-base "><BedDouble aria-hidden className="size-[1.1rem] text-teal-700" />{copy.title}</h2>
           <p className="mt-1 text-sm text-ink-muted">{copy.lead}</p>
         </div>
         <Button onClick={onOpen}>{copy.open}<ArrowRight aria-hidden className="rtl:-scale-x-100" /></Button>
@@ -259,7 +259,7 @@ function RoomControls({ room, selected, onSelect, onChange }: { room: RoomConfig
   const m = (v: number) => `${v.toFixed(2)} m`;
   const walls = (["calm", "neutral", "warm"] as const).map((id) => ({ id, label: copy.wall[id] }));
   const modes = (["soft", "work", "night"] as const).map((id) => ({ id, label: copy.light[id] }));
-  const tab = "flex-1 gap-1.5 rounded-full px-3 py-2 text-xs font-semibold text-ink-muted data-[state=active]:bg-white data-[state=active]:text-teal-800 data-[state=active]:shadow-sm [&_svg]:size-3.5";
+  const tab = "flex-1 gap-1.5 rounded-full px-3 py-2 text-xs  text-ink-muted data-[state=active]:bg-white data-[state=active]:text-teal-800 data-[state=active]:shadow-sm [&_svg]:size-3.5";
   return (
     <Card className="min-w-0 p-4 sm:p-5">
       <Tabs defaultValue="furniture">

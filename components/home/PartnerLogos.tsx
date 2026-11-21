@@ -6,26 +6,20 @@ import { useReducedMotion } from "framer-motion";
 import { Marquee } from "./Interactions";
 import { LABEL } from "./typography";
 
-const ITEM = "inline-flex items-center gap-2.5 whitespace-nowrap px-6 text-[0.9375rem] font-semibold text-ink-soft sm:px-9";
+const ITEM = "inline-flex items-center gap-2.5 whitespace-nowrap px-6 text-[0.9375rem]  text-ink-soft sm:px-9";
 
 type PartnerLogosProps = {
   hidden?: boolean;
-  hotLabel: string;
-  hotNames: readonly string[];
   backedLabel: string;
   backedNames: readonly string[];
 };
 
-export function PartnerLogos({ hidden, hotLabel, hotNames, backedLabel, backedNames }: PartnerLogosProps) {
+/** Only the programmes SynQ has actually joined; vendor credit programmes are not partners and are not listed. */
+export function PartnerLogos({ hidden, backedLabel, backedNames }: PartnerLogosProps) {
   return (
     <>
       <span aria-hidden={hidden} className={ITEM}>
-        <span className="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-teal-700">{hotLabel}</span>
-        <span className="h-5 w-px bg-line-strong" aria-hidden />
-        <span>{hotNames.join("  ·  ")}</span>
-      </span>
-      <span aria-hidden={hidden} className={ITEM}>
-        <span className="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-gold-700">{backedLabel}</span>
+        <span className="text-[0.6875rem] uppercase tracking-[0.16em] text-gold-700">{backedLabel}</span>
         <span className="h-5 w-px bg-line-strong" aria-hidden />
         <span>{backedNames.join("  ·  ")}</span>
       </span>
@@ -48,8 +42,6 @@ export function PartnerStrip() {
           <PartnerLogos
             key={index}
             hidden={index > 0}
-            hotLabel={home.partners}
-            hotNames={home.partnerHotNames}
             backedLabel={home.partnerBackedLabel}
             backedNames={home.partnerBackedNames}
           />

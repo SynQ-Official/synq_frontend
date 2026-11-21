@@ -54,7 +54,7 @@ export function TrendChart({
               active && payload?.length && payload[0].value != null ? (
                 <div className="rounded-xl border border-line bg-white/95 px-3 py-2 shadow-[0_12px_28px_-14px_rgb(36_107_112/0.45)] backdrop-blur-sm">
                   <p className="text-[0.6875rem] font-medium text-ink-muted">{label}</p>
-                  <p className="text-sm font-semibold tabular-nums text-ink">{`${payload[0].value}${unit ?? ""}`}</p>
+                  <p className="text-sm  tabular-nums text-ink">{`${payload[0].value}${unit ?? ""}`}</p>
                 </div>
               ) : null
             }

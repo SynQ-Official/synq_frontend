@@ -5,10 +5,10 @@ import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { ROUTES } from "@/lib/config/routes";
 import { pageMetadata } from "@/lib/config/site";
 import { LANGUAGE_STORAGE_KEY, normalizeLanguage } from "@/lib/i18n/config";
-import { trustCopy } from "@/lib/i18n/trust";
+import { legalUi } from "@/lib/i18n/legal";
 
 async function seoCopy() {
-  return trustCopy[normalizeLanguage((await cookies()).get(LANGUAGE_STORAGE_KEY)?.value)];
+  return legalUi[normalizeLanguage((await cookies()).get(LANGUAGE_STORAGE_KEY)?.value)];
 }
 
 /** Title and description follow the visitor's language, like the page itself. */

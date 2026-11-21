@@ -2,7 +2,7 @@ import { BRAND } from "@/lib/config/brand";
 import { ROUTES } from "@/lib/config/routes";
 import { SITE } from "@/lib/config/site";
 import { agentPagesCopy } from "@/lib/i18n/agents";
-import { legalCopy } from "@/lib/i18n/legal";
+import { legalUi } from "@/lib/i18n/legal";
 import { tracksCopy } from "@/lib/i18n/tracks";
 import { trustCopy } from "@/lib/i18n/trust";
 
@@ -34,7 +34,7 @@ export function GET() {
     "## Trust and support",
     "",
     link("Privacy policy and trust", ROUTES.privacy, trustCopy.en.seoDescription),
-    link("Terms of use", ROUTES.terms, legalCopy.terms.en.seoDescription),
+    link("Terms of use", ROUTES.terms, legalUi.en.seoDescription),
     link("Support", ROUTES.support, "Questions about SynQ, your privacy or your account, with answers on data sharing and urgent situations."),
     "",
     "## Optional",

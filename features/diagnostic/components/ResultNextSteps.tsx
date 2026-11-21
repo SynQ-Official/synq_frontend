@@ -82,7 +82,7 @@ export function ResultNextSteps() {
               >
                 {i === 0 ? <Check className="size-4" strokeWidth={2.5} aria-hidden /> : i + 1}
               </span>
-              <span className={cn("min-w-0 text-[1rem] leading-6", i === 0 ? "font-semibold text-ink" : "font-medium text-ink-soft")}>{step}</span>
+              <span className={cn("min-w-0 text-[1rem] leading-6", i === 0 ? " text-ink" : "font-medium text-ink-soft")}>{step}</span>
             </motion.li>
           ))}
         </ol>
@@ -116,7 +116,7 @@ export function ResultStickyCta() {
       className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden print:hidden"
     >
       <div className="mx-auto flex max-w-xl items-center gap-3 rounded-full border border-white/70 bg-white/90 py-2 ps-5 pe-2 shadow-float ring-1 ring-line/50 backdrop-blur-xl">
-        <p className="min-w-0 flex-1 truncate text-[0.9375rem] font-semibold text-ink">{resultPage.sticky.title}</p>
+        <p className="min-w-0 flex-1 truncate text-[0.9375rem]  text-ink">{resultPage.sticky.title}</p>
         <Button asChild size="lg" className="shrink-0 shadow-brand" tabIndex={cardInView ? -1 : undefined}>
           <Link href={luminaHref}>{resultPage.sticky.cta}</Link>
         </Button>

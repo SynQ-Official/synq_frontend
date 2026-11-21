@@ -6,6 +6,7 @@ import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react
 import { House, LogOut, Settings } from "lucide-react";
 import { motion, MotionConfig } from "framer-motion";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { HelpNow } from "@/components/help/HelpNow";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { LogoLoader, LogoSpinner } from "@/components/shared/LogoLoader";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -59,7 +60,7 @@ export function Notice({ kind, children }: { kind: "ok" | "error" | "info"; chil
 
 export function PrimaryButton({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...props} className={cn("inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-teal-700 px-5 text-sm font-semibold text-white shadow-brand transition hover:bg-teal-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500", className)}>
+    <button {...props} className={cn("inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-teal-700 px-5 text-sm  text-white shadow-brand transition hover:bg-teal-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500", className)}>
       {children}
     </button>
   );
@@ -67,7 +68,7 @@ export function PrimaryButton({ children, className, ...props }: React.ButtonHTM
 
 export function SecondaryButton({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...props} className={cn("inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line-strong bg-white/80 px-5 text-sm font-semibold text-ink transition hover:border-teal-200 hover:bg-white active:scale-[0.98] disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500", className)}>
+    <button {...props} className={cn("inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line-strong bg-white/80 px-5 text-sm  text-ink transition hover:border-teal-200 hover:bg-white active:scale-[0.98] disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500", className)}>
       {children}
     </button>
   );
@@ -78,7 +79,7 @@ export function PageHeading({ title, lead, children }: { title: ReactNode; lead?
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        <h1 className="text-title font-semibold tracking-[-0.02em] text-balance">{title}</h1>
+        <h1 className="text-title  tracking-[-0.02em] text-balance">{title}</h1>
         {lead && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-muted">{lead}</p>}
       </div>
       {children}
@@ -149,7 +150,10 @@ export function FamilyShell({ children, guarded = true }: { children: ReactNode;
       <div dir={dir} data-surface="clean" className="lm-canvas min-h-dvh text-ink">
         <header className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 pt-5 sm:px-6">
           <BrandLogo size="sm" href="/" />
-          <LanguageSwitcher variant="menu" />
+          <div className="flex items-center gap-1.5">
+            <HelpNow label="short" />
+            <LanguageSwitcher variant="menu" />
+          </div>
         </header>
         <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">{children}</main>
         <footer className="mx-auto max-w-5xl px-4 pb-8 text-xs leading-relaxed text-ink-muted sm:px-6">{t.disclaimer}</footer>
@@ -191,18 +195,22 @@ function FamilyRail({ pathname, signingOut, onSignOut }: { pathname: string; sig
     <aside className="lm-rail sticky top-4 m-4 me-0 hidden h-[calc(100dvh-2rem)] w-64 shrink-0 self-start lg:flex lg:flex-col">
       <div className="flex items-center justify-between gap-2 px-5 pb-3 pt-6">
         <span className="inline-flex rounded-2xl bg-white/90 px-3 py-1.5 shadow-sm"><BrandLogo size="sm" href="/family" /></span>
-        <span className="rounded-full bg-teal-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-teal-800 ring-1 ring-teal-100">{t.nav.family}</span>
+        <span className="rounded-full bg-teal-50 px-2.5 py-1 text-[0.6875rem]  text-teal-800 ring-1 ring-teal-100">{t.nav.family}</span>
       </div>
 
       <div className="mx-3 flex items-center gap-1 border-b border-line/70 pb-3">
         <Link href="/family/settings" className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-2 transition-colors hover:bg-teal-50/70">
-          <span className="lm-avatar inline-flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">{initialOf(me.data?.firstName)}</span>
+          <span className="lm-avatar inline-flex size-10 shrink-0 items-center justify-center rounded-full text-sm ">{initialOf(me.data?.firstName)}</span>
           <span className="min-w-0">
-            {name ? <span className="block truncate text-sm font-semibold leading-tight text-ink" dir="auto">{name}</span> : <Skeleton className="h-3 w-24" />}
+            {name ? <span className="block truncate text-sm  leading-tight text-ink" dir="auto">{name}</span> : <Skeleton className="h-3 w-24" />}
             <span className="mt-0.5 block truncate text-xs text-ink-muted">{t.nav.parent}</span>
           </span>
         </Link>
         <LanguageSwitcher variant="menu" />
+      </div>
+
+      <div className="px-3 pt-3">
+        <HelpNow className="w-full justify-center" />
       </div>
 
       <nav aria-label={t.nav.label} className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
@@ -212,7 +220,7 @@ function FamilyRail({ pathname, signingOut, onSignOut }: { pathname: string; sig
             <p className="px-3.5 pb-1 pt-4 text-xs font-medium text-ink-subtle">{t.nav.spaces}</p>
             {kids.data!.map((c) => (
               <RailLink key={c.childId} href={`/family/children/${c.childId}`} active={pathname.startsWith(`/family/children/${c.childId}`)}>
-                <span aria-hidden className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-200 to-teal-500 text-xs font-semibold text-white">{initialOf(c.firstName)}</span>
+                <span aria-hidden className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-200 to-teal-500 text-xs  text-white">{initialOf(c.firstName)}</span>
                 <span className="min-w-0 truncate" dir="auto">{c.firstName}</span>
               </RailLink>
             ))}
@@ -241,6 +249,7 @@ function FamilyMobileStrip({ pathname, signingOut, onSignOut }: { pathname: stri
     <div className="lm-topbar flex items-center justify-between gap-3 px-4 pb-3 pt-4 sm:px-6 lg:hidden">
       <BrandLogo size="md" href="/family" />
       <nav aria-label={t.nav.label} className="flex items-center gap-0.5">
+        <HelpNow label="short" className="me-1" />
         <Link href="/family" aria-label={t.nav.home} aria-current={pathname === "/family" ? "page" : undefined} className={icon}><House className="size-[1.15rem]" aria-hidden /></Link>
         <Link href="/family/settings" aria-label={t.nav.settings} aria-current={pathname === "/family/settings" ? "page" : undefined} className={icon}><Settings className="size-[1.15rem]" aria-hidden /></Link>
         <LanguageSwitcher variant="menu" />

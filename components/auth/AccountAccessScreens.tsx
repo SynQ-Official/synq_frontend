@@ -16,6 +16,7 @@ import { authApi, hasPendingPasswordChange } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 import { ROUTES } from "@/lib/config/routes";
 import { accountAccessCopy } from "@/lib/i18n/accountAccess";
+import { LEGAL } from "@/config/legal";
 import { legalUi } from "@/lib/i18n/legal";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
 import { prefetchPatientHome } from "@/lib/patient/prefetch";
@@ -418,7 +419,7 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
             {/* Not a <label>: a click on the two links must open the pages, not toggle the box. */}
             <p id="invite-terms-label">
               <LinkedText
-                template={legalUi[language].agree}
+                template={legalUi[language].agree + (LEGAL.version ? legalUi[language].agreeVersion.replace("{version}", LEGAL.version) : "")}
                 links={{
                   terms: <Link href={ROUTES.terms} target="_blank" className={LINK_CLASS}>{legalUi[language].terms}</Link>,
                   privacy: <Link href={ROUTES.privacy} target="_blank" className={LINK_CLASS}>{legalUi[language].privacyPolicy}</Link>,

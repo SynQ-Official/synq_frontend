@@ -2,7 +2,7 @@
 
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
-import { ACCENT_DARK, BODY, LABEL, SERIF } from "@/components/home/typography";
+import { ACCENT_DARK, BODY, SERIF } from "@/components/home/typography";
 import { AgentAvatar } from "@/components/layout/site-header";
 import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -133,7 +133,7 @@ function Stage() {
         </motion.div>
 
         <Floater className="start-2 top-[2%] hidden sm:block" delay={0.2} seconds={7}>
-          <p className="flex items-center gap-2 text-[0.75rem] font-semibold">
+          <p className="flex items-center gap-2 text-[0.75rem] ">
             <BellRing className="size-4 text-red-300" aria-hidden />
             {alertMeta.split(" · ")[0]}
           </p>
@@ -141,7 +141,7 @@ function Stage() {
         </Floater>
 
         <Floater className="end-2 bottom-[6%] hidden sm:block" delay={0.5} seconds={8}>
-          <p className="flex items-center gap-2 text-[0.75rem] font-semibold">
+          <p className="flex items-center gap-2 text-[0.75rem] ">
             <ShieldCheck className="size-4 text-gold-100" aria-hidden />
             {preview.shared}
           </p>
@@ -188,11 +188,6 @@ export function PsyHero() {
             <span className="text-[0.8125rem] font-medium text-teal-100">{identity.meta}</span>
           </motion.div>
 
-          <motion.p variants={fadeUp()} className={cn(LABEL, "mt-8 flex items-center gap-3 text-teal-200")}>
-            <span aria-hidden className="h-px w-8 bg-gold" />
-            {page.hero.eyebrow}
-            <span aria-hidden className="h-px w-8 bg-gold" />
-          </motion.p>
 
           <h1 id="agent-title" className={cn(SERIF, "mt-6 text-[clamp(2.75rem,5vw+1rem,5.25rem)] font-light leading-[1.02] tracking-[-0.035em] text-white rtl:tracking-normal")}>
             <span className="block">
@@ -217,7 +212,7 @@ export function PsyHero() {
             </Magnetic>
             <a
               href="#flow"
-              className="group inline-flex min-h-11 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-100 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-300"
+              className="group inline-flex min-h-11 items-center gap-2 rounded-md text-[0.9375rem]  text-teal-100 transition-colors duration-200 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-300"
             >
               <span className="home-link-line">{page.hero.secondary}</span>
               <ArrowDown className="size-4 transition-transform duration-300 ease-out-soft group-hover:translate-y-0.5" aria-hidden />

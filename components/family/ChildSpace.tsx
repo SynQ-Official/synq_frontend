@@ -90,11 +90,11 @@ function ChildHeader({ data, childId, siblings, onSwitch }: { data: Overview; ch
     <section className="lm-welcome p-5 sm:p-7">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-4">
-          <span aria-hidden className="inline-flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-300 to-teal-700 text-xl font-semibold text-white shadow-brand sm:size-16">
+          <span aria-hidden className="inline-flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-300 to-teal-700 text-xl  text-white shadow-brand sm:size-16">
             {(data.child.firstName?.trim()[0] ?? "·").toUpperCase()}
           </span>
           <div className="min-w-0">
-            <h1 className="truncate text-title font-semibold tracking-[-0.02em]" dir="auto">{data.child.firstName}</h1>
+            <h1 className="truncate text-title  tracking-[-0.02em]" dir="auto">{data.child.firstName}</h1>
             <ul className="mt-2 flex flex-wrap gap-1.5">
               {data.child.age !== null && <li className={chip}>{t.overview.ageYears(data.child.age)}</li>}
               <li className={chip}><Compass aria-hidden className="size-3.5 text-teal-700" />{data.child.track ? `${t.overview.carePath}: ${data.child.track}` : t.overview.noCarePath}</li>
@@ -130,7 +130,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
           <Card tone={crisis ? "danger" : "warn"} className="flex items-start gap-3 sm:items-center">
             <span aria-hidden className={cn("inline-flex size-10 shrink-0 items-center justify-center rounded-xl", crisis ? "bg-rose-100 text-rose-700" : "bg-gold-100 text-gold-700")}><TriangleAlert className="size-5" /></span>
             <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-semibold">{t.overview.attention}</h2>
+              <h2 className="text-sm ">{t.overview.attention}</h2>
               <ul className="mt-0.5 space-y-0.5 text-sm">
                 {data.attention.map((a) => (
                   <li key={a.code}>
@@ -140,7 +140,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
               </ul>
             </div>
             {!crisis && tabs.includes("safety") && data.attention.some((a) => a.code === "SAFETY_PLAN_NO_EMERGENCY_NUMBER") && (
-              <button type="button" onClick={() => go("safety")} className="hidden shrink-0 items-center gap-1.5 rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-gold-700 ring-1 ring-gold-100 hover:bg-white sm:inline-flex">
+              <button type="button" onClick={() => go("safety")} className="hidden shrink-0 items-center gap-1.5 rounded-full bg-white/80 px-4 py-2 text-sm  text-gold-700 ring-1 ring-gold-100 hover:bg-white sm:inline-flex">
                 {t.tabs.safety}<ArrowRight aria-hidden className="size-4 rtl:-scale-x-100" />
               </button>
             )}
@@ -156,10 +156,10 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
 
       <Cell index={2} className={cn(!room && "lg:col-span-2")}>
         <Card tone="calm" className="flex h-full flex-col">
-          <h2 className="text-sm font-semibold text-ink-soft">{t.overview.next}</h2>
+          <h2 className="text-sm  text-ink-soft">{t.overview.next}</h2>
           {next ? (
             <>
-              <p className="mt-3 flex items-center gap-3 text-lg font-semibold leading-snug">
+              <p className="mt-3 flex items-center gap-3 text-lg  leading-snug">
                 <span aria-hidden className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-teal-700 shadow-sm"><next.icon className="size-5" /></span>
                 {next.text}
               </p>
@@ -171,8 +171,8 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
 
       <Cell index={3}>
         <Card className="h-full">
-          <h2 className="flex items-center gap-2 text-sm font-semibold"><CalendarCheck aria-hidden className="size-4 text-teal-700" />{t.overview.last7}</h2>
-          <p className="mt-3 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)] font-semibold leading-none tracking-[-0.03em] tabular-nums text-teal-800">{data.last7Days.checkins}<span className="ms-1 text-base font-medium text-ink-subtle">/ 7</span></p>
+          <h2 className="flex items-center gap-2 text-sm "><CalendarCheck aria-hidden className="size-4 text-teal-700" />{t.overview.last7}</h2>
+          <p className="mt-3 text-[clamp(2rem,1.4rem+1.6vw,2.75rem)]  leading-none tracking-[-0.03em] tabular-nums text-teal-800">{data.last7Days.checkins}<span className="ms-1 text-base font-medium text-ink-subtle">/ 7</span></p>
           {data.childLastSelfCheckin && <p className="mt-4 text-sm text-ink-muted">{t.overview.childAnswered}: <span className="font-medium text-ink">{date(data.childLastSelfCheckin)}</span></p>}
         </Card>
       </Cell>
@@ -180,7 +180,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
       <Cell index={4} className="lg:col-span-2">
         <Card className="h-full">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="flex items-center gap-2 text-sm font-semibold"><HeartPulse aria-hidden className="size-4 text-teal-700" />{t.overview.lastCheckin}</h2>
+            <h2 className="flex items-center gap-2 text-sm "><HeartPulse aria-hidden className="size-4 text-teal-700" />{t.overview.lastCheckin}</h2>
             {data.lastCheckin && <span className="text-xs text-ink-muted">{date(data.lastCheckin.date)}</span>}
           </div>
           {data.lastCheckin ? (
@@ -188,7 +188,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
               {(["mood", "energy", "focus", "sleepHours"] as const).map((f) => (
                 <div key={f} className="lm-inset p-3">
                   <dt className="text-xs text-ink-muted">{t.checkin.fields[f]}</dt>
-                  <dd className="mt-1 text-lg font-semibold tabular-nums">{data.lastCheckin![f] ?? t.checkin.unknown}</dd>
+                  <dd className="mt-1 text-lg  tabular-nums">{data.lastCheckin![f] ?? t.checkin.unknown}</dd>
                   {data.lastCheckin![f] !== null && <dd className="text-xs text-ink-muted">{t.source[data.lastCheckin!.sources[f] ?? "OBSERVED"]}</dd>}
                 </div>
               ))}
@@ -196,7 +196,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
           ) : (
             <div className="lm-inset mt-4 flex flex-wrap items-center justify-between gap-3 p-4">
               <p className="text-sm text-ink-muted">{t.overview.none}</p>
-              {tabs.includes("checkin") && <button type="button" onClick={() => go("checkin")} className="text-sm font-semibold text-teal-700 underline-offset-4 hover:underline">{t.checkin.title}</button>}
+              {tabs.includes("checkin") && <button type="button" onClick={() => go("checkin")} className="text-sm  text-teal-700 underline-offset-4 hover:underline">{t.checkin.title}</button>}
             </div>
           )}
         </Card>
@@ -204,7 +204,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
 
       <Cell index={5}>
         <Card className="h-full">
-          <h2 className="flex items-center gap-2 text-sm font-semibold"><BookOpen aria-hidden className="size-4 text-teal-700" />{t.overview.recentNotes}</h2>
+          <h2 className="flex items-center gap-2 text-sm "><BookOpen aria-hidden className="size-4 text-teal-700" />{t.overview.recentNotes}</h2>
           {data.recentNotes.length ? (
             <ul className="mt-3 space-y-2 text-sm">
               {data.recentNotes.map((n) => (
@@ -216,7 +216,7 @@ function OverviewPanel({ data, childId, tabs, go }: { data: Overview; childId: s
             </ul>
           ) : <p className="mt-3 text-sm text-ink-muted">{t.journal.empty}</p>}
           {tabs.includes("journal") && (
-            <button type="button" onClick={() => go("journal")} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 underline-offset-4 hover:underline">
+            <button type="button" onClick={() => go("journal")} className="mt-4 inline-flex items-center gap-1.5 text-sm  text-teal-700 underline-offset-4 hover:underline">
               {t.tabs.journal}<ArrowRight aria-hidden className="size-4 rtl:-scale-x-100" />
             </button>
           )}

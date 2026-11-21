@@ -22,7 +22,7 @@ export function ChildGuidance({ childId }: { childId: string }) {
   return (
     <div className="space-y-4">
       <header>
-        <h2 className="text-lg font-semibold">{t.guidance.title}</h2>
+        <h2 className="text-lg ">{t.guidance.title}</h2>
         <p className="mt-1 text-sm text-ink-muted">{t.guidance.lead}</p>
       </header>
 
@@ -45,7 +45,7 @@ export function ChildGuidance({ childId }: { childId: string }) {
 
       {c.contradictions.length > 0 && (
         <Card tone="warn">
-          <h3 className="text-sm font-semibold">{t.guidance.disagree}</h3>
+          <h3 className="text-sm ">{t.guidance.disagree}</h3>
           <ul className="mt-2 space-y-1 text-sm">
             {c.contradictions.map((x) => (
               <li key={`${x.date}-${x.field}`}>
@@ -57,13 +57,13 @@ export function ChildGuidance({ childId }: { childId: string }) {
       )}
 
       <Card>
-        <h3 className="text-sm font-semibold">{t.guidance.articles}</h3>
+        <h3 className="text-sm ">{t.guidance.articles}</h3>
         {items.length > 0 ? (
           <ul className="mt-3 space-y-3">
             {items.map((a) => (
               <li key={a.id} className="rounded-xl bg-canvas p-3">
                 <p className="text-xs text-ink-muted">{a.topic}</p>
-                <p className="font-semibold">{a.title}</p>
+                <p className="">{a.title}</p>
                 <p className="mt-1 text-sm">{a.summary}</p>
                 <ul className="mt-2 list-disc space-y-1 ps-5 text-sm">{a.points.map((p) => <li key={p}>{p}</li>)}</ul>
               </li>
@@ -73,7 +73,7 @@ export function ChildGuidance({ childId }: { childId: string }) {
       </Card>
 
       <details className="rounded-2xl border border-line bg-white p-4 text-sm">
-        <summary className="cursor-pointer font-semibold">{t.guidance.rules}</summary>
+        <summary className="cursor-pointer ">{t.guidance.rules}</summary>
         <ul className="mt-2 list-disc space-y-1 ps-5">{c.rules.map((r) => <li key={r}>{t.guidance.rule[r] ?? r}</li>)}</ul>
       </details>
     </div>
@@ -81,7 +81,7 @@ export function ChildGuidance({ childId }: { childId: string }) {
 }
 
 function SourceCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return <Card><h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">{title}</h3>{children}</Card>;
+  return <Card><h3 className="mb-2 text-xs  uppercase tracking-wide text-ink-muted">{title}</h3>{children}</Card>;
 }
 
 function ParentSource({ source }: { source: FamilyContext["sources"]["PARENT_REPORTED_OBSERVATION"] }) {
@@ -109,7 +109,7 @@ export function ChildResources({ childId }: { childId: string }) {
   return (
     <div className="space-y-4">
       <header>
-        <h2 className="text-lg font-semibold">{t.resources.title}</h2>
+        <h2 className="text-lg ">{t.resources.title}</h2>
         <p className="mt-1 text-sm text-ink-muted">{t.resources.lead}</p>
       </header>
       {data.length === 0 ? (
@@ -121,7 +121,7 @@ export function ChildResources({ childId }: { childId: string }) {
             return (
               <li key={r.id}>
                 <Card className="h-full">
-                  {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-teal-800 underline-offset-4 hover:underline">{title}</a> : <p className="font-semibold">{title}</p>}
+                  {r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" className=" text-teal-800 underline-offset-4 hover:underline">{title}</a> : <p className="">{title}</p>}
                   {r.summary && <p className="mt-1 text-sm">{r.summary}</p>}
                   <p className="mt-2 text-xs text-ink-muted">{[r.sourceOrg, r.readingTimeMinutes ? `${r.readingTimeMinutes} min` : null].filter(Boolean).join(" · ")}</p>
                 </Card>
@@ -147,7 +147,7 @@ export function ChildSafety({ childId }: { childId: string }) {
   return (
     <div className="space-y-4">
       <header>
-        <h2 className="text-lg font-semibold">{t.safety.title}</h2>
+        <h2 className="text-lg ">{t.safety.title}</h2>
         <p className="mt-1 text-sm text-ink-muted">{t.safety.lead}</p>
       </header>
       <EmergencyPanel plan={plan} clinic={res.data.emergencyResources} />
@@ -165,12 +165,12 @@ function EmergencyPanel({ plan, clinic }: { plan: SafetyPlan; clinic: string[] }
   ];
   return (
     <Card tone="danger">
-      <p className="text-sm font-semibold">{t.journal.emergency}</p>
+      <p className="text-sm ">{t.journal.emergency}</p>
       {numbers.length ? (
         <ul className="mt-2 flex flex-wrap gap-2">
           {numbers.map((n) => (
             <li key={`${n.label}-${n.phone}`}>
-              <a href={`tel:${n.phone.replace(/[^\d+]/g, "")}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold ring-1 ring-rose-100">
+              <a href={`tel:${n.phone.replace(/[^\d+]/g, "")}`} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-4 text-sm  ring-1 ring-rose-100">
                 <Phone className="size-4" aria-hidden /> {n.label}: <span dir="ltr">{n.phone}</span>
               </a>
             </li>
@@ -179,7 +179,7 @@ function EmergencyPanel({ plan, clinic }: { plan: SafetyPlan; clinic: string[] }
       ) : <p className="mt-1 text-sm">{t.overview.noEmergencyNumber}</p>}
       {clinic.length > 0 && (
         <div className="mt-3 text-sm">
-          <p className="text-xs font-semibold">{t.safety.clinic}</p>
+          <p className="text-xs ">{t.safety.clinic}</p>
           <ul className="mt-1 space-y-0.5">{clinic.map((c) => <li key={c}>{c}</li>)}</ul>
         </div>
       )}

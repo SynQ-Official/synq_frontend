@@ -56,13 +56,13 @@ export function ArticleCard({ item, index = 0, className, onOpen, onDismiss }: C
           {two(index + 1)}
         </span>
         {content.sourceOrg && (
-          <span className="absolute start-3 top-3 inline-flex rounded-full bg-white/85 px-2.5 py-1 text-[0.75rem] font-bold tracking-[0.06em] text-teal-800">{content.sourceOrg}</span>
+          <span className="absolute start-3 top-3 inline-flex rounded-full bg-white/85 px-2.5 py-1 text-[0.75rem]  tracking-[0.06em] text-teal-800">{content.sourceOrg}</span>
         )}
       </span>
 
       <span className="flex flex-1 flex-col p-4 sm:p-5">
         {because && <span className="mb-2 text-[0.8125rem] font-medium leading-snug text-teal-700">{copy.because[because]}</span>}
-        <span dir="auto" className="text-[1.0625rem] font-semibold leading-snug text-ink">{title}</span>
+        <span dir="auto" className="text-[1.0625rem]  leading-snug text-ink">{title}</span>
         {content.summary && <span dir="auto" className="mt-2 line-clamp-3 text-[0.875rem] leading-6 text-ink-soft">{content.summary}</span>}
         {content.readingTimeMinutes ? (
           <span className="mt-2 text-[0.8125rem] font-medium text-muted-foreground">{fill(copy.minutes, { n: content.readingTimeMinutes })}</span>
@@ -119,7 +119,7 @@ export function ArticleCard({ item, index = 0, className, onOpen, onDismiss }: C
           type="button"
           onClick={() => onDismiss(content.id)}
           aria-label={copy.notForMeLabel}
-          className="absolute end-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1 text-[0.75rem] font-semibold text-ink-soft outline-none transition-colors hover:bg-white hover:text-ink focus-visible:ring-2 focus-visible:ring-teal-500"
+          className="absolute end-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/85 px-2.5 py-1 text-[0.75rem]  text-ink-soft outline-none transition-colors hover:bg-white hover:text-ink focus-visible:ring-2 focus-visible:ring-teal-500"
         >
           <EyeOff className="size-3.5" aria-hidden />
           {copy.notForMe}

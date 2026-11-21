@@ -74,7 +74,7 @@ export function RecommendedExercises() {
       <div className="flex flex-col gap-4 p-5 pb-4 sm:flex-row sm:items-end sm:justify-between sm:p-6 sm:pb-4">
         <div className="min-w-0">
           <p className="lm-eyebrow">{ex.section}</p>
-          <h2 id="recommended-title" className="mt-1 text-xl font-semibold leading-snug text-ink">{ex.title}</h2>
+          <h2 id="recommended-title" className="mt-1 text-xl  leading-snug text-ink">{ex.title}</h2>
           <p className="mt-1 max-w-xl text-sm leading-relaxed text-ink-soft">{ex.lead[profile.track]}</p>
         </div>
         {kinds.length > 1 && (
@@ -86,7 +86,7 @@ export function RecommendedExercises() {
                 aria-pressed={kind === value}
                 onClick={() => setKind(value)}
                 className={cn(
-                  "min-h-9 shrink-0 cursor-pointer rounded-full border px-3.5 text-xs font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500",
+                  "min-h-9 shrink-0 cursor-pointer rounded-full border px-3.5 text-xs  transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500",
                   kind === value ? "border-teal-600 bg-teal-600 text-white" : "border-line bg-white/70 text-ink-soft hover:border-teal-300 hover:text-ink",
                 )}
               >
@@ -115,7 +115,7 @@ export function RecommendedExercises() {
                 <FeaturedIcon className="size-7" aria-hidden />
               </span>
             </div>
-            <span className="relative inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[0.6875rem] font-semibold uppercase tracking-wide text-teal-800 ring-1 ring-white rtl:normal-case rtl:tracking-normal">
+            <span className="relative inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[0.6875rem]  uppercase tracking-wide text-teal-800 ring-1 ring-white rtl:normal-case rtl:tracking-normal">
               <Sparkles className="size-3 text-gold-600" aria-hidden />
               {kind === "ALL" ? ex.featured : ex.kinds[featured.type]}
             </span>
@@ -123,7 +123,7 @@ export function RecommendedExercises() {
 
           <div className="flex flex-1 flex-col gap-3.5 p-5">
             <div>
-              <h3 className="text-lg font-semibold leading-snug text-ink">{item.title}</h3>
+              <h3 className="text-lg  leading-snug text-ink">{item.title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-ink-soft">{item.description}</p>
             </div>
             <ul className="flex flex-wrap gap-2 text-xs font-medium text-ink-soft">
@@ -133,7 +133,7 @@ export function RecommendedExercises() {
             </ul>
             <p className="flex items-start gap-1.5 text-xs leading-snug text-muted-foreground">
               <Sparkles className="mt-px size-3.5 shrink-0 text-gold-600" aria-hidden />
-              <span><span className="font-semibold text-ink-soft">{ex.why}:</span> {reason(featured)}</span>
+              <span><span className=" text-ink-soft">{ex.why}:</span> {reason(featured)}</span>
             </p>
             <div className="mt-auto flex flex-wrap items-center gap-3 pt-1">
               <Button onClick={() => start(featured)} className="w-full sm:w-auto">
@@ -141,7 +141,7 @@ export function RecommendedExercises() {
                 {featuredDone ? ex.again : ex.start}
               </Button>
               {featuredDone && (
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-700">
+                <span className="inline-flex items-center gap-1.5 text-xs  text-sage-700">
                   <Check className="size-4" aria-hidden />{ex.doneToday}
                 </span>
               )}
@@ -151,7 +151,7 @@ export function RecommendedExercises() {
 
         {/* The rest, ranked. */}
         <div className="min-w-0">
-          {rest.length > 0 && <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted rtl:normal-case rtl:tracking-normal">{ex.more}</p>}
+          {rest.length > 0 && <p className="mb-2.5 text-xs  uppercase tracking-wide text-ink-muted rtl:normal-case rtl:tracking-normal">{ex.more}</p>}
           <ul className="grid gap-2.5">
             {rest.slice(0, LIST_SIZE).map((exercise) => {
               const local = localizeExercise(exercise, language);
@@ -168,7 +168,7 @@ export function RecommendedExercises() {
                       {finished ? <Check className="size-5" aria-hidden /> : <Icon className="size-5" aria-hidden />}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold text-ink">{local.title}</span>
+                      <span className="block truncate text-sm  text-ink">{local.title}</span>
                       <span className="mt-0.5 block truncate text-xs text-ink-soft">
                         {ex.kinds[exercise.type]}
                         {local.minutes ? ` · ${fill(copy.common.min, { n: local.minutes })}` : ""}

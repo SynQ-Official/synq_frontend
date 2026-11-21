@@ -1,7 +1,7 @@
 import type { Lang } from "./config";
 
 /**
- * Copy of /tracks — the one page that describes the three tracks (ADHD, bipolar disorder, psychosis & schizophrenia).
+ * Copy of /tracks — the one page that describes the three tracks (ADHD, bipolar disorder, psychosis).
  * It says what each is and how it can show up, and what the daily space does differently for it. It does not repeat
  * how Mira or Lumina work (that lives on /mira and /lumina) and it never offers a diagnosis.
  */
@@ -45,13 +45,13 @@ const en: TracksCopy = {
   seo: {
     title: "The three tracks: ADHD, bipolar disorder, psychosis",
     description:
-      "What ADHD, bipolar disorder and psychosis or schizophrenia are, how each can show up in daily life, and how SynQ adapts your space to the track you follow.",
+      "What ADHD, bipolar disorder and psychosis are, how each can show up in daily life, and how SynQ adapts your space to your care path.",
   },
   hero: {
     eyebrow: "The three tracks",
     titleA: "One space,",
     titleB: "shaped to your track.",
-    body: "ADHD, bipolar disorder and psychosis ask different things of a day. SynQ keeps the same calm core and changes what it puts first.",
+    body: "ADHD, bipolar disorder and psychosis ask different things of a day. SynQ keeps the same simple core and changes what it puts first.",
     scroll: "Explore the tracks",
   },
   explorer: {
@@ -84,7 +84,7 @@ const en: TracksCopy = {
         tab: "Bipolar disorder",
         kicker: "Rhythm · Balance",
         title: "Bipolar disorder",
-        what: "Stretches of unusually high energy and stretches of low mood, with calmer periods between them. Sleep and routine are often the first things to move, sometimes days before the mood does.",
+        what: "Stretches of unusually high energy and stretches of low mood, with steadier periods between them. Sleep and routine are often the first things to move, sometimes days before the mood does.",
         signsTitle: "How it can show up",
         signs: [
           "Little sleep without feeling tired",
@@ -94,16 +94,16 @@ const en: TracksCopy = {
         ],
         leansTitle: "What leans in for bipolar disorder",
         leans: [
-          { name: "Sleep and rhythm", body: "Hours slept, mood and energy are read against your own baseline, not an average." },
+          { name: "Sleep and rhythm", body: "Hours slept, mood and energy are read against your usual range, not an average." },
           { name: "Early signals", body: "When a pattern lifts or drops, you get a gentle note to bring to your care team." },
-          { name: "Reading library", body: "Calm articles from WHO, NIMH, NICE and the NHS, at your pace." },
+          { name: "Reading library", body: "Short articles from WHO, NIMH, NICE and the NHS, at your pace." },
         ],
-        visual: { caption: "Your baseline, and how far the days move from it", labels: ["Higher", "Baseline", "Lower"] },
+        visual: { caption: "Your usual range, and how far the days move from it", labels: ["Higher", "Usual", "Lower"] },
       },
       psychosis: {
-        tab: "Psychosis & schizophrenia",
-        kicker: "Calm · Grounding",
-        title: "Psychosis & schizophrenia",
+        tab: "Psychosis",
+        kicker: "Quiet · Grounding",
+        title: "Psychosis",
         what: "In psychosis, some of what you see, hear or believe is no longer shared by those around you. Schizophrenia is one condition where it can return. Steady, early support makes a real difference.",
         signsTitle: "How it can show up",
         signs: [
@@ -131,7 +131,7 @@ const en: TracksCopy = {
     rows: [
       { label: "Spark: one task into small steps", values: [true, false, false] },
       { label: "Focus timer", values: [true, false, false] },
-      { label: "Sleep and rhythm read against your baseline", values: [false, true, false] },
+      { label: "Sleep and rhythm read against your usual range", values: [false, true, false] },
       { label: "Reading library", values: [false, true, true] },
       { label: "Grounding exercises", values: [false, false, true] },
       { label: "Motion-free, quiet screens", values: [false, false, true] },
@@ -153,13 +153,13 @@ const ar: TracksCopy = {
   seo: {
     title: "المسارات الثلاثة: فرط الحركة، ثنائي القطب، الذهان",
     description:
-      "ما هو اضطراب فرط الحركة وتشتت الانتباه والاضطراب ثنائي القطب والذهان أو الفصام، وكيف يظهر كلٌّ منها في الحياة اليومية، وكيف تتكيّف SynQ مع المسار الذي تتابعه.",
+      "ما هو اضطراب فرط الحركة وتشتت الانتباه والاضطراب ثنائي القطب والذهان، وكيف يظهر كلٌّ منها في الحياة اليومية، وكيف تتكيّف SynQ مع المسار الذي تتابعه.",
   },
   hero: {
     eyebrow: "المسارات الثلاثة",
     titleA: "مساحة واحدة،",
     titleB: "على مقاس مسارك.",
-    body: "فرط الحركة وتشتت الانتباه، والاضطراب ثنائي القطب، والذهان؛ لكلٍّ منها ما يطلبه من اليوم. تُبقي SynQ النواة الهادئة نفسها وتغيّر ما تضعه أولًا.",
+    body: "فرط الحركة وتشتت الانتباه، والاضطراب ثنائي القطب، والذهان؛ لكلٍّ منها ما يطلبه من اليوم. تُبقي SynQ النواة البسيطة نفسها وتغيّر ما تضعه أولًا.",
     scroll: "استكشف المسارات",
   },
   explorer: {
@@ -202,16 +202,16 @@ const ar: TracksCopy = {
         ],
         leansTitle: "ما يتكيّف للاضطراب ثنائي القطب",
         leans: [
-          { name: "النوم والإيقاع", body: "تُقرأ ساعات النوم والمزاج والطاقة مقارنةً بخطّك المرجعي أنت، لا بمتوسط عام." },
+          { name: "النوم والإيقاع", body: "تُقرأ ساعات النوم والمزاج والطاقة مقارنةً بنطاقك المعتاد، لا بمتوسط عام." },
           { name: "إشارات مبكرة", body: "حين يرتفع نمط أو ينخفض، تصلك ملاحظة لطيفة تحملها إلى فريق رعايتك." },
-          { name: "مكتبة القراءة", body: "مقالات هادئة من منظمة الصحة العالمية وNIMH وNICE وNHS، بوتيرتك." },
+          { name: "مكتبة القراءة", body: "مقالات قصيرة من منظمة الصحة العالمية وNIMH وNICE وNHS، بوتيرتك." },
         ],
-        visual: { caption: "خطّك المرجعي، ومدى ابتعاد الأيام عنه", labels: ["أعلى", "المرجع", "أدنى"] },
+        visual: { caption: "نطاقك المعتاد، ومدى ابتعاد الأيام عنه", labels: ["أعلى", "المعتاد", "أدنى"] },
       },
       psychosis: {
-        tab: "الذهان والفصام",
+        tab: "الذهان",
         kicker: "هدوء · ثبات",
-        title: "الذهان والفصام",
+        title: "الذهان",
         what: "في الذهان يصبح بعض ما تراه أو تسمعه أو تعتقده غير مشترك مع من حولك. الفصام إحدى الحالات التي قد يعود فيها. والدعم المبكر المنتظم يصنع فرقًا حقيقيًا.",
         signsTitle: "كيف قد يظهر",
         signs: [
@@ -222,7 +222,7 @@ const ar: TracksCopy = {
         ],
         leansTitle: "ما يتكيّف للذهان",
         leans: [
-          { name: "مساحة هادئة", body: "بلا حركة منجرفة ولا ضغط: الشاشات تظهر وتتلاشى فقط، ولا شيء يطلب منك السرعة." },
+          { name: "مساحة بسيطة", body: "بلا حركة منجرفة ولا ضغط: الشاشات تظهر وتتلاشى فقط، ولا شيء يطلب منك السرعة." },
           { name: "التثبيت", body: "تمرين 5-4-3-2-1 يعيد انتباهك إلى الغرفة التي أنت فيها." },
           { name: "مفكرة خاصة", body: "هي لك افتراضيًا. لا يصل إلى مختصك إلا ما تختار مشاركته." },
         ],
@@ -239,10 +239,10 @@ const ar: TracksCopy = {
     rows: [
       { label: "سبارك: مهمة واحدة إلى خطوات صغيرة", values: [true, false, false] },
       { label: "مؤقت التركيز", values: [true, false, false] },
-      { label: "النوم والإيقاع مقارنةً بخطّك المرجعي", values: [false, true, false] },
+      { label: "النوم والإيقاع مقارنةً بنطاقك المعتاد", values: [false, true, false] },
       { label: "مكتبة القراءة", values: [false, true, true] },
       { label: "تمارين التثبيت", values: [false, false, true] },
-      { label: "شاشات هادئة بلا حركة", values: [false, false, true] },
+      { label: "شاشات بسيطة بلا حركة", values: [false, false, true] },
     ],
     yes: "مشمول",
     no: "ليس ضمن هذا المسار",

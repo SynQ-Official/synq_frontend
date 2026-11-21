@@ -96,7 +96,7 @@ function RoleVisual({ index, preview }: { index: number; preview: LuminaPreviewC
       return (
         <div>
           <BaselineChart delay={0.1} />
-          <p className="mt-3 flex items-center gap-2 text-[0.75rem] font-semibold text-teal-700">
+          <p className="mt-3 flex items-center gap-2 text-[0.75rem]  text-teal-700">
             <span className="size-2 rounded-full bg-teal-500" />
             {preview.views.trend.verdict}
           </p>
@@ -138,7 +138,7 @@ function RoleVisual({ index, preview }: { index: number; preview: LuminaPreviewC
             ))}
           </div>
           <div className="min-w-0 space-y-2">
-            <p className="text-[0.9375rem] font-semibold text-ink">{preview.views.report.title}</p>
+            <p className="text-[0.9375rem]  text-ink">{preview.views.report.title}</p>
             <p className="flex items-center gap-2 text-[0.8125rem] text-ink-soft">
               <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-ink text-white">
                 <LockKeyhole className="size-3.5" strokeWidth={1.75} />

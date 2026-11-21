@@ -287,7 +287,7 @@ export function TourOverlay({ steps, onClose }: { steps: TourStep[]; onClose: (c
             </button>
           </div>
 
-          <h2 className="mt-3 text-lg font-semibold leading-snug text-ink">{text.title}</h2>
+          <h2 className="mt-3 text-lg  leading-snug text-ink">{text.title}</h2>
           <p id="tour-body" className="mt-1.5 text-sm leading-relaxed text-ink-soft">{body}</p>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">

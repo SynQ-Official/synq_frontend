@@ -39,7 +39,7 @@ export function MatchStrengthMeter({
             </span>
           ))}
         </div>
-        <span className={cn("text-[0.9375rem] font-semibold", inverse ? "text-white" : "text-ink")}>{levelLabel}</span>
+        <span className={cn("text-[0.9375rem] ", inverse ? "text-white" : "text-ink")}>{levelLabel}</span>
       </div>
     </div>
   );

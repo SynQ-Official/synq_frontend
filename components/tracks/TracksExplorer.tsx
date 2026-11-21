@@ -101,7 +101,7 @@ export function TracksExplorer() {
                     <motion.span layoutId="track-pill" transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 34 }} className="absolute inset-0 rounded-[1.25rem] bg-white shadow-soft ring-1 ring-line" />
                   )}
                   <span className={cn("relative size-3 shrink-0 rounded-full transition-transform duration-300", TRACK_TONE[id].dot, selected && "scale-125")} aria-hidden />
-                  <span className="relative min-w-0 text-[0.9375rem] font-semibold leading-snug">{copy.tracks[id].tab}</span>
+                  <span className="relative min-w-0 text-[0.9375rem]  leading-snug">{copy.tracks[id].tab}</span>
                 </button>
               );
             })}
@@ -165,10 +165,10 @@ export function TracksExplorer() {
                     transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.25 + index * 0.1 }}
                     className={cn("rounded-panel border p-6 transition-transform duration-500 ease-out-soft hover:-translate-y-1 sm:p-7", tone.soft, "border-line")}
                   >
-                    <span className={cn("flex size-9 items-center justify-center rounded-xl text-[0.875rem] font-semibold", tone.solid)} aria-hidden>
+                    <span className={cn("flex size-9 items-center justify-center rounded-xl text-[0.875rem] ", tone.solid)} aria-hidden>
                       {index + 1}
                     </span>
-                    <p className="mt-5 text-[1.0625rem] font-semibold text-ink">{item.name}</p>
+                    <p className="mt-5 text-[1.0625rem]  text-ink">{item.name}</p>
                     <p className="mt-2 text-[0.9375rem] leading-[1.7] text-ink-soft">{item.body}</p>
                   </motion.li>
                 ))}

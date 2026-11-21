@@ -68,7 +68,7 @@ function AudienceChooser({ items }: { items: readonly Audience[] }) {
                                 href={href}
                                 onPointerEnter={() => setHot(index)}
                                 onFocus={() => setHot(index)}
-                                className="group relative flex min-h-14 items-center gap-3 rounded-[1.375rem] px-3 text-start text-[0.9375rem] font-semibold text-ink outline-none focus-visible:ring-2 focus-visible:ring-teal-500 sm:rounded-full sm:px-4"
+                                className="group relative flex min-h-14 items-center gap-3 rounded-[1.375rem] px-3 text-start text-[0.9375rem]  text-ink outline-none focus-visible:ring-2 focus-visible:ring-teal-500 sm:rounded-full sm:px-4"
                             >
                                 {active && (
                                     <motion.span
@@ -86,7 +86,7 @@ function AudienceChooser({ items }: { items: readonly Audience[] }) {
                                 >
                                     <Icon className="size-4" aria-hidden />
                                 </span>
-                                <span className="relative min-w-0 flex-1 truncate">{label}</span>
+                                <span className="relative min-w-0 flex-1 text-pretty leading-snug">{label}</span>
                                 <ArrowRight
                                     aria-hidden
                                     className={cn(
@@ -151,21 +151,21 @@ export const Hero = () => {
                     <div className="w-full max-w-6xl">
                         <h1 className={cn(DISPLAY_XL, "mx-auto text-ink")}>
                             <span className="block">
-                                <WordReveal delay={0.45} step={0.07}>{copy.titleA}</WordReveal>
+                                <WordReveal delay={0.05} step={0.05}>{copy.titleA}</WordReveal>
                             </span>
                             <span className="block">
                                 {lead ? (
                                     <>
-                                        <WordReveal delay={0.7} step={0.07}>{lead}</WordReveal>{" "}
+                                        <WordReveal delay={0.2} step={0.05}>{lead}</WordReveal>{" "}
                                     </>
                                 ) : null}
-                                <WordReveal className={ACCENT_LIGHT} delay={1} step={0.07}>
+                                <WordReveal className={ACCENT_LIGHT} delay={0.35} step={0.05}>
                                     {accent}
                                 </WordReveal>
                             </span>
                         </h1>
 
-                        <motion.div variants={stagger(0.12, 1.5)} initial="hidden" animate="show">
+                        <motion.div variants={stagger(0.1, 0.7)} initial="hidden" animate="show">
                             <motion.p variants={fadeUp(0, 16)} className={cn(BODY, "mx-auto mt-10 max-w-2xl")}>
                                 {copy.subtitle}
                             </motion.p>
@@ -174,7 +174,7 @@ export const Hero = () => {
                                 <AudienceChooser
                                     items={[
                                         { label: copy.audiences.clinicians, href: ROUTES.psy, Icon: Stethoscope },
-                                        { label: copy.audiences.parents, href: agentEntryHref("mira", signedIn), Icon: UsersRound },
+                                        { label: copy.audiences.parents, href: "/family", Icon: UsersRound },
                                         { label: copy.audiences.adults, href: agentEntryHref("mira", signedIn), Icon: UserRound },
                                     ]}
                                 />

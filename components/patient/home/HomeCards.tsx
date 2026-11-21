@@ -61,7 +61,7 @@ export function WellbeingCard() {
                   <ScoreRing value={reading.value} display={reading.display} label={copy.dimensions[key]} icon={<Icon className="size-5" aria-hidden />} />
                 )}
                 <div>
-                  <p className="text-sm font-semibold text-ink">{copy.dimensions[key]}</p>
+                  <p className="text-sm  text-ink">{copy.dimensions[key]}</p>
                   <p className="text-sm tabular-nums text-ink-soft">{reading.display}</p>
                   {/* The mood colour sits in the dot; the words stay in a readable ink (the light tints fail contrast as text). */}
                   <p className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-ink-muted">
@@ -230,7 +230,7 @@ export function PlanCard() {
                     {done ? <Check className="size-4" aria-hidden /> : <Icon className="size-[1.125rem]" aria-hidden />}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-ink">{item.title}</span>
+                    <span className="block truncate text-sm  text-ink">{item.title}</span>
                     <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
                       {item.minutes ? <><Clock className="size-3" aria-hidden />{fill(copy.common.min, { n: item.minutes })} ·</> : null}
                       {done ? copy.home.plan.completed : row.assigned ? copy.home.plan.assigned : copy.home.plan.suggested}
@@ -271,16 +271,16 @@ export function ProgressStrip() {
   }, [history.data]);
 
   return (
-    <GlassCard className="flex h-full flex-col gap-4 sm:flex-row sm:items-center 2xl:flex-col 2xl:items-stretch" aria-labelledby="progress-title">
+    <GlassCard className="flex flex-col gap-4 sm:flex-row sm:items-center" aria-labelledby="progress-title">
       <span className="stat-tile stat-tile-sage shrink-0"><Flame className="size-5" aria-hidden /></span>
       <div className="min-w-0 flex-1">
-        <h2 id="progress-title" className="text-base font-semibold text-ink">{copy.home.progress.title}</h2>
+        <h2 id="progress-title" className="text-base  text-ink">{copy.home.progress.title}</h2>
         {/* A failed load must never read as "0 of 7 days": that would tell the patient they had not shown up. */}
         {history.error ? <ErrorState onRetry={() => void history.refresh()} /> : history.isLoading ? <Skeleton className="mt-2 h-4 w-72 max-w-full" /> : (
           <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{days ? fill(copy.home.progress.body, { n: days }) : copy.home.progress.bodyZero}</p>
         )}
       </div>
-      <div className="w-full sm:w-48 2xl:w-full">
+      <div className="w-full sm:w-64 lg:w-80">
         <p className="mb-1 text-xs text-muted-foreground">{copy.home.progress.moodTrend}</p>
         <Sparkline values={moodSeries} color="var(--color-teal-600)" height={44} domain={[0, 10]} />
       </div>

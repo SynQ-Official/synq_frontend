@@ -69,7 +69,7 @@ export function PatientModal({
                   exit={layoutId ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }}
                   transition={{ duration: reduce ? 0 : 0.32, ease: EASE_OUT }}
                 >
-                  <Dialog.Title className={hideTitle ? "sr-only" : "pe-10 text-lg font-semibold text-ink"}>{title}</Dialog.Title>
+                  <Dialog.Title className={hideTitle ? "sr-only" : "pe-10 text-lg  text-ink"}>{title}</Dialog.Title>
                   {description ? (
                     <Dialog.Description className="mt-1 pe-10 text-sm text-muted-foreground">{description}</Dialog.Description>
                   ) : (

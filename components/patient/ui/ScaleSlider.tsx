@@ -36,7 +36,7 @@ export function ScaleSlider({
   return (
     <div dir="ltr" className="w-full">
       <div className="mb-3 flex justify-center">
-        <span className="rounded-full px-4 py-1 text-2xl font-semibold tabular-nums" style={{ color, background: `${color}1a` }}>
+        <span className="rounded-full px-4 py-1 text-2xl  tabular-nums" style={{ color, background: `${color}1a` }}>
           {format ? format(value) : value}
         </span>
       </div>

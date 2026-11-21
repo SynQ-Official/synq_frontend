@@ -2,7 +2,6 @@
 
 import { LABEL } from "@/components/home/typography";
 import { EASE_OUT } from "@/lib/motion";
-import type { TrustId } from "@/lib/i18n/trust";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ShieldCheck, type LucideIcon } from "lucide-react";
@@ -20,7 +19,7 @@ function place(index: number, total: number) {
  * being read lights up in gold, a pulse leaves the shield towards it, and its name rests under the shield. Reading the page
  * is how it moves, so the picture and the index always agree. Decorative: the sections carry the words.
  */
-export function TrustSeal({ ids, icons, titles, active, className }: { ids: readonly TrustId[]; icons: Record<TrustId, LucideIcon>; titles: readonly string[]; active: TrustId; className?: string }) {
+export function TrustSeal({ ids, icons, titles, active, className }: { ids: readonly string[]; icons: Record<string, LucideIcon>; titles: readonly string[]; active: string; className?: string }) {
   const reduce = useReducedMotion();
   const current = Math.max(0, ids.indexOf(active));
 

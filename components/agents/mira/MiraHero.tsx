@@ -2,7 +2,7 @@
 
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
-import { ACCENT_LIGHT, BODY, LABEL, SERIF } from "@/components/home/typography";
+import { ACCENT_LIGHT, BODY, SERIF } from "@/components/home/typography";
 import { AgentAvatar } from "@/components/layout/site-header";
 import { fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -27,7 +27,7 @@ function Floater({ children, className, delay = 0, seconds = 6, dot }: { childre
       <motion.span
         animate={reduce ? undefined : { y: [0, -8, 0] }}
         transition={{ duration: seconds, repeat: Infinity, ease: "easeInOut", delay }}
-        className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/80 bg-white/85 px-3.5 py-2 text-[0.8125rem] font-semibold text-ink shadow-float backdrop-blur-md"
+        className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/80 bg-white/85 px-3.5 py-2 text-[0.8125rem]  text-ink shadow-float backdrop-blur-md"
       >
         {dot ? <span className={cn("size-2 rounded-full", dot)} /> : null}
         {children}
@@ -70,10 +70,6 @@ export function MiraHero() {
             <span className="text-[0.8125rem] font-medium text-ink-muted">{identity.meta}</span>
           </motion.div>
 
-          <motion.p variants={fadeUp()} className={cn(LABEL, "mt-8 flex items-center gap-3 text-teal-700")}>
-            <span aria-hidden className="h-px w-8 bg-gold" />
-            {page.hero.eyebrow}
-          </motion.p>
 
           <h1 id="agent-title" className={cn(SERIF, "mt-6 text-[clamp(2.75rem,4.6vw+1rem,5rem)] font-light leading-[1.02] tracking-[-0.035em] text-ink rtl:tracking-normal")}>
             <span className="block">
@@ -96,7 +92,7 @@ export function MiraHero() {
             </Magnetic>
             <a
               href="#flow"
-              className="group inline-flex min-h-11 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 transition-colors duration-200 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500"
+              className="group inline-flex min-h-11 items-center gap-2 rounded-md text-[0.9375rem]  text-teal-700 transition-colors duration-200 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500"
             >
               <span className="home-link-line">{page.hero.secondary}</span>
               <ArrowDown className="size-4 transition-transform duration-300 ease-out-soft group-hover:translate-y-0.5" aria-hidden />

@@ -24,7 +24,7 @@ export function NameIntake({ onSubmit, onSkip }: { onSubmit: (name: string) => v
     >
       <MiraAvatar size="md" />
       <div className="min-w-0 flex-1">
-        <p className="text-[1rem] font-semibold text-ink">{t.prompt}</p>
+        <p className="text-[1rem]  text-ink">{t.prompt}</p>
         <p className="mt-1 text-[0.9375rem] leading-6 text-ink-soft">{t.hint}</p>
         <form
           onSubmit={(event) => {

@@ -27,7 +27,7 @@ function Screen({ children, right }: { children: ReactNode; right?: ReactNode })
       <div className="flex items-center justify-between gap-2">
         <span className="flex items-center gap-2">
           <AgentAvatar agent="mira" className="size-8 rounded-xl ring-1 ring-line" />
-          <span className="text-[0.875rem] font-semibold text-ink">Mira</span>
+          <span className="text-[0.875rem]  text-ink">Mira</span>
         </span>
         {right}
       </div>
@@ -40,7 +40,7 @@ function Pill({ children, tone = "teal" }: { children: ReactNode; tone?: "teal" 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.6875rem] font-semibold",
+        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[0.6875rem] ",
         tone === "teal" && "border-teal-200 bg-teal-50 text-teal-700",
         tone === "sage" && "border-sage-100 bg-sage-50 text-sage-700",
         tone === "gold" && "border-gold-100 bg-gold-100 text-gold-700",
@@ -151,7 +151,7 @@ export function HelloScreen({ copy }: { copy: MiraPreviewCopy["screens"]["hello"
           <motion.span aria-hidden className="ms-0.5 h-4 w-px bg-teal-600" animate={reduce ? undefined : { opacity: [1, 0, 1] }} transition={{ duration: 1, repeat: Infinity }} />
         </motion.div>
       </div>
-      <motion.span {...rise(0.7, reduce)} className="flex min-h-11 items-center justify-center rounded-full bg-ink text-[0.875rem] font-semibold text-white">
+      <motion.span {...rise(0.7, reduce)} className="flex min-h-11 items-center justify-center rounded-full bg-ink text-[0.875rem]  text-white">
         {copy.cta}
       </motion.span>
     </Screen>
@@ -238,7 +238,7 @@ export function SafetyScreen({ copy }: { copy: MiraPreviewCopy["screens"]["safet
           {copy.status}
         </motion.p>
       </div>
-      <motion.span {...rise(0.7, reduce)} className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-sage-100 bg-sage-50 text-[0.875rem] font-semibold text-sage-700">
+      <motion.span {...rise(0.7, reduce)} className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-sage-100 bg-sage-50 text-[0.875rem]  text-sage-700">
         <Check className="size-4" aria-hidden />
         {copy.ok}
       </motion.span>
@@ -298,7 +298,7 @@ export function RadarChart({ scores, className }: { scores: readonly number[]; c
         return (
           <g key={axis}>
             <circle cx={x} cy={y} r="8" fill="#fff" stroke="var(--color-teal-300)" />
-            <text x={x} y={y + 3.2} textAnchor="middle" fontSize="9" fontWeight="600" fill="var(--color-teal-800)">
+            <text x={x} y={y + 3.2} textAnchor="middle" fontSize="9" fontWeight="400" fill="var(--color-teal-800)">
               {axis + 1}
             </text>
           </g>
@@ -321,8 +321,8 @@ export function ResultScreen({ copy }: { copy: MiraPreviewCopy["screens"]["resul
       <ul className="mt-1 space-y-2">
         {copy.areas.map((area, index) => (
           <motion.li key={area} {...rise(0.6 + index * 0.1, reduce)} className="flex items-center gap-2.5 text-[0.75rem]">
-            <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-teal-300 text-[0.625rem] font-semibold text-teal-800">{index + 1}</span>
-            <span className={cn("min-w-0 flex-1 truncate", index === 0 ? "font-semibold text-ink" : "text-ink-soft")}>{area}</span>
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-teal-300 text-[0.625rem]  text-teal-800">{index + 1}</span>
+            <span className={cn("min-w-0 flex-1 truncate", index === 0 ? " text-ink" : "text-ink-soft")}>{area}</span>
             <span dir="ltr" className="font-mono tabular-nums text-ink-muted">
               {EXAMPLE_SCORES[index]}
             </span>
@@ -333,7 +333,7 @@ export function ResultScreen({ copy }: { copy: MiraPreviewCopy["screens"]["resul
         {copy.review}
         <Pill tone="gold">{copy.reviewValue}</Pill>
       </motion.p>
-      <motion.span {...rise(1.05, reduce)} className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-full bg-ink text-[0.8125rem] font-semibold text-white">
+      <motion.span {...rise(1.05, reduce)} className="mt-3 flex min-h-11 items-center justify-center gap-2 rounded-full bg-ink text-[0.8125rem]  text-white">
         <Download className="size-4" aria-hidden />
         {copy.download}
       </motion.span>

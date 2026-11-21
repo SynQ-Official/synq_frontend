@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { HelpNow } from "@/components/help/HelpNow";
 import { HeaderShell } from "./HeaderShell";
 import { MarketingHeader } from "./MarketingHeader";
 
@@ -30,7 +31,10 @@ export function SiteHeader(props: SiteHeaderProps) {
         <HeaderShell position={props.position ?? "sticky"} surface="capsule" solid innerClassName="max-w-chat grid grid-cols-[auto_1fr_auto]">
           <BrandLogo size="md" />
           <div className="flex min-w-0 justify-center">{props.center}</div>
-          <div className="flex items-center gap-1 sm:gap-1.5">{props.actions}</div>
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <HelpNow label="short" />
+            {props.actions}
+          </div>
         </HeaderShell>
       );
   }

@@ -70,7 +70,7 @@ function QuestionRing({ answered, total, known, percent, size = "lg" }: { answer
           transition={reduce ? { duration: 0 } : { duration: 0.9, ease: EASE_OUT }}
         />
       </svg>
-      <span className={cn("relative tabular-nums text-ink", large ? cn(SERIF, "text-[1.5rem] font-light tracking-[-0.03em] rtl:font-sans rtl:text-[1.25rem]") : "text-[0.6875rem] font-semibold")} dir="ltr">
+      <span className={cn("relative tabular-nums text-ink", large ? cn(SERIF, "text-[1.5rem] font-light tracking-[-0.03em] rtl:font-sans rtl:text-[1.25rem]") : "text-[0.6875rem] ")} dir="ltr">
         {answered}
         {known && <span className={cn("text-ink-subtle", large && "text-[0.9375rem]")}>/{total}</span>}
       </span>
@@ -137,7 +137,7 @@ export function SessionRail(props: ProgressProps) {
         <MiraAvatar size="md" presence />
         <p className={cn(LABEL, "min-w-0 text-teal-700")}>{rail.eyebrow}</p>
       </div>
-      <h1 className={cn(SERIF, "mt-7 text-balance text-[clamp(1.875rem,1.2vw+1.4rem,2.5rem)] font-light leading-[1.08] tracking-[-0.03em] text-ink rtl:text-[clamp(1.625rem,1vw+1.25rem,2.125rem)] rtl:font-semibold rtl:leading-[1.4] rtl:tracking-normal")}>
+      <h1 className={cn(SERIF, "mt-7 text-balance text-[clamp(1.875rem,1.2vw+1.4rem,2.5rem)] font-light leading-[1.08] tracking-[-0.03em] text-ink rtl:text-[clamp(1.625rem,1vw+1.25rem,2.125rem)]  rtl:leading-[1.4] rtl:tracking-normal")}>
         {titleLead ? <>{titleLead} </> : null}
         <span className={ACCENT_LIGHT}>{titleAccent}</span>
       </h1>
@@ -148,7 +148,7 @@ export function SessionRail(props: ProgressProps) {
         <div className="flex items-center gap-4">
           <QuestionRing answered={position.answered} total={position.total} known={position.known} percent={percent} />
           <div className="min-w-0 flex-1">
-            <p className="text-[0.9375rem] font-semibold text-ink">{counter}</p>
+            <p className="text-[0.9375rem]  text-ink">{counter}</p>
             <Stage stage={stage} className="mt-1 block text-[0.875rem] leading-6 text-ink-soft" />
           </div>
         </div>
@@ -171,7 +171,7 @@ export function SessionRail(props: ProgressProps) {
           className="group flex w-full cursor-pointer items-start gap-3 rounded-[1.25rem] px-4 py-3.5 text-start transition-colors duration-200 hover:bg-ivory focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-500"
         >
           <span className="min-w-0 flex-1">
-            <span className="block text-[0.875rem] font-semibold text-ink">{rail.focusTitle}</span>
+            <span className="block text-[0.875rem]  text-ink">{rail.focusTitle}</span>
             <span className="mt-0.5 block text-[0.8125rem] leading-5 text-ink-muted">{rail.focusBody}</span>
           </span>
           <ChevronRight
@@ -212,12 +212,12 @@ export function SessionRail(props: ProgressProps) {
                       {done ? <Check className="size-3.5" strokeWidth={2.5} /> : <ChapterIcon chapter={step} className="size-3.5" />}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className={cn("block text-[0.875rem]", current ? "font-semibold text-ink" : "text-ink-soft")}>
+                      <span className={cn("block text-[0.875rem]", current ? " text-ink" : "text-ink-soft")}>
                         {diagnostic.chapters[step]}
                       </span>
                       <span className="block text-[0.8125rem] text-ink-muted">{diagnostic.chapterHints[step as keyof typeof diagnostic.chapterHints]}</span>
                     </span>
-                    {current && <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-[0.75rem] font-semibold text-teal-700">{diagnostic.chapterNow}</span>}
+                    {current && <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-[0.75rem]  text-teal-700">{diagnostic.chapterNow}</span>}
                   </li>
                 );
               })}
@@ -245,7 +245,7 @@ export function CompactProgress(props: ProgressProps) {
       <div className="min-w-0 flex-1">
         <h1 className="flex min-w-0 items-baseline gap-2 text-[0.875rem] text-ink">
           <span className="sr-only">{diagnostic.title} — </span>
-          <span className="shrink-0 font-semibold">{counter}</span>
+          <span className="shrink-0 ">{counter}</span>
           <Stage stage={stage} className="min-w-0 truncate text-[0.8125rem] text-ink-muted" />
         </h1>
         <div className="mt-2">

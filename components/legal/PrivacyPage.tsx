@@ -1,43 +1,39 @@
 "use client";
 
-import { WordReveal } from "@/components/home/AnimationUtilities";
 import { Grain } from "@/components/home/Atmosphere";
 import { homeSerif } from "@/components/home/fonts";
-import { ACCENT_LIGHT, BODY, BODY_SM, DISPLAY_L, DISPLAY_S, LABEL } from "@/components/home/typography";
+import { BODY, DISPLAY_L, DISPLAY_M, DISPLAY_S } from "@/components/home/typography";
+import { EmergencyNumbers } from "@/components/help/EmergencyNumbers";
 import { MinimalFooter } from "@/components/layout/MinimalFooter";
 import { SiteHeader } from "@/components/layout/site-header";
-import { EmergencyNote } from "@/components/legal/EmergencyNote";
 import { Button } from "@/components/ui/button";
+import { LEGAL } from "@/config/legal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { CONTACT } from "@/lib/config/brand";
 import { ROUTES } from "@/lib/config/routes";
-import { legalUi, privacyLegalDetails } from "@/lib/i18n/legal";
-import { trustCopy, type TrustId } from "@/lib/i18n/trust";
+import { legalDocuments, legalUi, type LegalFact, type LegalSection } from "@/lib/i18n/legal";
+import { trustCopy } from "@/lib/i18n/trust";
 import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { ArrowRight, BadgeCheck, Check, Database, LifeBuoy, Lock, Mail, MapPin, Phone, Scale, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Database, FileText, LifeBuoy, Lock, Mail, MapPin, Phone, Scale, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
 import { MotionConfig, motion, useScroll, useSpring } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { TodoBlock } from "./TodoBlock";
+import { PendingLegalField } from "./PendingLegalField";
 import { TrustSeal } from "./TrustSeal";
 
-const ICONS: Record<TrustId, LucideIcon> = {
-  privacy: Lock,
-  security: ShieldCheck,
-  "responsible-ai": BadgeCheck,
-  "data-handling": Database,
-  legal: Scale,
-  terms: ScrollText,
-  contact: Mail,
+/** The seal around the hero: the sections a reader looks for first. */
+const SEAL: Record<string, LucideIcon> = {
+  "privacy-who-sees": Lock,
+  "privacy-ai": BadgeCheck,
+  "privacy-collect": Database,
+  "privacy-security": ShieldCheck,
+  "privacy-rights": Scale,
+  "terms-scope": ScrollText,
+  "privacy-contact": Mail,
 };
 
-const reveal = {
-  variants: fadeUp(0, 18),
-  initial: "hidden",
-  whileInView: "show",
-  viewport: REVEAL_VIEWPORT,
-} as const;
+const reveal = { variants: fadeUp(0, 18), initial: "hidden", whileInView: "show", viewport: REVEAL_VIEWPORT } as const;
 
 /** Only the details the company has actually provided are shown. */
 export function ContactDetails({ labels }: { labels: { emailLabel: string; phoneLabel: string; addressLabel: string } }) {
@@ -71,7 +67,7 @@ export function ContactDetails({ labels }: { labels: { emailLabel: string; phone
   );
 }
 
-/** Which section is being read: drives the highlighted entry of the index. */
+/** Which section is being read: drives the highlighted entry of the index and the seal. */
 function useActiveSection(ids: readonly string[]) {
   const [active, setActive] = useState(ids[0] ?? "");
   useEffect(() => {
@@ -90,17 +86,97 @@ function useActiveSection(ids: readonly string[]) {
   return active;
 }
 
+function factValue(fact: LegalFact): string | null {
+  const value = LEGAL[fact];
+  return Array.isArray(value) ? (value.length ? value.join(", ") : null) : (value as string | null);
+}
+
+/** A fact from config/legal.ts, or the pending line when it is still null. */
+function Fact({ label, value }: { label: string; value: string | null }) {
+  return (
+    <div className="py-2.5">
+      {value === null ? (
+        <PendingLegalField label={label} />
+      ) : (
+        <p className="text-base leading-7 text-ink">
+          <span className="">{label}: </span>
+          <span dir="auto">{value}</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SectionCard({ section }: { section: LegalSection }) {
+  const { language } = useLanguage();
+  const ui = legalUi[language];
+  const trust = trustCopy[language];
+  const training = LEGAL.journalsUsedForModelTraining;
+
+  return (
+    <motion.section id={section.id} aria-labelledby={`${section.id}-title`} {...reveal} className="scroll-mt-28 rounded-panel border border-line bg-white p-6 shadow-[var(--shadow-soft)] sm:p-9">
+      <h3 id={`${section.id}-title`} className={cn(DISPLAY_S, "text-ink")}>
+        {section.title}
+      </h3>
+
+      {section.points.length > 0 ? (
+        <motion.ul variants={stagger(0.07, 0.1)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} className="mt-5 space-y-1 border-t border-line pt-5">
+          {section.points.map((point) => (
+            <motion.li key={point} variants={fadeUp(0, 12)} className="flex items-start gap-3 py-2 text-base leading-7 text-ink-soft">
+              <span aria-hidden className="mt-1.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700">
+                <Check className="size-3" strokeWidth={2.75} />
+              </span>
+              {point}
+            </motion.li>
+          ))}
+        </motion.ul>
+      ) : null}
+
+      {section.facts || section.retention || section.pending ? (
+        <div className={cn("mt-5", section.points.length > 0 ? "" : "border-t border-line pt-3")}>
+          {section.facts?.map((fact) => <Fact key={fact} label={ui.facts[fact]} value={factValue(fact)} />)}
+          {section.retention ? LEGAL.retentionPeriods.map(({ category, period }) => <Fact key={category} label={ui.retention[category]} value={period} />) : null}
+          {section.pending ? <Fact label={section.pending} value={null} /> : null}
+        </div>
+      ) : null}
+
+      {/* Shown only once the legal owner has answered it: either answer, stated wrongly, would mislead. */}
+      {section.training && training !== null ? <p className="mt-4 text-base font-medium leading-7 text-ink">{training ? ui.training.yes : ui.training.no}</p> : null}
+
+      {section.emergency ? <EmergencyNumbers language={language} className="mt-6" /> : null}
+
+      {section.contact ? (
+        <>
+          <ContactDetails labels={trust.contact} />
+          {CONTACT.email ? null : <Fact label={trust.contact.emailLabel} value={null} />}
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <Button asChild size="lg" className="group min-h-12 px-7 shadow-brand">
+              <Link href={ROUTES.support}>
+                {trust.contact.formCta}
+                <ArrowRight className="transition-transform duration-300 ease-out-soft group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden />
+              </Link>
+            </Button>
+            <span className="text-sm text-ink-muted">{trust.contact.formHint}</span>
+          </div>
+        </>
+      ) : null}
+    </motion.section>
+  );
+}
+
 /**
- * /privacy — the privacy policy and how patient information is protected, on one page: the plain-words commitments
- * first, then the formal legal details (a visible TODO until the legal advisor supplies them).
+ * /privacy: "Privacy Policy & Terms of Use". Two separate documents on one page, anchored #privacy and #terms (/terms
+ * redirects to #terms). Facts come from config/legal.ts; anything not confirmed shows "To be confirmed before launch".
  */
 export function PrivacyPage() {
   const { language, direction } = useLanguage();
-  const copy = trustCopy[language];
   const ui = legalUi[language];
-  const lead = copy.titleA;
-  const sectionIds = useMemo(() => copy.sections.map((section) => section.id), [copy.sections]);
+  const trust = trustCopy[language];
+  const docs = legalDocuments[language];
+  const sectionIds = useMemo(() => docs.flatMap((doc) => doc.sections.map((section) => section.id)), [docs]);
   const active = useActiveSection(sectionIds);
+  const sealIds = Object.keys(SEAL);
+  const sealTitles = sealIds.map((id) => docs.flatMap((doc) => doc.sections).find((section) => section.id === id)!.title);
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 });
 
@@ -117,145 +193,102 @@ export function PrivacyPage() {
 
         <main className="page-container flex-1 pb-20 pt-10 sm:pt-14 lg:pb-28 lg:pt-20">
           <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
-          <motion.header variants={stagger(0.08)} initial="hidden" animate="show" className="lg:col-span-7">
-            <motion.p variants={fadeUp()} className={cn(LABEL, "flex items-center gap-3 text-teal-700")}>
-              <span aria-hidden className="h-px w-8 bg-gold" />
-              {copy.eyebrow}
-            </motion.p>
-            <h1 aria-label={`${copy.titleA} ${copy.titleB}`} className={cn(DISPLAY_L, "mt-6 text-ink")}>
-              <span aria-hidden>
-                <WordReveal delay={0.1}>{lead}</WordReveal>{" "}
-                <WordReveal className={ACCENT_LIGHT} delay={0.1 + lead.split(" ").length * 0.055 + 0.1}>
-                  {copy.titleB}
-                </WordReveal>
-              </span>
-            </h1>
-            <motion.p variants={fadeUp(0.2)} className={cn(BODY, "mt-7 max-w-2xl")}>
-              {copy.intro}
-            </motion.p>
-            <motion.p variants={fadeUp(0.25)} className="mt-6 inline-flex items-center gap-2.5 rounded-full border border-teal-200 bg-white px-4 py-2 text-[0.9375rem] font-medium text-teal-800 transition-[border-color,box-shadow,transform] duration-300 ease-out-soft hover:-translate-y-0.5 hover:border-teal-400 hover:shadow-[var(--shadow-soft-hover)]">
-              <ShieldCheck className="size-4 shrink-0 text-teal-700" aria-hidden />
-              {copy.principle}
-            </motion.p>
-          </motion.header>
-          <div className="lg:col-span-5">
-            <TrustSeal ids={sectionIds} icons={ICONS} titles={copy.sections.map((section) => section.title)} active={active as TrustId} />
-          </div>
+            <motion.header variants={stagger(0.08)} initial="hidden" animate="show" className="lg:col-span-7">
+              <motion.h1 variants={fadeUp(0.05)} className={cn(DISPLAY_L, "mt-6 text-balance text-ink")}>
+                {ui.title}
+              </motion.h1>
+              <motion.p variants={fadeUp(0.15)} className={cn(BODY, "mt-7 max-w-2xl")}>
+                {ui.intro}
+              </motion.p>
+              <motion.dl variants={fadeUp(0.2)} className="mt-6 flex flex-wrap items-start gap-3">
+                {[
+                  [ui.version, LEGAL.version],
+                  [ui.lastUpdated, LEGAL.lastUpdated],
+                ].map(([label, value]) =>
+                  value ? (
+                    <div key={label} className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white px-4 py-2 text-[0.9375rem]">
+                      <FileText className="size-4 text-teal-700" aria-hidden />
+                      <dt className="text-ink-soft">{label}:</dt>
+                      <dd className=" text-ink" dir="ltr">{value}</dd>
+                    </div>
+                  ) : (
+                    <div key={label}>
+                      <dt className="sr-only">{label}</dt>
+                      <dd>
+                        <PendingLegalField label={label ?? ""} />
+                      </dd>
+                    </div>
+                  ),
+                )}
+              </motion.dl>
+              <motion.p variants={fadeUp(0.25)} className="mt-6 inline-flex items-center gap-2.5 rounded-full border border-teal-200 bg-white px-4 py-2 text-[0.9375rem] font-medium text-teal-800">
+                <ShieldCheck className="size-4 shrink-0 text-teal-700" aria-hidden />
+                {trust.principle}
+              </motion.p>
+            </motion.header>
+            <div className="lg:col-span-5">
+              <TrustSeal ids={sealIds} icons={SEAL} titles={sealTitles} active={active} />
+            </div>
           </div>
 
           <div className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-12 lg:gap-12">
-            <nav aria-label={copy.eyebrow} className="lg:col-span-3">
-              <ul className="flex flex-wrap gap-2 lg:sticky lg:top-28 lg:flex-col lg:gap-1">
-                {copy.sections.map((section) => {
-                  const current = active === section.id;
-                  return (
-                    <li key={section.id}>
-                      <a
-                        href={`#${section.id}`}
-                        aria-current={current ? "location" : undefined}
-                        className={cn(
-                          "group relative inline-flex min-h-10 items-center gap-2.5 rounded-full border px-4 text-[0.9375rem] font-medium transition-[background-color,border-color,color,transform] duration-300 ease-out-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 lg:rounded-md lg:border-transparent lg:bg-transparent lg:ps-3 lg:hover:translate-x-0.5 rtl:lg:hover:-translate-x-0.5",
-                          current ? "border-teal-300 bg-teal-50 text-teal-900" : "border-line-strong bg-white text-ink-soft hover:border-teal-300 hover:text-teal-800",
-                        )}
-                      >
-                        <span aria-hidden className={cn("hidden h-4 w-0.5 rounded-full bg-gold transition-transform duration-500 ease-out-soft lg:block", current ? "scale-y-100" : "scale-y-0")} />
-                        {section.title}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
+            <nav aria-label={ui.contents} className="lg:col-span-3">
+              <div className="space-y-6 lg:sticky lg:top-28">
+                {docs.map((doc) => (
+                  <div key={doc.id}>
+                    <a href={`#${doc.id}`} className="inline-flex min-h-10 items-center rounded-md text-[0.8125rem] uppercase tracking-[0.12em] text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 rtl:tracking-normal">
+                      {doc.title}
+                    </a>
+                    <ul className="mt-1 flex flex-wrap gap-2 lg:flex-col lg:gap-0.5">
+                      {doc.sections.map((section) => {
+                        const current = active === section.id;
+                        return (
+                          <li key={section.id}>
+                            <a
+                              href={`#${section.id}`}
+                              aria-current={current ? "location" : undefined}
+                              className={cn(
+                                "inline-flex min-h-10 items-center gap-2.5 rounded-full border px-4 text-[0.9375rem] font-medium transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 lg:rounded-md lg:border-transparent lg:bg-transparent lg:ps-3",
+                                current ? "border-teal-300 bg-teal-50 text-teal-900" : "border-line-strong bg-white text-ink-soft hover:border-teal-300 hover:text-teal-800",
+                              )}
+                            >
+                              <span aria-hidden className={cn("hidden h-4 w-0.5 rounded-full bg-gold transition-transform duration-500 ease-out-soft lg:block", current ? "scale-y-100" : "scale-y-0")} />
+                              {section.title}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </nav>
 
-            <div className="space-y-6 lg:col-span-9">
-              {copy.sections.map((section) => {
-                const Icon = ICONS[section.id];
-                return (
-                  <motion.section
-                    key={section.id}
-                    id={section.id}
-                    aria-labelledby={`${section.id}-title`}
-                    {...reveal}
-                    className="group/card scroll-mt-28 rounded-panel border border-line bg-white p-6 shadow-[var(--shadow-soft)] transition-[border-color,box-shadow,transform] duration-500 ease-out-soft hover:-translate-y-1 hover:border-teal-200 hover:shadow-[var(--shadow-soft-hover)] sm:p-9"
-                  >
-                    <div className="flex items-start gap-4">
-                      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 transition-[background-color,color,transform] duration-500 ease-out-soft group-hover/card:-rotate-6 group-hover/card:scale-105 group-hover/card:bg-teal-700 group-hover/card:text-white">
-                        <Icon className="size-5" strokeWidth={1.5} aria-hidden />
-                      </span>
-                      <div className="min-w-0">
-                        <h2 id={`${section.id}-title`} className={cn(DISPLAY_S, "text-ink")}>
-                          {section.title}
-                        </h2>
-                        <p className={cn(BODY_SM, "mt-1.5")}>{section.summary}</p>
-                      </div>
-                    </div>
+            <div className="space-y-16 lg:col-span-9">
+              {docs.map((doc) => (
+                <article key={doc.id} id={doc.id} aria-labelledby={`${doc.id}-title`} className="scroll-mt-28">
+                  <h2 id={`${doc.id}-title`} className={cn(DISPLAY_M, "text-ink")}>
+                    {doc.title}
+                  </h2>
+                  <div className="mt-6 space-y-6">
+                    {doc.sections.map((section) => (
+                      <SectionCard key={section.id} section={section} />
+                    ))}
+                  </div>
+                </article>
+              ))}
 
-                    {section.points.length > 0 ? (
-                      <motion.ul variants={stagger(0.07, 0.1)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} className="mt-7 space-y-1 border-t border-line pt-5">
-                        {section.points.map((point) => (
-                          <motion.li
-                            key={point}
-                            variants={fadeUp(0, 12)}
-                            className="group/point -mx-3 flex items-start gap-3 rounded-xl px-3 py-2.5 text-[1rem] leading-7 text-ink-soft transition-[background-color,color] duration-300 ease-out-soft hover:bg-teal-50/70 hover:text-ink"
-                          >
-                            <span aria-hidden className="mt-1.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-700 transition-[background-color,color,transform] duration-300 ease-out-soft group-hover/point:scale-110 group-hover/point:bg-teal-700 group-hover/point:text-white">
-                              <Check className="size-3" strokeWidth={2.75} />
-                            </span>
-                            {point}
-                          </motion.li>
-                        ))}
-                      </motion.ul>
-                    ) : null}
-
-                    {section.id === "security" ? <EmergencyNote className="mt-6" /> : null}
-
-                    {section.id === "legal" ? (
-                      <div className="mt-7 space-y-6 border-t border-line pt-6">
-                        {privacyLegalDetails[language].map((detail) => (
-                          <div key={detail.id} id={detail.id} className="scroll-mt-28">
-                            <h3 className="text-[1rem] font-semibold text-ink">{detail.title}</h3>
-                            <TodoBlock label={ui.todoLabel} detail={detail.todo} className="mt-3" />
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {section.id === "terms" ? (
-                      <Link href={ROUTES.terms} className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
-                        <span className="home-link-line">{copy.readMore}</span>
-                        <ArrowRight className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
-                      </Link>
-                    ) : null}
-
-                    {section.id === "contact" ? (
-                      <>
-                        <ContactDetails labels={copy.contact} />
-                        {CONTACT.email ? null : <TodoBlock label={ui.todoLabel} detail={ui.contactMissing} />}
-                        <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
-                          <Button asChild size="lg" className="group min-h-12 px-7 shadow-brand">
-                            <Link href={ROUTES.support}>
-                              {copy.contact.formCta}
-                              <ArrowRight className="transition-transform duration-300 ease-out-soft group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden />
-                            </Link>
-                          </Button>
-                          <span className="text-[0.875rem] text-ink-muted">{copy.contact.formHint}</span>
-                        </div>
-                        <p role="note" className="mt-7 flex items-start gap-3 rounded-2xl border border-gold-100 bg-gold-50 p-4 text-[0.9375rem] leading-6 text-ink-soft">
-                          <LifeBuoy className="mt-0.5 size-5 shrink-0 text-gold-700" strokeWidth={1.5} aria-hidden />
-                          {copy.contact.urgent}
-                        </p>
-                      </>
-                    ) : null}
-                  </motion.section>
-                );
-              })}
+              <p role="note" className="flex items-start gap-3 rounded-2xl border border-gold-100 bg-gold-50 p-4 text-[0.9375rem] leading-6 text-ink-soft">
+                <LifeBuoy className="mt-0.5 size-5 shrink-0 text-gold-700" strokeWidth={1.5} aria-hidden />
+                {trust.contact.urgent}
+              </p>
             </div>
           </div>
 
           <p className="mt-12">
-            <Link href={ROUTES.home} className="inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem] font-semibold text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
+            <Link href={ROUTES.home} className="inline-flex min-h-10 items-center gap-2 rounded-md text-[0.9375rem]  text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-500">
               <ArrowRight className="size-4 rotate-180 rtl:rotate-0" aria-hidden />
-              <span className="home-link-line">{copy.backHome}</span>
+              <span className="home-link-line">{trust.backHome}</span>
             </Link>
           </p>
         </main>

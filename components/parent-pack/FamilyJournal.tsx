@@ -103,7 +103,7 @@ function CheckinForm({ existing, onSaved, note, setNote }: { existing: Caregiver
 
   return (
     <GlassCard className="space-y-4 p-5" aria-labelledby="pp-checkin">
-      <h2 id="pp-checkin" className="text-base font-semibold text-ink">Daily check-in {existing && <span className="text-xs font-normal text-ink-muted">· recorded today, you can update it</span>}</h2>
+      <h2 id="pp-checkin" className="text-base  text-ink">Daily check-in {existing && <span className="text-xs font-normal text-ink-muted">· recorded today, you can update it</span>}</h2>
       <ChipRow label="Observed mood (1 low – 5 high)" value={form.mood} options={SCALE} onChange={(v) => v && set("mood", v)} />
       <ChipRow label="Energy level" value={form.energy} options={SCALE} onChange={(v) => v && set("energy", v)} />
       <ChipRow label="Focus" value={form.focus} options={SCALE} onChange={(v) => v && set("focus", v)} />
@@ -156,7 +156,7 @@ function JournalComposer({ onSaved }: { onSaved: () => void }) {
 
   return (
     <GlassCard className="space-y-3 p-5" aria-labelledby="pp-note">
-      <h2 id="pp-note" className="text-base font-semibold text-ink">Important events and notes</h2>
+      <h2 id="pp-note" className="text-base  text-ink">Important events and notes</h2>
       <p className="text-xs text-muted-foreground">Read by SynQ&apos;s Smart Journal like your child&apos;s own journal. If a note describes a crisis, it is flagged for human review, as for the patient. This is not an emergency service.</p>
       <label className="sr-only" htmlFor="pp-note-text">What happened today</label>
       <Textarea id="pp-note-text" dir="auto" rows={7} maxLength={6000} value={content} onChange={(e) => setContent(e.target.value)} placeholder="What happened today? What was hard, what went well?" />
@@ -173,7 +173,7 @@ function JournalComposer({ onSaved }: { onSaved: () => void }) {
 export function CrisisNotice({ resources }: { resources: string[] }) {
   return (
     <div role="alert" className="rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm text-rose-900">
-      <p className="flex items-center gap-2 font-semibold"><AlertTriangle className="size-4" aria-hidden />If anyone is in immediate danger, call your local emergency number now.</p>
+      <p className="flex items-center gap-2 "><AlertTriangle className="size-4" aria-hidden />If anyone is in immediate danger, call your local emergency number now.</p>
       <p className="mt-1.5">This note was flagged for review. That is not an emergency response: SynQ is not an emergency service and cannot send help to you. Contact your care team directly as well.</p>
       {resources.length > 0 && (
         <ul className="mt-2 space-y-1">
@@ -183,7 +183,7 @@ export function CrisisNotice({ resources }: { resources: string[] }) {
           })}
         </ul>
       )}
-      <Link href={`${PARENT_PACK_BASE}/safety#emergency`} className="mt-2 inline-block font-semibold underline underline-offset-4">Open your safety plan</Link>
+      <Link href={`${PARENT_PACK_BASE}/safety#emergency`} className="mt-2 inline-block  underline underline-offset-4">Open your safety plan</Link>
     </div>
   );
 }
@@ -194,13 +194,13 @@ export function JournalCharts({ checkins, days, end }: { checkins: CaregiverChec
   return (
     <div className="grid gap-5 lg:grid-cols-3">
       <GlassCard className="p-5 lg:col-span-2">
-        <h3 className="text-sm font-semibold text-ink">Hours of sleep</h3>
+        <h3 className="text-sm  text-ink">Hours of sleep</h3>
         <TrendChart data={dailySeries(checkins, days, "sleepHours", end)} domain={[0, 14]} ticks={[0, 7, 14]} unit=" h" height={170} />
-        <h3 className="mt-5 text-sm font-semibold text-ink">Observed mood</h3>
+        <h3 className="mt-5 text-sm  text-ink">Observed mood</h3>
         <TrendChart data={dailySeries(checkins, days, "mood", end)} domain={[1, 5]} ticks={[1, 3, 5]} color="var(--color-gold-600)" height={150} />
       </GlassCard>
       <GlassCard className="p-5">
-        <h3 className="text-sm font-semibold text-ink">Difficulties reported</h3>
+        <h3 className="text-sm  text-ink">Difficulties reported</h3>
         <p className="text-xs text-muted-foreground">Days each was ticked, out of {checkins.length} observed.</p>
         {counts.length === 0 ? <p className="mt-4 text-sm text-ink-muted">None ticked in this window.</p> : (
           <ul className="mt-4 space-y-2.5">
@@ -230,7 +230,7 @@ function ObservationList({ checkins, onRemoved }: { checkins: CaregiverCheckin[]
   const list = [...checkins].reverse().slice(0, 10);
   return (
     <GlassCard className="p-5" aria-labelledby="pp-days">
-      <h2 id="pp-days" className="mb-3 text-sm font-semibold text-ink">Daily history</h2>
+      <h2 id="pp-days" className="mb-3 text-sm  text-ink">Daily history</h2>
       {error && <p role="alert" className="mb-2 text-sm text-rose-700">{error}</p>}
       {list.length === 0 ? <p className="text-sm text-ink-muted">Nothing recorded yet.</p> : (
         <ul className="divide-y divide-line/70">
@@ -262,7 +262,7 @@ function NoteList({ journal }: { journal: ReturnType<typeof useCaregiverJournal>
   const entries = journal.data ?? [];
   return (
     <GlassCard className="p-5" aria-labelledby="pp-notes">
-      <h2 id="pp-notes" className="mb-3 text-sm font-semibold text-ink">Notes</h2>
+      <h2 id="pp-notes" className="mb-3 text-sm  text-ink">Notes</h2>
       {journal.error && !journal.data ? <ErrorState onRetry={() => void journal.refresh()} /> : !journal.data ? <Skeleton className="h-32" /> : entries.length === 0 ? <p className="text-sm text-ink-muted">No notes yet.</p> : (
         <ul className="divide-y divide-line/70">
           {entries.map((e) => (
@@ -310,7 +310,7 @@ function ReportSection() {
     <section id="report" className="mt-8 scroll-mt-24" aria-labelledby="pp-report">
       <GlassCard className="flex flex-wrap items-end justify-between gap-4 p-5">
         <div>
-          <h2 id="pp-report" className="flex items-center gap-2 text-base font-semibold text-ink"><FileText className="size-4" aria-hidden />Consultation report</h2>
+          <h2 id="pp-report" className="flex items-center gap-2 text-base  text-ink"><FileText className="size-4" aria-hidden />Consultation report</h2>
           <p className="mt-1 max-w-xl text-sm text-muted-foreground">A chronological summary with charts, to print or save as PDF and bring to an appointment.</p>
         </div>
         <div className="flex flex-wrap items-end gap-2">
@@ -340,16 +340,16 @@ function ReportBody({ report }: { report: CaregiverReport }) {
       <p className="rounded-xl bg-gold-50 px-3 py-2 text-xs text-ink-soft">{report.disclaimer}</p>
       <dl className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {([["Mood", fmt(s.averages.mood, "/5")], ["Energy", fmt(s.averages.energy, "/5")], ["Focus", fmt(s.averages.focus, "/5")], ["Sleep", fmt(s.averages.sleepHours, " h")], ["Sleep range", s.sleepRange ? `${s.sleepRange.min}–${s.sleepRange.max} h` : "—"]] as const).map(([k, v]) => (
-          <div key={k} className="rounded-xl border border-line p-3"><dt className="text-xs text-ink-muted">{k} (average)</dt><dd className="text-lg font-semibold tabular-nums text-ink">{v}</dd></div>
+          <div key={k} className="rounded-xl border border-line p-3"><dt className="text-xs text-ink-muted">{k} (average)</dt><dd className="text-lg  tabular-nums text-ink">{v}</dd></div>
         ))}
       </dl>
       {report.days.length > 0 && <JournalCharts checkins={report.days} days={Math.min(days, 120)} end={report.to} />}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div><h3 className="text-sm font-semibold text-ink">Medication observations</h3><p className="text-sm text-ink-soft">{s.medication.length ? s.medication.map((m) => `${MED_LABELS[m.label as MedicationNote] ?? m.label}: ${m.count}`).join(" · ") : "None recorded."}</p></div>
-        <div><h3 className="text-sm font-semibold text-ink">Notes</h3><p className="text-sm text-ink-soft">{s.journal.entries} note{s.journal.entries === 1 ? "" : "s"}{s.journal.themes.length ? ` · themes: ${s.journal.themes.map((t) => `${t.label} (${t.count})`).join(", ")}` : ""}</p></div>
+        <div><h3 className="text-sm  text-ink">Medication observations</h3><p className="text-sm text-ink-soft">{s.medication.length ? s.medication.map((m) => `${MED_LABELS[m.label as MedicationNote] ?? m.label}: ${m.count}`).join(" · ") : "None recorded."}</p></div>
+        <div><h3 className="text-sm  text-ink">Notes</h3><p className="text-sm text-ink-soft">{s.journal.entries} note{s.journal.entries === 1 ? "" : "s"}{s.journal.themes.length ? ` · themes: ${s.journal.themes.map((t) => `${t.label} (${t.count})`).join(", ")}` : ""}</p></div>
       </div>
       <div>
-        <h3 className="mb-2 text-sm font-semibold text-ink">Chronology</h3>
+        <h3 className="mb-2 text-sm  text-ink">Chronology</h3>
         {report.days.length === 0 ? <p className="text-sm text-ink-muted">No observations in this period.</p> : (
           <table className="w-full text-start text-sm">
             <thead className="text-xs text-ink-muted"><tr><th className="py-1 text-start font-medium">Day</th><th className="text-start font-medium">Mood</th><th className="text-start font-medium">Energy</th><th className="text-start font-medium">Focus</th><th className="text-start font-medium">Sleep</th><th className="text-start font-medium">Difficulties</th></tr></thead>

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Flame, Moon, Sun, Sunrise, Sunset, type LucideIcon } from "lucide-react";
-import { CountUp } from "@/components/home/CountUp";
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
 import { DISPLAY_M, LABEL } from "@/components/home/typography";
 import { LuminaLogo } from "@/components/patient/ui/LuminaLogo";
@@ -40,7 +39,7 @@ function Stat({ value, label, loading }: { value: number | null; label: string; 
       {loading ? (
         <Skeleton className="h-8 w-12" />
       ) : (
-        <CountUp value={value === null ? "—" : String(value)} className="block text-[clamp(1.75rem,1.2rem+1.4vw,2.5rem)] font-semibold leading-none tracking-[-0.03em] tabular-nums text-ink" />
+        <span className="block text-[clamp(1.75rem,1.2rem+1.4vw,2.5rem)] leading-none tracking-[-0.03em] tabular-nums text-ink">{value === null ? "—" : String(value)}</span>
       )}
       <p className="mt-1.5 text-[0.8125rem] font-medium leading-snug text-ink">{label}</p>
     </div>
@@ -129,7 +128,7 @@ export function DayWelcome() {
             </span>
           </motion.div>
 
-          <h1 id="day-welcome-title" className={cn(DISPLAY_M, "mt-5 font-semibold tracking-[-0.03em] text-ink")}>
+          <h1 id="day-welcome-title" className={cn(DISPLAY_M, "mt-5  tracking-[-0.03em] text-ink")}>
             {lead.trim() && reveal(lead.trim(), delay)}
             {lead.trim() ? " " : null}
             <span dir="auto" className="text-teal-700">
@@ -165,7 +164,7 @@ export function DayWelcome() {
         </div>
       </div>
 
-      <motion.div {...enter(0.45)} className="relative grid grid-cols-3 gap-4 bg-white/45 px-6 py-5 sm:px-8 lg:px-10">
+      <motion.div {...enter(0.45)} className="relative grid grid-cols-3 gap-4 divide-x divide-ink/10 bg-white/45 px-6 py-5 sm:px-8 lg:px-10 [&>*:not(:first-child)]:ps-4 sm:[&>*:not(:first-child)]:ps-8">
         <Stat value={history.error ? null : history.data?.length ?? 0} label={w.stats.checkins} loading={history.isLoading} />
         <Stat value={history.error ? null : history.streak} label={w.stats.streak} loading={history.isLoading} />
         <Stat value={together} label={w.stats.together} loading={false} />

@@ -33,7 +33,7 @@ function Pane({ title, aside, children }: { title: string; aside?: ReactNode; ch
       <div className="flex items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-3">
           <AgentAvatar agent="lumina" className="size-9 rounded-xl ring-1 ring-line" />
-          <span className="truncate text-[1rem] font-semibold text-ink">{title}</span>
+          <span className="truncate text-[1rem]  text-ink">{title}</span>
         </span>
         {aside}
       </div>
@@ -44,7 +44,7 @@ function Pane({ title, aside, children }: { title: string; aside?: ReactNode; ch
 
 function SavedPill({ label }: { label: string }) {
   return (
-    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sage-100 bg-sage-50 px-3 py-1 text-[0.75rem] font-semibold text-sage-700">
+    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-sage-100 bg-sage-50 px-3 py-1 text-[0.75rem]  text-sage-700">
       <Check className="size-3.5" aria-hidden />
       {label}
     </span>
@@ -256,7 +256,7 @@ export function ReportView({ copy }: { copy: LuminaPreviewCopy }) {
           <ul className="mt-4 space-y-4">
             {report.sections.map((section, index) => (
               <motion.li key={section} {...rise(0.35 + index * 0.15, reduce)}>
-                <p className="text-[0.75rem] font-semibold text-teal-700">{section}</p>
+                <p className="text-[0.75rem]  text-teal-700">{section}</p>
                 {index === 0 ? (
                   <svg viewBox="0 0 120 40" className="mt-1.5 h-9 w-full" aria-hidden preserveAspectRatio="none">
                     <path d={spark} fill="none" stroke="var(--color-teal-500)" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
@@ -276,7 +276,7 @@ export function ReportView({ copy }: { copy: LuminaPreviewCopy }) {
 
         <motion.div {...rise(0.5, reduce)} className="flex flex-col justify-center gap-5 rounded-2xl border border-teal-200 bg-teal-50/60 p-5">
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[0.9375rem] font-semibold leading-snug text-ink">{report.share}</span>
+            <span className="text-[0.9375rem]  leading-snug text-ink">{report.share}</span>
             <span aria-hidden className={cn("relative h-7 w-12 shrink-0 rounded-full transition-colors duration-500", shared ? "bg-teal-600" : "bg-line-strong")}>
               <motion.span className="absolute start-1 top-1 size-5 rounded-full bg-white shadow-sm" animate={{ x: shared ? (direction === "rtl" ? -20 : 20) : 0 }} transition={{ type: "spring", stiffness: 420, damping: 26 }} />
             </span>

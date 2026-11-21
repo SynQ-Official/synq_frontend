@@ -8,7 +8,11 @@ import { AMBIENCE_FADE_MS, howlVolume, soundSources } from "@/lib/patient/ambien
 export type PlayerStatus = "idle" | "loading" | "playing" | "stopping";
 export type PlayerError = "config" | "load" | "play";
 
-const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_URL ?? "";
+/**
+ * Where the sound files live: the R2 bucket's public origin in production (NEXT_PUBLIC_MEDIA_URL). Without it the files are
+ * read from this site's own /media (local development), so the player works instead of stopping on a "config" error.
+ */
+const MEDIA_BASE = process.env.NEXT_PUBLIC_MEDIA_URL || "/media";
 /**
  * Web Audio by default: loops without a gap, but some iPhones stop it when the screen locks. Building with
  * NEXT_PUBLIC_AMBIENCE_HTML5=1 plays through an <audio> element instead (keeps going when locked, may leave a tiny gap).

@@ -34,7 +34,7 @@ export function TracksMatrix() {
         <div role="row" className={cn(GRID, "border-b border-line bg-canvas/70 px-3 py-4 sm:px-6")}>
           <span aria-hidden />
           {matrix.columns.map((name, index) => (
-            <span key={name} role="columnheader" className="flex flex-col items-center gap-1.5 text-center text-[0.6875rem] font-semibold leading-tight text-ink sm:text-[0.8125rem]">
+            <span key={name} role="columnheader" className="flex flex-col items-center gap-1.5 text-center text-[0.6875rem]  leading-tight text-ink sm:text-[0.8125rem]">
               <span aria-hidden className={cn("size-2.5 rounded-full", TRACK_TONE[TRACK_ORDER[index]].dot)} />
               {name}
             </span>

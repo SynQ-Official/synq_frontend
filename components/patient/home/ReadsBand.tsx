@@ -35,7 +35,7 @@ export function ReadsBand() {
             </span>
             {copy.curated}
           </p>
-          <h2 id="reads-band-title" className={cn(SERIF, "mt-4 text-[clamp(1.625rem,1rem+1.6vw,2.375rem)] font-light leading-[1.12] tracking-[-0.02em] text-ink rtl:font-semibold rtl:leading-[1.35] rtl:tracking-normal")}>
+          <h2 id="reads-band-title" className={cn(SERIF, "mt-4 text-[clamp(1.625rem,1rem+1.6vw,2.375rem)] font-light leading-[1.12] tracking-[-0.02em] text-ink  rtl:leading-[1.35] rtl:tracking-normal")}>
             {copy.title}
           </h2>
           <p className="mt-3 max-w-md text-[0.9375rem] leading-[1.7] text-ink-soft">{copy.subtitle}</p>

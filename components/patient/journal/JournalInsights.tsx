@@ -48,7 +48,7 @@ export function JournalInsights() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-ink">{i.title}</h2>
+        <h2 className="text-lg  text-ink">{i.title}</h2>
         <div role="group" aria-label={i.title} className="segmented">
           {RANGES.map((range) => (
             <button key={range} type="button" aria-pressed={days === range} onClick={() => setDays(range)} className="lm-tab">
@@ -114,7 +114,7 @@ function Loaded({ data, days, moodSeries, goalSeries }: { data: Insights; days: 
               { label: i.activeDays, value: data.totals.activeDays },
             ].map((stat) => (
               <div key={stat.label} className="rounded-2xl bg-white/65 px-2 py-3">
-                <p className="flex items-center justify-center gap-1 text-2xl font-semibold tabular-nums text-ink">{stat.icon && <Flame className="size-4 text-gold-600" aria-hidden />}{stat.value}</p>
+                <p className="flex items-center justify-center gap-1 text-2xl  tabular-nums text-ink">{stat.icon && <Flame className="size-4 text-gold-600" aria-hidden />}{stat.value}</p>
                 <p className="mt-0.5 text-[0.6875rem] leading-tight text-muted-foreground">{stat.label}</p>
               </div>
             ))}
@@ -151,7 +151,7 @@ function Loaded({ data, days, moodSeries, goalSeries }: { data: Insights; days: 
           ) : <p className="text-sm text-muted-foreground">—</p>}
           {(data.themes.length > 0 || data.journalSignals.length > 0 || data.hardMoments > 0) && (
             <div className="mt-5 border-t border-white/70 pt-4">
-              <p className="mb-2 text-xs font-semibold text-ink-soft">{i.themes}</p>
+              <p className="mb-2 text-xs  text-ink-soft">{i.themes}</p>
               <div className="flex flex-wrap gap-1.5">
                 {data.themes.map((item) => <span key={item.theme} className="chip" dir="auto">{themeLabel(item.theme, copy)} · {item.count}</span>)}
                 {data.journalSignals.map((item) => <span key={item.signal} className="chip" dir="auto">{signalLabel(item.signal, copy)} · {item.count}</span>)}
@@ -167,7 +167,7 @@ function Loaded({ data, days, moodSeries, goalSeries }: { data: Insights; days: 
         <div className="grid gap-3 sm:grid-cols-2">
           {[{ title: i.last7, block: data.recent.last7 }, { title: i.prev7, block: data.recent.previous7 }].map(({ title, block }) => (
             <div key={title} className="rounded-2xl bg-white/65 p-4">
-              <p className="text-xs font-semibold text-teal-700">{title}</p>
+              <p className="text-xs  text-teal-700">{title}</p>
               <p className="mt-1 text-sm text-ink-soft">{fill(i.entries, { n: block.entries })}</p>
               <p className="mt-1 text-sm text-ink-soft tabular-nums">{copy.reports.metrics.mood}: {toFiveScale(block.moodAverage) ?? "—"} · {copy.reports.metrics.goals}: {block.goalAverage ?? "—"}</p>
             </div>

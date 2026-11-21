@@ -18,7 +18,7 @@ import { passwordResetCopy } from "@/lib/i18n/passwordReset";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RESEND_AFTER_SECONDS = 60;
-export const LINK_CLASS = "rounded-md font-semibold text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
+export const LINK_CLASS = "rounded-md  text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
 
 export function Card({ icon, title, children }: { icon?: ReactNode; title: string; children: ReactNode }) {
   return (

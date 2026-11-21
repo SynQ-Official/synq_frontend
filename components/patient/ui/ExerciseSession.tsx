@@ -55,8 +55,8 @@ function BreathingGuide({ pattern }: { pattern: BreathingPattern }) {
           transition={{ duration: reduce || finished ? 0 : current.seconds, ease: "easeInOut" }}
         />
         <div className="relative text-center text-white drop-shadow">
-          {!finished && <p className="text-lg font-semibold">{copy.home.exercise[current.phase]}</p>}
-          <p className="text-3xl font-semibold tabular-nums">{finished ? "✓" : remaining}</p>
+          {!finished && <p className="text-lg ">{copy.home.exercise[current.phase]}</p>}
+          <p className="text-3xl  tabular-nums">{finished ? "✓" : remaining}</p>
         </div>
       </div>
       <p className="text-sm text-muted-foreground">
@@ -112,7 +112,7 @@ function SessionBody({
               animate={{ opacity: index <= stepIndex ? 1 : 0.4 }}
               className="flex items-start gap-3 rounded-2xl border border-white/80 bg-white/70 p-3.5"
             >
-              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs font-semibold text-teal-800">
+              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-teal-100 text-xs  text-teal-800">
                 {index < stepIndex ? <Check className="size-3.5" aria-hidden /> : index + 1}
               </span>
               <span className="text-sm leading-relaxed text-ink">{step}</span>

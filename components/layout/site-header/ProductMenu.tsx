@@ -110,7 +110,7 @@ export function ProductMenu({ triggerClassName, indicator, current, onOpenChange
             {/* pt-3 above bridges the gap under the trigger so hover intent survives the trip to the panel. */}
             <div className="relative overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/85 p-2 shadow-float ring-1 ring-line/60 backdrop-blur-2xl">
               <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-              <p className="flex items-center gap-2.5 px-3.5 pb-2 pt-3 text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.18em] text-ink-muted rtl:normal-case rtl:tracking-normal">
+              <p className="flex items-center gap-2.5 px-3.5 pb-2 pt-3 text-[0.6875rem]  uppercase leading-none tracking-[0.18em] text-ink-muted rtl:normal-case rtl:tracking-normal">
                 <span aria-hidden className="h-px w-5 bg-gold" />
                 {copy.menu.title}
               </p>
@@ -127,7 +127,7 @@ export function ProductMenu({ triggerClassName, indicator, current, onOpenChange
                       >
                         <AgentAvatar agent={agent.id} className="size-12 rounded-2xl ring-1 ring-line transition-transform duration-500 ease-out-soft motion-safe:group-hover:scale-105" />
                         <span className="min-w-0 flex-1">
-                          <span className="block text-[1rem] font-semibold tracking-[-0.01em] text-ink">{item.name}</span>
+                          <span className="block text-[1rem]  tracking-[-0.01em] text-ink">{item.name}</span>
                           <span className={cn("mt-0.5 block truncate text-[0.8125rem] font-medium", agent.tone.text)}>{item.role}</span>
                         </span>
                         <ArrowRight

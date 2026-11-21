@@ -172,7 +172,7 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
                           >
                             <AgentAvatar agent={agent.id} className="size-14 rounded-2xl" />
                             <span className="min-w-0 flex-1">
-                              <span className={cn(SERIF, "block text-[1.5rem] font-light leading-none tracking-[-0.02em] rtl:font-sans rtl:font-semibold rtl:tracking-normal", active && "text-gold-300")}>{item.name}</span>
+                              <span className={cn(SERIF, "block text-[1.5rem] font-light leading-none tracking-[-0.02em] rtl:font-sans  rtl:tracking-normal", active && "text-gold-300")}>{item.name}</span>
                               <span className="mt-1.5 block truncate text-[0.8125rem] text-teal-100">{item.role}</span>
                             </span>
                             <ArrowRight className="size-5 shrink-0 text-white/60 transition-[translate,color] duration-300 ease-out-soft group-hover:translate-x-1 group-hover:text-gold-300 rtl:-scale-x-100 rtl:group-hover:-translate-x-1" aria-hidden />
@@ -200,7 +200,7 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
                               className={cn(
                                 SERIF,
                                 "min-w-0 flex-1 text-[clamp(1.875rem,7vw,2.75rem)] font-light leading-tight tracking-[-0.025em] rtl:tracking-normal",
-                                active && "italic text-gold-300 rtl:not-italic",
+                                active && "text-white",
                               )}
                             >
                               {copy.links[link.id]}
@@ -232,7 +232,7 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
                         <Link
                           href={ROUTES.dashboard}
                           onClick={close}
-                          className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-white px-6 text-[0.9375rem] font-semibold text-ink shadow-[0_18px_36px_-18px_rgb(0_0_0/0.6)] transition-colors duration-300 hover:bg-gold-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300"
+                          className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-white px-6 text-[0.9375rem]  text-ink shadow-[0_18px_36px_-18px_rgb(0_0_0/0.6)] transition-colors duration-300 hover:bg-gold-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300"
                         >
                           {dictionary.dashboard.navigation.overview}
                           <ArrowRight className="size-4 transition-transform duration-300 ease-out-soft group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" aria-hidden />
@@ -241,7 +241,7 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
                           type="button"
                           onClick={() => void signOut()}
                           disabled={leaving}
-                          className="inline-flex min-h-14 cursor-pointer items-center justify-center gap-2.5 rounded-full border border-white/25 bg-white/5 px-6 text-[0.9375rem] font-semibold text-white transition-colors duration-300 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300 disabled:opacity-60"
+                          className="inline-flex min-h-14 cursor-pointer items-center justify-center gap-2.5 rounded-full border border-white/25 bg-white/5 px-6 text-[0.9375rem]  text-white transition-colors duration-300 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300 disabled:opacity-60"
                         >
                           <LogOut className="size-4 rtl:-scale-x-100" aria-hidden />
                           {dictionary.dashboard.navigation.signOut}
@@ -254,7 +254,7 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
                             href={ROUTES.signIn}
                             onClick={close}
                             className={cn(
-                              "group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-white px-6 text-[0.9375rem] font-semibold text-ink shadow-[0_18px_36px_-18px_rgb(0_0_0/0.6)] transition-colors duration-300 hover:bg-gold-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300",
+                              "group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-white px-6 text-[0.9375rem] text-ink shadow-[0_18px_36px_-18px_rgb(0_0_0/0.6)] transition-colors duration-300 hover:bg-gold-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300",
                               onSignUp && "sm:col-span-2",
                             )}
                           >
@@ -267,7 +267,7 @@ export function MobileNavigation({ activeId, open, onOpenChange, className }: Mo
                             href={ROUTES.signUp}
                             onClick={close}
                             className={cn(
-                              "inline-flex min-h-14 items-center justify-center rounded-full border border-white/25 bg-white/5 px-6 text-[0.9375rem] font-semibold text-white transition-colors duration-300 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300",
+                              "inline-flex min-h-14 items-center justify-center rounded-full border border-white/25 bg-white/5 px-6 text-[0.9375rem]  text-white transition-colors duration-300 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-300",
                               onSignIn && "sm:col-span-2",
                             )}
                           >

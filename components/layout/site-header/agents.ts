@@ -81,7 +81,7 @@ export const AGENTS: ReadonlyArray<{
   },
 ];
 
-/** Top-level destinations (no in-page home anchors). `product` opens the Mira / Lumina / Psy list; the others are plain links. */
+/** Top-level destinations. `product` opens the Mira / Lumina / Clinician Workspace list; the others are plain links. */
 export const PRIMARY_LINKS = [
   { id: "product", href: null },
   { id: "tracks", href: ROUTES.tracks },

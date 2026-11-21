@@ -73,8 +73,8 @@ function AdhdVisual({ labels }: { labels: readonly string[] }) {
           />
         );
       })}
-      <text x="22" y="26" className="fill-ink-soft" fontSize="11" fontWeight="600">{labels[0]}</text>
-      <text x={W - 22} y={H - 14} textAnchor="end" className="fill-teal-700" fontSize="11" fontWeight="600">{labels[1]}</text>
+      <text x="22" y="26" className="fill-ink-soft" fontSize="11" fontWeight="400">{labels[0]}</text>
+      <text x={W - 22} y={H - 14} textAnchor="end" className="fill-teal-700" fontSize="11" fontWeight="400">{labels[1]}</text>
     </svg>
   );
 }
@@ -120,9 +120,9 @@ function BipolarVisual({ labels }: { labels: readonly string[] }) {
           />
         )}
       </svg>
-      <span className="pointer-events-none absolute start-3 top-3 text-[0.6875rem] font-semibold text-gold-700">{labels[0]}</span>
-      <span className="pointer-events-none absolute start-3 text-[0.6875rem] font-semibold text-gold-700" style={{ top: "calc(50% + 20px)" }}>{labels[1]}</span>
-      <span className="pointer-events-none absolute bottom-3 start-3 text-[0.6875rem] font-semibold text-gold-700">{labels[2]}</span>
+      <span className="pointer-events-none absolute start-3 top-3 text-[0.6875rem]  text-gold-700">{labels[0]}</span>
+      <span className="pointer-events-none absolute start-3 text-[0.6875rem]  text-gold-700" style={{ top: "calc(50% + 20px)" }}>{labels[1]}</span>
+      <span className="pointer-events-none absolute bottom-3 start-3 text-[0.6875rem]  text-gold-700">{labels[2]}</span>
     </div>
   );
 }
@@ -157,7 +157,7 @@ function PsychosisVisual({ labels }: { labels: readonly string[] }) {
               y={cy - r + 13}
               textAnchor="middle"
               fontSize="11"
-              fontWeight="700"
+              fontWeight="400"
               className="fill-sage-700"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}

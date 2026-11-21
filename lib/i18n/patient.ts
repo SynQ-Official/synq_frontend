@@ -28,12 +28,14 @@ const en = {
     optional: "Optional", on: "On", off: "Off", private: "Private",
   },
   shell: {
+    groups: { daily: "Your day", care: "Care and practice" },
+    safetyTitle: "Safety",
     navLabel: "Patient navigation",
     nav: { home: "Home", checkin: "Check-in", mira: "Mira", journal: "Smart Journal", spark: "Spark", library: "Library", ambiances: "Sounds", care: "Care team", reports: "Reports", settings: "Settings" },
     signOut: "Sign out",
     signingOut: "Signing out…",
     skipToContent: "Skip to content",
-    eyebrows: { home: "Your day", checkin: "Daily ritual", mira: "Guided orientation", journal: "Your private space", spark: "Your task assistant", care: "Your care team", reports: "Your journey", settings: "Your preferences" },
+    eyebrows: { home: "Your day", checkin: "Daily ritual", mira: "Guided orientation", journal: "Your private space", spark: "Your task assistant", care: "Your care team", reports: "Your weeks", settings: "Your preferences" },
     notAlone: { title: "Every step counts", body: "SynQ is with you, today and always." },
     greeting: { morning: "Good morning, {name}", afternoon: "Good afternoon, {name}", evening: "Good evening, {name}", night: "Hello, {name}" },
     notifications: {
@@ -43,7 +45,7 @@ const en = {
     },
   },
   tracks: {
-    ADHD: "Your wellbeing journey", BIPOLAR: "Your wellbeing journey", SCHIZOPHRENIA: "Your wellbeing journey", UNSPECIFIED: "Your wellbeing journey",
+    ADHD: "Your wellbeing, week by week", BIPOLAR: "Your wellbeing, week by week", SCHIZOPHRENIA: "Your wellbeing, week by week", UNSPECIFIED: "Your wellbeing, week by week",
   },
   dimensions: {
     mood: "Mood", energy: "Energy", sleep: "Sleep", focus: "Focus",
@@ -60,6 +62,11 @@ const en = {
     ],
   },
   home: {
+    sections: {
+      today: { eyebrow: "Today", title: "Your day, at a glance" },
+      week: { eyebrow: "This week", title: "How the week is going" },
+      support: { eyebrow: "Support", title: "Practice and rest" },
+    },
     subtitle: "Small steps, taken daily, add up to real change. Here's your day at a glance.",
     mira: { title: "Talk with Mira", body: "A guided orientation conversation to put words to what's on your mind.", cta: "Open Mira" },
     hero: {
@@ -335,7 +342,7 @@ const en = {
       limitations: "Good to know", disclaimer: "This summary describes what you shared. It is not a diagnosis.",
     },
     inProgress: "In progress", ready: "Ready", weekOf: "Week of {range}", view: "View report",
-    inProgressBody: "Your report opens on {date}, once this week is complete.", locked: "Opens {date}", lockedHint: "Keep checking in — your first report unlocks after your first full week.", firstEmpty: "Your first report arrives after your first full week.",
+    inProgressBody: "Your report opens on {date}, once this week is complete.", locked: "Opens {date}", lockedHint: "Keep checking in. Your first report opens after your first full week.", firstEmpty: "Your first report arrives after your first full week.",
     firstOpens: "Your first report opens on {date}, once your first week is complete. Until then, this is your week so far.",
     dayOf: "Day {a} of 7", soFar: "So far this week",
     emptyTitle: "No reports yet", quietWeek: "A quiet week — not enough entries to read anything into.",
@@ -488,7 +495,7 @@ const en = {
   library: {
     eyebrow: "Library", title: "Reading you can trust",
     subtitle: "Articles on {topic}, matched to what comes up in your Journal. Each opens at a public health source — WHO, NIMH, NICE or the NHS.",
-    topics: { BIPOLAR: "bipolar disorder", SCHIZOPHRENIA: "schizophrenia and psychosis" },
+    topics: { BIPOLAR: "bipolar disorder", SCHIZOPHRENIA: "psychosis" },
     back: "Back to Home", readAtSource: "Read at the source", newTab: "Opens the source in a new tab.",
     count: "{n} articles",
     forYou: "Picked from your Journal", more: "Show more articles", moreLoading: "Finding more…", noMore: "That's everything that matches your Journal right now. Check back soon.",
@@ -510,7 +517,7 @@ const en = {
       SUPPORT_HOLD: { title: "No articles to suggest right now", body: "Check back in a few days. If today feels hard, talking to someone you trust or your clinician can help." },
       NO_RELEVANT_CONTENT: { title: "No matching article right now", body: "We don't have an article that fits your recent Journal entries, so we won't show you something unrelated. Check back soon." },
     },
-    unavailableTitle: "No articles for your track yet", unavailableBody: "The library covers bipolar disorder and schizophrenia for now. More is on the way.",
+    unavailableTitle: "No articles for your track yet", unavailableBody: "The library covers bipolar disorder and psychosis for now. More is on the way.",
     disclaimer: "General information from public health sources, not medical advice. Talk to your clinician about anything that concerns you.",
   },
   checkinSchedule: {
@@ -631,6 +638,8 @@ const ar: PatientCopy = {
     optional: "اختياري", on: "مفعّل", off: "متوقف", private: "خاص",
   },
   shell: {
+    groups: { daily: "يومك", care: "الرعاية والممارسة" },
+    safetyTitle: "الأمان",
     navLabel: "التنقل الرئيسي",
     nav: { home: "الرئيسية", checkin: "الفحص اليومي", mira: "ميرا", journal: "المفكرة الذكية", spark: "سبارك", library: "المكتبة", ambiances: "الأصوات", care: "فريق الرعاية", reports: "التقارير", settings: "الإعدادات" },
     signOut: "تسجيل الخروج",
@@ -646,7 +655,7 @@ const ar: PatientCopy = {
     },
   },
   tracks: {
-    ADHD: "رحلة عافيتك", BIPOLAR: "رحلة عافيتك", SCHIZOPHRENIA: "رحلة عافيتك", UNSPECIFIED: "رحلة عافيتك",
+    ADHD: "عافيتك أسبوعاً بأسبوع", BIPOLAR: "عافيتك أسبوعاً بأسبوع", SCHIZOPHRENIA: "عافيتك أسبوعاً بأسبوع", UNSPECIFIED: "عافيتك أسبوعاً بأسبوع",
   },
   dimensions: {
     mood: "المزاج", energy: "الطاقة", sleep: "النوم", focus: "التركيز",
@@ -663,6 +672,11 @@ const ar: PatientCopy = {
     ],
   },
   home: {
+    sections: {
+      today: { eyebrow: "اليوم", title: "يومك في لمحة" },
+      week: { eyebrow: "هذا الأسبوع", title: "كيف يسير أسبوعك" },
+      support: { eyebrow: "الدعم", title: "تمرّن واسترح" },
+    },
     subtitle: "خطوات صغيرة كل يوم تصنع فرقًا حقيقيًا. إليك يومك في لمحة.",
     mira: { title: "تحدّث مع ميرا", body: "محادثة توجيه موجَّهة لتضع كلمات لما يدور في ذهنك.", cta: "افتح ميرا" },
     hero: {
@@ -1091,7 +1105,7 @@ const ar: PatientCopy = {
   library: {
     eyebrow: "المكتبة", title: "قراءات يمكنك الوثوق بها",
     subtitle: "مقالات عن {topic}، تناسب ما يظهر في مفكرتك. يفتح كلٌّ منها في مصدر صحي عام — منظمة الصحة العالمية أو NIMH أو NICE أو NHS.",
-    topics: { BIPOLAR: "الاضطراب ثنائي القطب", SCHIZOPHRENIA: "الفصام والذهان" },
+    topics: { BIPOLAR: "الاضطراب ثنائي القطب", SCHIZOPHRENIA: "الذهان" },
     back: "العودة إلى الرئيسية", readAtSource: "اقرأ في المصدر", newTab: "يفتح المصدر في تبويب جديد.",
     count: "{n} مقالًا",
     forYou: "مختارة من مفكرتك", more: "عرض المزيد من المقالات", moreLoading: "جارٍ البحث عن المزيد…", noMore: "هذا كل ما يناسب مفكرتك الآن. عُد قريبًا.",
@@ -1113,7 +1127,7 @@ const ar: PatientCopy = {
       SUPPORT_HOLD: { title: "لا مقالات مقترحة الآن", body: "عُد بعد بضعة أيام. وإن كان اليوم صعبًا، فقد يساعدك الحديث مع شخص تثق به أو مع معالجك." },
       NO_RELEVANT_CONTENT: { title: "لا مقال مناسب الآن", body: "ليس لدينا مقال يناسب مدخلات مفكرتك الأخيرة، ولن نعرض عليك ما لا صلة له بها. عُد قريبًا." },
     },
-    unavailableTitle: "لا مقالات لمسارك بعد", unavailableBody: "تغطي المكتبة حاليًا الاضطراب ثنائي القطب والفصام. والمزيد قادم.",
+    unavailableTitle: "لا مقالات لمسارك بعد", unavailableBody: "تغطي المكتبة حاليًا الاضطراب ثنائي القطب والذهان. والمزيد قادم.",
     disclaimer: "معلومات عامة من مصادر صحية عامة وليست نصيحة طبية. تحدّث إلى معالجك عن أي أمر يقلقك.",
   },
   checkinSchedule: {

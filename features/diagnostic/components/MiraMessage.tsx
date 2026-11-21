@@ -202,7 +202,7 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
       <MiraAvatar size="md" className="mt-0.5" />
       <div className="min-w-0 flex-1 sm:max-w-[min(88%,42rem)]">
         <p className="flex flex-wrap items-baseline gap-x-2 px-0.5">
-          <span className={cn(SERIF, "text-[1.0625rem] font-normal tracking-[-0.01em] text-ink rtl:font-semibold rtl:tracking-normal")}>{diagnostic.miraLabel}</span>
+          <span className={cn(SERIF, "text-[1.0625rem] font-normal tracking-[-0.01em] text-ink  rtl:tracking-normal")}>{diagnostic.miraLabel}</span>
           <span className="text-[0.75rem] text-ink-muted">{diagnostic.aiGuide}</span>
           {time && (
             <>
@@ -219,7 +219,7 @@ export function MiraMessage({ content, role, createdAt, index, language, streami
           )}
         >
           {notice && (
-            <p className="mb-2.5 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[0.8125rem] font-semibold text-gold-700 ring-1 ring-gold-100">
+            <p className="mb-2.5 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[0.8125rem]  text-gold-700 ring-1 ring-gold-100">
               <Info className="size-3.5" aria-hidden />
               {diagnostic.notCountedHint}
             </p>

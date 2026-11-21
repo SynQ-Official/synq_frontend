@@ -1,6 +1,5 @@
 "use client";
 
-import { CountUp } from "@/components/home/CountUp";
 import { SERIF } from "@/components/home/typography";
 import { AgentAvatar } from "@/components/layout/site-header";
 import type { LuminaPreviewCopy } from "@/lib/i18n/agents";
@@ -56,9 +55,9 @@ export function WellbeingRing({ value, label, icon: Icon, delay = 0 }: { value: 
           <Icon className="size-[1.0625rem]" strokeWidth={1.75} />
         </span>
       </span>
-      <span className="block w-full truncate text-[0.6875rem] font-semibold text-ink sm:text-[0.75rem]">{label}</span>
+      <span className="block w-full truncate text-[0.6875rem] text-ink sm:text-[0.75rem]">{label}</span>
       <span dir="ltr" className="-mt-1 text-[0.6875rem] tabular-nums text-ink-soft">
-        <CountUp value={String(value)} />
+        {String(value)}
         /10
       </span>
     </div>
@@ -125,14 +124,14 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
           <AgentAvatar agent="lumina" className="size-8 rounded-xl ring-1 ring-gold-100 sm:size-9" />
           <span className={cn(SERIF, "truncate text-[1.125rem] font-light tracking-[-0.02em] text-ink rtl:font-normal rtl:tracking-normal sm:text-[1.375rem]")}>{copy.greeting}</span>
         </span>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem] font-semibold text-sage-700 ring-1 ring-sage-100 sm:text-[0.6875rem]">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem]  text-sage-700 ring-1 ring-sage-100 sm:text-[0.6875rem]">
           <Check className="size-3" strokeWidth={3} />
           {copy.saved}
         </span>
       </motion.div>
 
       <motion.section {...rise(0.25)} className={card}>
-        <p className="text-[0.75rem] font-semibold text-ink sm:text-[0.8125rem]">{home.wellbeing}</p>
+        <p className="text-[0.75rem]  text-ink sm:text-[0.8125rem]">{home.wellbeing}</p>
         <p className="text-[0.6875rem] text-ink-muted">{home.wellbeingLine}</p>
         <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-3">
           {RINGS.map((ring, index) => (
@@ -144,8 +143,8 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
       <div className={cn("grid gap-2.5 sm:gap-3", !compact && "sm:grid-cols-2")}>
         <motion.section {...rise(0.4)} className={card}>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[0.75rem] font-semibold text-ink sm:text-[0.8125rem]">{views.trend.title}</p>
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem] font-semibold text-sage-700 ring-1 ring-sage-100">
+            <p className="text-[0.75rem]  text-ink sm:text-[0.8125rem]">{views.trend.title}</p>
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem]  text-sage-700 ring-1 ring-sage-100">
               <TrendingUp className="size-3" strokeWidth={2.5} />
               {home.nextTitle}
             </span>
@@ -158,7 +157,7 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
         </motion.section>
 
         <motion.section {...rise(0.55)} className={cn(card, compact && "hidden")}>
-          <p className="text-[0.75rem] font-semibold text-ink sm:text-[0.8125rem]">{home.signalsTitle}</p>
+          <p className="text-[0.75rem]  text-ink sm:text-[0.8125rem]">{home.signalsTitle}</p>
           <ul className="mt-2.5 space-y-2">
             {home.signals.map((line, index) => {
               const Icon = SIGNAL_ICONS[index];
@@ -176,7 +175,7 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
       </div>
 
       <motion.section {...rise(0.7)} className={cn(card, "hidden md:block", compact && "md:hidden")}>
-        <p className="text-[0.8125rem] font-semibold text-ink">{home.planTitle}</p>
+        <p className="text-[0.8125rem]  text-ink">{home.planTitle}</p>
         <ul className="mt-2.5 grid grid-cols-3 gap-2">
           {home.plan.map((line, index) => {
             const Icon = PLAN_ICONS[index];

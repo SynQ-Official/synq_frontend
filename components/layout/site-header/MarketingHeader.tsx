@@ -13,6 +13,7 @@ import { ROUTES } from "@/lib/config/routes";
 import { SPRING_SOFT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { PRIMARY_LINKS, activeLinkId } from "./agents";
+import { HelpNow } from "@/components/help/HelpNow";
 import { HeaderShell } from "./HeaderShell";
 import { MobileNavigation } from "./MobileNavigation";
 import { ProductMenu } from "./ProductMenu";
@@ -34,7 +35,7 @@ function ActivePill() {
 }
 
 /**
- * Public header: product destinations (companions, trust and safety, support) rather than in-page home anchors.
+ * Public header: the Companions menu (Mira, Lumina, Clinician Workspace), care paths, privacy and support, then "Need help now" and one way in.
  * Part of the page at the top, a quiet surface on scroll.
  */
 export function MarketingHeader() {
@@ -51,8 +52,8 @@ export function MarketingHeader() {
   // The pill follows the pointer, rests on the current page, and sits under "Companions" while its list is open.
   const pillId = productOpen ? "product" : (hovered ?? activeId);
 
-  // The end of the header follows the visitor: their own menu when signed in, otherwise the way in —
-  // and on an auth page, the other auth page (never a link to where they already are).
+  // The end of the header follows the visitor: their own menu when signed in, otherwise the way in (and, for an adult
+  // with no account, "Create account") and on an auth page, the other auth page (never a link to where they already are).
   const onSignIn = pathname === ROUTES.signIn;
   const onSignUp = pathname === ROUTES.signUp;
   const primary = onSignIn ? { href: ROUTES.signUp, label: dictionary.nav.signUp } : { href: ROUTES.signIn, label: dictionary.nav.signIn };
@@ -106,7 +107,7 @@ export function MarketingHeader() {
 
       <div className="flex shrink-0 items-center gap-1.5 justify-self-end whitespace-nowrap sm:gap-2.5 xl:gap-3">
         <LanguageSwitcher className="hidden sm:inline-flex" />
-        {!signedIn && <span aria-hidden className="hidden h-5 w-px bg-line sm:block lg:hidden xl:block" />}
+        <HelpNow label="short" />
         {signedIn ? (
           <div className="hidden lg:block">
             <UserMenu name={name || dictionary.dashboard.navigation.overview} onOpenChange={setUserOpen} />
@@ -116,7 +117,7 @@ export function MarketingHeader() {
             {showSecondary && (
               <Link
                 href={ROUTES.signUp}
-                className="hidden min-h-11 items-center rounded-full px-4 text-sm font-semibold text-ink-soft transition-colors duration-200 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 xl:inline-flex"
+                className="hidden min-h-11 items-center rounded-full px-4 text-sm text-ink-soft transition-colors duration-200 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 xl:inline-flex"
               >
                 <span className="home-link-line">{dictionary.nav.signUp}</span>
               </Link>
@@ -124,13 +125,13 @@ export function MarketingHeader() {
             {/* Phones and tablets: a compact way in beside the menu button (the full CTA takes over from lg). */}
             <Link
               href={primary.href}
-              className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-4 text-[0.8125rem] font-semibold text-white shadow-[0_8px_20px_-10px_rgb(17_76_97/0.7)] transition-[background-color,transform] duration-300 ease-out-soft hover:bg-teal-800 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 sm:px-5 sm:text-sm lg:hidden"
+              className="inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-4 text-[0.8125rem]  text-white shadow-[0_8px_20px_-10px_rgb(17_76_97/0.7)] transition-[background-color,transform] duration-300 ease-out-soft hover:bg-teal-800 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 sm:px-5 sm:text-sm lg:hidden"
             >
               {primary.label}
             </Link>
             <Link
               href={primary.href}
-              className="group hidden min-h-11 items-center gap-3 rounded-full bg-ink py-1 ps-5 pe-1 text-sm font-semibold text-white shadow-[0_10px_24px_-12px_rgb(17_76_97/0.7)] transition-[background-color,box-shadow,transform] duration-300 ease-out-soft hover:bg-teal-800 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 lg:inline-flex"
+              className="group hidden min-h-11 items-center gap-3 rounded-full bg-ink py-1 ps-5 pe-1 text-sm  text-white shadow-[0_10px_24px_-12px_rgb(17_76_97/0.7)] transition-[background-color,box-shadow,transform] duration-300 ease-out-soft hover:bg-teal-800 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 lg:inline-flex"
             >
               {primary.label}
               <span className="flex size-9 items-center justify-center rounded-full bg-white/15 transition-[background-color,color,transform] duration-300 ease-out-soft group-hover:bg-gold group-hover:text-ink">

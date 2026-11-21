@@ -159,7 +159,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
         <GlassCard className="overflow-hidden p-0">
           {switchRow}
           <div className="space-y-2 px-5 py-6 sm:px-8">
-            <p className={cn(SERIF, "text-lg font-normal text-ink rtl:font-semibold")}>{copy.offTitle}</p>
+            <p className={cn(SERIF, "text-lg font-normal text-ink ")}>{copy.offTitle}</p>
             <p className="max-w-prose text-sm leading-6 text-ink-soft">{copy.offBody}</p>
             {saveFailed && <p role="alert" className="text-sm text-rose-700">{copy.errors.save}</p>}
           </div>
@@ -174,9 +174,11 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
       <GlassCard className="overflow-hidden p-0">
         {switchRow}
 
-        <div className="flex flex-col items-center gap-5 px-5 py-8 text-center sm:px-8 sm:py-10">
+        {/* Two columns from lg: listening (the sound, play, time left) on one side, its settings on the other. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+        <div className="flex flex-col items-center justify-center gap-5 px-5 py-8 text-center sm:px-8 sm:py-10 lg:border-e lg:border-ink/10 lg:py-12">
           <LuminaOrb size={96} breathe={running} />
-          <h2 className={cn(SERIF, "text-[clamp(1.25rem,1.05rem+0.8vw,1.625rem)] font-normal leading-tight text-ink rtl:font-semibold")}>{sound.label[language]}</h2>
+          <h2 className={cn(SERIF, "text-[clamp(1.25rem,1.05rem+0.8vw,1.625rem)] font-normal leading-tight text-ink ")}>{sound.label[language]}</h2>
           <Button
             type="button"
             size="lg"
@@ -193,7 +195,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
           {player.error && <p role="alert" className="text-sm text-rose-700">{copy.errors[player.error]}</p>}
         </div>
 
-        <div className="space-y-7 border-t border-ink/10 px-5 py-6 sm:px-8">
+        <div className="space-y-7 border-t border-ink/10 px-5 py-6 sm:px-8 lg:border-t-0 lg:py-8">
         <div>
           <p id={ids.sound} className={SECTION_LABEL}>{copy.soundLegend}</p>
           <RadioGroup
@@ -303,6 +305,7 @@ export function AmbiencePlayer({ ambiences, sounds, update }: { ambiences: Ambie
         <div className="border-t border-ink/10 pt-4">
           <p className="text-sm font-medium leading-6 text-ink">{copy.disclaimer}</p>
           <p className="mt-1 text-xs text-ink-muted">{fill(copy.credit, { author: sound.author, licence: sound.licence })}</p>
+        </div>
         </div>
         </div>
       </GlassCard>

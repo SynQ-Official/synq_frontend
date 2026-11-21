@@ -63,7 +63,7 @@ export function TokenBoard({ id }: { id: string }) {
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <Button size="sm" onClick={() => setTokens(Math.min(TOKEN_GOAL, tokens + 1))} disabled={tokens >= TOKEN_GOAL}><Plus aria-hidden />Add a token</Button>
         <Button size="sm" variant="outline" onClick={() => setTokens(Math.max(0, tokens - 1))} disabled={tokens === 0} aria-label="Undo last token"><Minus aria-hidden /></Button>
-        {tokens >= TOKEN_GOAL && <span className="text-sm font-semibold text-gold-700" role="status">Goal reached: time for the agreed reward.</span>}
+        {tokens >= TOKEN_GOAL && <span className="text-sm  text-gold-700" role="status">Goal reached: time for the agreed reward.</span>}
       </div>
       <p className="mt-2 text-xs text-muted-foreground">Tokens are a reminder of effort. They are never taken back as a punishment.</p>
     </div>
@@ -102,7 +102,7 @@ export function VisualTimer() {
           strokeDasharray={circumference} strokeDashoffset={circumference * (1 - fraction)} transform="rotate(-90 60 60)"
           style={{ transition: reduced ? undefined : "stroke-dashoffset 1s linear" }}
         />
-        <text x="60" y="66" textAnchor="middle" className="fill-ink text-[1.25rem] font-semibold tabular-nums">{label}</text>
+        <text x="60" y="66" textAnchor="middle" className="fill-ink text-[1.25rem]  tabular-nums">{label}</text>
       </svg>
       <div className="space-y-3">
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Timer length">
@@ -118,7 +118,7 @@ export function VisualTimer() {
           </Button>
           <Button size="sm" variant="ghost" onClick={() => { setRunning(false); setLeft(total); }}><RotateCcw aria-hidden />Reset</Button>
         </div>
-        {left === 0 && <p role="status" className="text-sm font-semibold text-teal-800">Time is up.</p>}
+        {left === 0 && <p role="status" className="text-sm  text-teal-800">Time is up.</p>}
       </div>
     </div>
   );

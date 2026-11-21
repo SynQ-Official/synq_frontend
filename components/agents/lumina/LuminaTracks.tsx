@@ -28,7 +28,7 @@ function SparkPreview({ demo }: { demo: LuminaTracksCopy["demo"]["spark"] }) {
   const reduce = useReducedMotion();
   return (
     <motion.div variants={stagger(0.12, 0.25)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} aria-hidden className="rounded-2xl bg-white/80 p-4 ring-1 ring-white">
-      <p className="flex items-center gap-2 text-[0.75rem] font-semibold text-teal-700">
+      <p className="flex items-center gap-2 text-[0.75rem]  text-teal-700">
         <Sparkles className="size-3.5" strokeWidth={2} />
         {demo.heading}
       </p>
@@ -91,7 +91,7 @@ function LibraryPreview({ demo }: { demo: LuminaTracksCopy["demo"]["library"] })
   return (
     <motion.div variants={stagger(0.12, 0.25)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} aria-hidden className="grid items-center gap-4 sm:grid-cols-[minmax(0,1fr)_auto] rounded-2xl bg-white/80 p-4 ring-1 ring-white">
       <div>
-        <p className="flex items-center gap-2 text-[0.75rem] font-semibold text-gold-700">
+        <p className="flex items-center gap-2 text-[0.75rem]  text-gold-700">
           <BookOpenText className="size-3.5" strokeWidth={2} />
           {demo.heading}
         </p>
@@ -119,7 +119,7 @@ function LibraryPreview({ demo }: { demo: LuminaTracksCopy["demo"]["library"] })
           animate={reduce ? undefined : { scale: [0.7, 1, 0.7], opacity: [0.7, 1, 0.7] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
-        <span className="relative text-[0.75rem] font-semibold text-gold-700">{demo.breathe}</span>
+        <span className="relative text-[0.75rem]  text-gold-700">{demo.breathe}</span>
       </div>
     </motion.div>
   );

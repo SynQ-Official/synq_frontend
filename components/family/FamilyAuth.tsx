@@ -41,7 +41,7 @@ export function FamilyAuth() {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="text-title font-semibold tracking-[-0.02em] text-balance">{t.auth.registerTitle}</h1>
+      <h1 className="text-title  tracking-[-0.02em] text-balance">{t.auth.registerTitle}</h1>
       <p className="mt-2 text-sm text-ink-muted">{t.auth.registerLead}</p>
       <Card className="mt-5">
         <form onSubmit={submit} className="space-y-4" noValidate>
@@ -60,7 +60,7 @@ export function FamilyAuth() {
         </form>
       </Card>
       <div className="mt-4 flex flex-col gap-2 text-sm">
-        <Link className="font-semibold text-teal-700 underline-offset-4 hover:underline" href={signInHref("parent", params.get("redirect"))}>{t.auth.toSignIn}</Link>
+        <Link className=" text-teal-700 underline-offset-4 hover:underline" href={signInHref("parent", params.get("redirect"))}>{t.auth.toSignIn}</Link>
         <Link className="text-ink-muted underline-offset-4 hover:underline" href={signInHref("patient")}>{t.auth.patientLink}</Link>
       </div>
     </div>

@@ -102,7 +102,7 @@ export function SparkView() {
 
             {view?.safety?.needsSupport && (
               <section role="region" aria-label={copy.safety.title} className="rounded-[1.5rem] border border-rose-100 bg-rose-50/80 p-5">
-                <p className="flex items-center gap-2 font-semibold text-rose-700"><HeartHandshake className="size-5" aria-hidden />{copy.safety.title}</p>
+                <p className="flex items-center gap-2  text-rose-700"><HeartHandshake className="size-5" aria-hidden />{copy.safety.title}</p>
                 {view.safety.message && <p className="mt-2 text-sm leading-relaxed text-ink">{view.safety.message}</p>}
                 {view.safety.emergencyResources.length > 0 && (
                   <ul className="mt-3 space-y-1.5 text-sm">
@@ -110,7 +110,7 @@ export function SparkView() {
                       const phone = phoneOf(resource);
                       return (
                         <li key={resource}>
-                          {phone ? <a href={`tel:${phone}`} className="font-semibold text-rose-700 underline underline-offset-2">{resource}</a> : <span className="text-ink">{resource}</span>}
+                          {phone ? <a href={`tel:${phone}`} className=" text-rose-700 underline underline-offset-2">{resource}</a> : <span className="text-ink">{resource}</span>}
                         </li>
                       );
                     })}

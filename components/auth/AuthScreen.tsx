@@ -23,6 +23,7 @@ import { ROUTES } from "@/lib/config/routes";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
 import { LinkedText } from "@/components/legal/LegalLinks";
 import { accountAccessCopy } from "@/lib/i18n/accountAccess";
+import { LEGAL } from "@/config/legal";
 import { legalUi } from "@/lib/i18n/legal";
 import { prefetchPatientHome } from "@/lib/patient/prefetch";
 import { cn } from "@/lib/utils";
@@ -77,7 +78,7 @@ const FIELD_IDS: Record<FieldName, string> = {
 };
 
 const LINK_CLASS =
-  "rounded-md font-semibold text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
+  "rounded-md  text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
 
 function VisibilityToggle({ show, toggle, label }: { show: boolean; toggle: () => void; label: string }) {
   return (
@@ -131,7 +132,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   }, [router, isParent]);
 
   const [values, setValues] = useState<FormValues>({ nickname: "", email: "", password: "", confirmPassword: "" });
-  const [phone, setPhone] = useState<PhoneValue>(() => ({ country: defaultCountry(language), national: "" }));
+  const [phone, setPhone] = useState<PhoneValue>(() => ({ country: defaultCountry(), national: "" }));
   const [error, setError] = useState("");
   const [errorField, setErrorField] = useState<FieldName | null>(null);
   const [showPwd, setShowPwd] = useState(false);
@@ -296,21 +297,14 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
       transition={{ duration: DURATION.slow, ease: EASE_OUT, delay: 0.1 }}
       className={AUTH_CARD}
     >
-      <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
       {/* ── HEADING ──────────────────────────────────────────────────── */}
       <header>
-        <p className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-1.5 text-[0.8125rem] font-medium text-ink-soft shadow-sm">
-          <ShieldCheck className="size-3.5 text-teal-600" aria-hidden />
-          {auth.badge}
-        </p>
-        <h1
-          id="auth-title"
-          className={cn(AUTH_TITLE, "mt-6")}
-        >
+        <h1 id="auth-title" aria-describedby="auth-badge" className={cn(AUTH_TITLE, "text-balance")}>
           {isSignUp ? auth.titleSignUpA : auth.titleSignInA}{" "}
           <span className={ACCENT_LIGHT}>{isSignUp ? auth.titleSignUpB : auth.titleSignInB}</span>
         </h1>
-        <p className="mt-3 text-[1rem] leading-7 text-ink-soft">
+        <span id="auth-badge" className="sr-only">{auth.badge}</span>
+        <p className="mt-4 text-pretty text-[1rem] leading-7 text-ink-soft">
           {isSignUp ? auth.subtitleSignUp : role === null ? roleCopy.choose : isParent ? roleCopy.parentSubtitle : auth.subtitleWelcome}
         </p>
         {!isSignUp && <RoleSelector role={role} onChange={chooseRole} language={language} />}
@@ -547,7 +541,7 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               {/* Not a <label>: a click on the two links must open the pages, not toggle the box. */}
               <p id="auth-terms-label">
                 <LinkedText
-                  template={legalUi[language].agree}
+                  template={legalUi[language].agree + (LEGAL.version ? legalUi[language].agreeVersion.replace("{version}", LEGAL.version) : "")}
                   links={{
                     terms: <Link href={ROUTES.terms} target="_blank" className={LINK_CLASS}>{legalUi[language].terms}</Link>,
                     privacy: <Link href={ROUTES.privacy} target="_blank" className={LINK_CLASS}>{legalUi[language].privacyPolicy}</Link>,

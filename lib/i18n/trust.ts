@@ -50,7 +50,7 @@ const en: TrustCopy = {
   titleA: "Trust is part of",
   titleB: "the product.",
   intro:
-    "SynQ supports patients between consultations and gives clinicians clearer, earlier visibility. Because that depends on very personal information, how it is protected is described here, in plain words.",
+    "SynQ supports patients between consultations, and their clinician stays in charge. Because that depends on very personal information, how it is protected is described here, in plain words.",
   principle: "AI guides and flags; the professional always decides.",
   readMore: "Read more",
   sections: [
@@ -60,7 +60,7 @@ const en: TrustCopy = {
       summary: "You decide what your clinician sees, and you can change it at any time.",
       points: [
         "Your check-ins, journal and orientation belong to you. A clinician sees them only if you agree, category by category: mood, sleep, medication, exercises and orientation results.",
-        "You choose how much of your journal is shared: nothing, only the excerpts that were flagged or that you selected, or the full text.",
+        "You choose how much of your journal is shared: nothing, only the excerpts you select, or the full text. Entries you mark private are never shared.",
         "You can change or stop sharing at any time from your settings.",
         "Before a care relationship begins, a clinician sees a pseudonymous patient code, never a real name.",
       ],
@@ -84,7 +84,7 @@ const en: TrustCopy = {
         "Mira's orientation uses questions based on established screening tools. It surfaces signals worth a professional evaluation; it is not a diagnosis.",
         "The journal analysis names themes and emotions. It does not label a person or score them against others.",
         "Every summary and report states its evidence and its limits, and says that a licensed professional makes every diagnostic and treatment decision.",
-        "When a serious signal appears, AI does not act alone: the patient sees calm guidance and emergency resources, and a clinician is alerted and follows up.",
+        "When a serious signal appears, AI does not act alone: the patient sees clear guidance and emergency numbers, and a clinician is alerted and follows up.",
       ],
     },
     {
@@ -139,7 +139,7 @@ const ar: TrustCopy = {
   titleA: "الثقة جزء",
   titleB: "من المنتج.",
   intro:
-    "تدعم SynQ المرضى بين المواعيد وتمنح المختصين رؤية أوضح وأبكر. ولأن ذلك يقوم على معلومات شخصية جداً، فإن طريقة حمايتها مشروحة هنا بكلمات واضحة.",
+    "تدعم SynQ المرضى بين المواعيد، ويبقى المختص هو المسؤول. ولأن ذلك يقوم على معلومات شخصية جداً، فإن طريقة حمايتها مشروحة هنا بكلمات واضحة.",
   principle: "الذكاء الاصطناعي يوجّه وينبّه، والمختص هو من يقرّر دائماً.",
   readMore: "اقرأ المزيد",
   sections: [
@@ -149,7 +149,7 @@ const ar: TrustCopy = {
       summary: "أنت تقرر ما يراه مختصك، ويمكنك تغيير ذلك في أي وقت.",
       points: [
         "فحوصاتك اليومية ومفكرتك وتوجيهك ملك لك. ولا يراها مختص إلا بموافقتك، فئةً فئة: المزاج والنوم والدواء والتمارين ونتائج التوجيه.",
-        "أنت تختار مقدار ما يُشارَك من مفكرتك: لا شيء، أو المقتطفات التي رُصدت أو التي اخترتها فقط، أو النص كاملاً.",
+        "أنت تختار مقدار ما يُشارَك من مفكرتك: لا شيء، أو المقتطفات التي تختارها فقط، أو النص كاملاً. والمدخلات التي تجعلها خاصة لا تُشارَك أبداً.",
         "يمكنك تغيير المشاركة أو إيقافها في أي وقت من إعداداتك.",
         "قبل بدء العلاقة العلاجية، يرى المختص رمزاً مستعاراً للمريض ولا يرى اسماً حقيقياً.",
       ],
@@ -173,7 +173,7 @@ const ar: TrustCopy = {
         "يعتمد توجيه ميرا على أسئلة مبنية على أدوات فحص معروفة. ويُبرز إشارات تستحق تقييماً مهنياً، وهو ليس تشخيصاً.",
         "يسمّي تحليل المفكرة المواضيع والمشاعر. ولا يصنّف الشخص ولا يقارنه بغيره.",
         "يذكر كل ملخص وتقرير أدلته وحدوده، ويؤكد أن مختصاً مرخَّصاً يتخذ كل قرار تشخيصي وعلاجي.",
-        "حين تظهر إشارة خطيرة لا يتصرف الذكاء الاصطناعي وحده: يرى المريض إرشاداً هادئاً وموارد الطوارئ، ويُنبَّه مختص ويتابع الحالة.",
+        "حين تظهر إشارة خطيرة لا يتصرف الذكاء الاصطناعي وحده: يرى المريض إرشاداً واضحاً وأرقام الطوارئ، ويُنبَّه مختص ويتابع الحالة.",
       ],
     },
     {

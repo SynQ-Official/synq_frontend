@@ -171,7 +171,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
             className="flex-1"
           >
             <span className="stat-tile mb-4 size-11">{(() => { const Icon = STEP_ICON[item.key]; return <Icon className="size-5" aria-hidden />; })()}</span>
-            <h2 className="text-[clamp(1.375rem,1.1rem+1vw,1.875rem)] font-semibold leading-snug tracking-tight text-ink">{q.title}</h2>
+            <h2 className="text-[clamp(1.375rem,1.1rem+1vw,1.875rem)]  leading-snug tracking-tight text-ink">{q.title}</h2>
             {item.key === "mood" && <p className="mt-1.5 text-sm text-ink-soft">{copy.checkin.companion.pickMood}</p>}
 
             <div className="mt-7">
@@ -190,7 +190,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="mt-4 text-center text-xs font-semibold uppercase tracking-[0.14em] text-teal-700 rtl:tracking-normal"
+                        className="mt-4 text-center text-xs  uppercase tracking-[0.14em] text-teal-700 rtl:tracking-normal"
                       >
                         {copy.moods.levels[mood.level - 1].tone}
                       </motion.p>
@@ -227,7 +227,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
 
             <p className="mt-7 flex items-start gap-2 rounded-xl bg-white/60 px-3.5 py-2.5 text-xs leading-relaxed text-teal-800">
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-              <span><span className="font-semibold">{copy.checkin.why}: </span>{q.why}</span>
+              <span><span className="">{copy.checkin.why}: </span>{q.why}</span>
             </p>
           </motion.div>
         </AnimatePresence>
@@ -283,7 +283,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
                   <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border", done ? "border-teal-200 bg-teal-100 text-teal-700" : current ? "border-transparent bg-teal-600 text-white" : "border-line-strong bg-white/60 text-ink-subtle")}>
                     {done && !current ? <Check className="size-3.5" aria-hidden /> : <Icon className="size-3.5" aria-hidden />}
                   </span>
-                  <span className={cn("min-w-0 flex-1 truncate", current ? "font-semibold text-ink" : "text-ink-soft")}>{copy.checkin.steps[entry.key]}</span>
+                  <span className={cn("min-w-0 flex-1 truncate", current ? " text-ink" : "text-ink-soft")}>{copy.checkin.steps[entry.key]}</span>
                   <span className="shrink-0 text-xs tabular-nums text-ink-muted">
                     {done ? answerText(entry.key, answers, goals, copy) : current ? "" : copy.checkin.companion.upcoming}
                   </span>
@@ -361,7 +361,7 @@ function CompanionPanel({ mood, children }: { mood: MoodLevel | null; children?:
       <div className="flex items-center gap-3">
         <LuminaLogo size={44} presence />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-ink">{c.title}</p>
+          <p className="text-sm  text-ink">{c.title}</p>
           {mood && <p className="text-xs text-ink-muted">{copy.moods.label}: <MoodEmoji level={mood} className="align-[-0.15em] text-base" /> {copy.moods.levels[mood.level - 1].name}</p>}
         </div>
       </div>
@@ -372,12 +372,12 @@ function CompanionPanel({ mood, children }: { mood: MoodLevel | null; children?:
       </AnimatePresence>
       {children && (
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted rtl:tracking-normal">{c.path}</p>
+          <p className="mb-2 text-xs  uppercase tracking-wide text-ink-muted rtl:tracking-normal">{c.path}</p>
           {children}
         </div>
       )}
       <div className="mt-auto">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-muted rtl:tracking-normal">{c.valueTitle}</p>
+        <p className="mb-2 text-xs  uppercase tracking-wide text-ink-muted rtl:tracking-normal">{c.valueTitle}</p>
         <ul className="space-y-2">
           {c.value.map((text, index) => {
             const Icon = VALUE_ICONS[index] ?? Sparkles;
@@ -403,12 +403,12 @@ function StartCard({ onBegin }: { onBegin: () => void }) {
       <section className="flex flex-col gap-7 p-6 sm:p-10" aria-labelledby="checkin-start-title">
         <LuminaLogo size={84} presence float glow />
         <div>
-          <h2 id="checkin-start-title" className="text-[clamp(1.625rem,1.2rem+1.4vw,2.25rem)] font-semibold leading-tight tracking-tight text-ink">{s.title}</h2>
+          <h2 id="checkin-start-title" className="text-[clamp(1.625rem,1.2rem+1.4vw,2.25rem)]  leading-tight tracking-tight text-ink">{s.title}</h2>
           <p className="mt-2 text-sm font-medium text-teal-800">{fill(s.duration, { n: STEPS.length })}</p>
         </div>
 
         <div>
-          <p className="mb-2.5 text-xs font-semibold uppercase tracking-wide text-ink-muted rtl:tracking-normal">{s.covers}</p>
+          <p className="mb-2.5 text-xs  uppercase tracking-wide text-ink-muted rtl:tracking-normal">{s.covers}</p>
           <ul className="flex flex-wrap gap-2">
             {STEPS.map((entry, position) => {
               const Icon = STEP_ICON[entry.key];
@@ -466,7 +466,7 @@ export function GoalList({ goals, className }: { goals: CheckinGoal[]; className
                     transition={{ duration: 0.35, ease: EASE_OUT }}
                     whileTap={{ scale: 0.94 }}
                     className={cn(
-                      "inline-flex min-h-9 items-center rounded-full border px-3.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:opacity-60",
+                      "inline-flex min-h-9 items-center rounded-full border px-3.5 text-xs  transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:opacity-60",
                       active
                         ? status === "COMPLETED" ? "border-transparent bg-sage-100 text-sage-700" : status === "PARTIAL" ? "border-transparent bg-gold-100 text-gold-700" : "border-transparent bg-rose-50 text-rose-700"
                         : "border-white/80 bg-white/70 text-ink-soft hover:bg-white",
@@ -497,7 +497,7 @@ function AlreadyDone({ checkin, onEdit }: { checkin: Checkin; onEdit: () => void
         <div className="flex items-start gap-4">
           <span className="stat-tile stat-tile-sage size-12 shrink-0"><Check className="size-5" aria-hidden /></span>
           <div>
-            <h2 className="text-2xl font-semibold leading-tight text-ink">{copy.checkin.alreadyTitle}</h2>
+            <h2 className="text-2xl  leading-tight text-ink">{copy.checkin.alreadyTitle}</h2>
             <p className="mt-1 text-sm text-ink-soft">{copy.checkin.alreadyBody}</p>
           </div>
         </div>
@@ -506,7 +506,7 @@ function AlreadyDone({ checkin, onEdit }: { checkin: Checkin; onEdit: () => void
 
         {checkin.goals.length > 0 && (
           <div>
-            <p className="mb-3 text-sm font-semibold text-ink">{copy.checkin.goalsToday}</p>
+            <p className="mb-3 text-sm  text-ink">{copy.checkin.goalsToday}</p>
             <GoalList goals={checkin.goals} />
           </div>
         )}
@@ -546,19 +546,19 @@ function CheckinResultView({ checkin }: { checkin: Checkin }) {
       <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE_OUT }} className="flex flex-col gap-6 p-6 sm:p-10">
         <div className="flex flex-col items-start gap-3">
           {mood && <MoodEmoji level={mood} className="text-[4.5rem]" />}
-          <h2 className="text-[clamp(1.625rem,1.2rem+1.4vw,2.25rem)] font-semibold leading-tight tracking-tight text-ink">{copy.checkin.result.title}</h2>
+          <h2 className="text-[clamp(1.625rem,1.2rem+1.4vw,2.25rem)]  leading-tight tracking-tight text-ink">{copy.checkin.result.title}</h2>
           <p className="text-sm text-ink-soft">{copy.checkin.result.saved}</p>
           {streak >= 2 && <span className="chip chip-pending"><Flame className="size-3" aria-hidden />{fill(copy.checkin.result.streak, { n: streak })}</span>}
         </div>
 
         <div>
-          <p className="mb-3 text-sm font-semibold text-ink">{copy.checkin.result.snapshot}</p>
+          <p className="mb-3 text-sm  text-ink">{copy.checkin.result.snapshot}</p>
           <Snapshot checkin={checkin} />
         </div>
 
         {checkin.goals.length > 0 && (
           <div>
-            <p className="mb-1 text-sm font-semibold text-ink">{copy.checkin.goalsToday}</p>
+            <p className="mb-1 text-sm  text-ink">{copy.checkin.goalsToday}</p>
             <p className="mb-3 text-xs text-muted-foreground">{copy.checkin.goalsLater}</p>
             <GoalList goals={checkin.goals} />
           </div>

@@ -25,7 +25,7 @@ export function ParentResourceLibrary() {
         subtitle="Nature sounds, ambient sounds and brown noise for wind-down and homework time, from SynQ's Smart Library." />
       <div className="grid items-start gap-5 lg:grid-cols-[1.3fr_1fr]">
         <GlassCard className="p-5" aria-labelledby="pp-sounds">
-          <h2 id="pp-sounds" className="mb-3 flex items-center gap-2 text-base font-semibold text-ink"><Headphones className="size-4" aria-hidden />Comfort sounds</h2>
+          <h2 id="pp-sounds" className="mb-3 flex items-center gap-2 text-base  text-ink"><Headphones className="size-4" aria-hidden />Comfort sounds</h2>
           {ambiences.error && !ambiences.data ? <ErrorState onRetry={() => void ambiences.refresh()} /> : ambiences.isLoading ? <Skeleton className="h-40" /> : !ambiences.available ? (
             <EmptyState icon={Music} title="No sounds available for this account yet" body="On some tracks the care team switches sounds on first." />
           ) : (
@@ -43,7 +43,7 @@ export function ParentResourceLibrary() {
           )}
         </GlassCard>
         <GlassCard className="p-5" aria-labelledby="pp-reads">
-          <h2 id="pp-reads" className="mb-2 flex items-center gap-2 text-base font-semibold text-ink"><BookHeart className="size-4" aria-hidden />Reading</h2>
+          <h2 id="pp-reads" className="mb-2 flex items-center gap-2 text-base  text-ink"><BookHeart className="size-4" aria-hidden />Reading</h2>
           {reads ? (
             <>
               <p className="text-sm text-ink-soft">Trusted articles matched to your child&apos;s track, opened at their public source.</p>

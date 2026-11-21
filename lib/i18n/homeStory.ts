@@ -37,13 +37,13 @@ const en: HomeStoryCopy = {
     highlight: ["mental", "health", "support", "platform", "Mira", "Lumina", "licensed", "clinician", "choose"],
     facts: [
       ["3", "conditions followed"],
-      ["2", "AI companions"],
+      ["2", "AI assistants, Mira and Lumina"],
       ["1", "licensed clinician who decides"],
     ],
     filmsLabel: "SynQ films",
     films: [
       { title: "For patients", line: "A first conversation with Mira, then a daily space with Lumina." },
-      { title: "For parents", line: "A calmer home, shaped around your child." },
+      { title: "For parents", line: "A steadier home, shaped around your child." },
       { title: "For clinicians", line: "Reports to review, and every decision stays yours." },
     ],
   },
@@ -60,13 +60,13 @@ const ar: HomeStoryCopy = {
     highlight: ["دعم", "للصحة", "النفسية", "ميرا", "ولومينا", "مختص", "مرخَّص", "تختار"],
     facts: [
       ["3", "حالات نتابعها"],
-      ["2", "رفيقان بالذكاء الاصطناعي"],
+      ["2", "مساعدان بالذكاء الاصطناعي، ميرا ولومينا"],
       ["1", "مختص مرخَّص يقرّر"],
     ],
     filmsLabel: "أفلام SynQ",
     films: [
       { title: "للمرضى", line: "محادثة أولى مع ميرا، ثم مساحة يومية مع لومينا." },
-      { title: "للأهل", line: "بيت أهدأ، يُصمَّم حول طفلك." },
+      { title: "للأهل", line: "بيت أكثر استقراراً، يُصمَّم حول طفلك." },
       { title: "للمختصين", line: "تقارير تراجعها، وكل قرار يبقى لك." },
     ],
   },

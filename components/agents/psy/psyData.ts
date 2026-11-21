@@ -53,12 +53,12 @@ export const ACTIVITY: readonly (readonly [completed: number, scheduled: number,
 /** Caseload split in the order priority, watch, stable. */
 export const RISK_VALUES = [2, 3, 7] as const;
 
-/** Priority patients: [traffic light index, drift 0..1, open alerts, worsened]. */
-export const PATIENT_ROWS: readonly (readonly [light: 0 | 1 | 2, drift: number, alerts: number, worsened: boolean])[] = [
-  [0, 0.62, 2, true],
-  [1, 0.48, 1, false],
-  [1, 0.37, 0, false],
-  [2, 0.12, 0, false],
+/** Priority patients: [traffic light index, open alerts, worsened]. Alerts add up to DEMO_OPEN_ALERTS (KPI, rail, triage). */
+export const PATIENT_ROWS: readonly (readonly [light: 0 | 1 | 2, alerts: number, worsened: boolean])[] = [
+  [0, 2, true],
+  [1, 1, false],
+  [1, 0, false],
+  [2, 0, false],
 ];
 
 /** Attention items by kind: an alert, an alert, a priority report, an assessment to review. */

@@ -1,6 +1,5 @@
 "use client";
 
-import { CountUp } from "@/components/home/CountUp";
 import type { PsyPreviewCopy } from "@/lib/i18n/agents";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -29,7 +28,7 @@ function Panel({ title, description, action, children, className, flush }: { tit
     <section className={cn("flex min-w-0 flex-col rounded-2xl border border-slate-200/80 bg-white shadow-sm", className)}>
       <header className="flex items-start justify-between gap-3 px-5 pb-3 pt-4">
         <div className="min-w-0">
-          <h2 className="text-[15px] font-semibold tracking-tight text-slate-900">{title}</h2>
+          <h2 className="text-[15px]  tracking-tight text-slate-900">{title}</h2>
           {description && <p className="mt-0.5 text-xs text-slate-500">{description}</p>}
         </div>
         {action}
@@ -91,7 +90,7 @@ function Delta({ pct, goodWhen, caption }: { pct: number | null; goodWhen: "up" 
   const Icon = up ? ArrowUpRight : ArrowDownRight;
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
-      <span dir="ltr" className={cn("inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-semibold tabular-nums", good ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700")}>
+      <span dir="ltr" className={cn("inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5  tabular-nums", good ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700")}>
         <Icon size={12} aria-hidden />
         {Math.abs(pct)}%
       </span>
@@ -106,7 +105,7 @@ export function Avatar({ name, size = "sm" }: { name: string; size?: "sm" | "lg"
   const palette = ["bg-[#f0fdfa] text-[#115e59] ring-[#99f6e4]", "bg-indigo-50 text-indigo-800 ring-indigo-200", "bg-sky-50 text-sky-800 ring-sky-200", "bg-violet-50 text-violet-800 ring-violet-200"];
   const hue = [...name].reduce((sum, char) => sum + char.charCodeAt(0), 0) % palette.length;
   return (
-    <span aria-hidden className={cn("flex shrink-0 items-center justify-center rounded-full font-semibold ring-1", size === "sm" ? "size-8 text-[11px]" : "size-14 text-lg", palette[hue])}>
+    <span aria-hidden className={cn("flex shrink-0 items-center justify-center rounded-full  ring-1", size === "sm" ? "size-8 text-[11px]" : "size-14 text-lg", palette[hue])}>
       {letters}
     </span>
   );
@@ -127,7 +126,7 @@ function PageHeader({ eyebrow, title, description, actions }: { eyebrow?: string
       <div className="min-w-0">
         {eyebrow && <p className="text-xs font-medium text-[#0f766e]">{eyebrow}</p>}
         {/* A screen inside the product mockup, not the page's own heading (that is the hero <h1>). */}
-        <h3 className="mt-1 text-[1.625rem] font-semibold leading-tight tracking-tight text-slate-900">{title}</h3>
+        <h3 className="mt-1 text-[1.625rem]  leading-tight tracking-tight text-slate-900">{title}</h3>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
@@ -164,8 +163,8 @@ function ActivityChart({ legend }: { legend: readonly string[] }) {
               <span aria-hidden className="size-2 rounded-sm" style={{ background: colors[index] }} />
               {label}
             </dt>
-            <dd dir="ltr" className="mt-0.5 text-lg font-semibold tracking-tight text-slate-900 tabular-nums rtl:text-end">
-              <CountUp value={String(totals[index])} />
+            <dd dir="ltr" className="mt-0.5 text-lg tracking-tight text-slate-900 tabular-nums rtl:text-end">
+              {String(totals[index])}
             </dd>
           </div>
         ))}
@@ -252,8 +251,8 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
             </dt>
             <dd className="mt-2 flex items-end justify-between gap-2">
               <span className="min-w-0">
-                <span dir="ltr" className="block text-[1.75rem] font-semibold leading-none tracking-tight text-slate-900 tabular-nums rtl:text-end">
-                  <CountUp value={value} />
+                <span dir="ltr" className="block text-[1.75rem] leading-none tracking-tight text-slate-900 tabular-nums rtl:text-end">
+                  {value}
                 </span>
                 <span className="mt-2.5 block min-h-5">
                   <Delta pct={KPI_DELTAS[index].pct} goodWhen={KPI_DELTAS[index].goodWhen} caption={caption} />
@@ -290,7 +289,7 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
                   <span aria-hidden className="size-2 shrink-0 rounded-sm" style={{ background: TRAFFIC[index].color }} />
                   {label}
                 </dt>
-                <dd className="mt-0.5 text-sm font-semibold text-slate-900 tabular-nums">
+                <dd className="mt-0.5 text-sm  text-slate-900 tabular-nums">
                   {RISK_VALUES[index]}
                   <span className="ms-1 text-xs font-normal text-slate-500">{Math.round((RISK_VALUES[index] / total) * 100)}%</span>
                 </dd>
@@ -335,7 +334,7 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
             <ol className="space-y-1">
               {copy.agenda.items.map(([time, patient, line], index) => (
                 <li key={time} className="flex items-center gap-3 rounded-lg px-2 py-2">
-                  <span dir="ltr" className="w-11 shrink-0 text-xs font-semibold text-slate-900 tabular-nums">
+                  <span dir="ltr" className="w-11 shrink-0 text-xs  text-slate-900 tabular-nums">
                     {time}
                   </span>
                   <span aria-hidden className={cn("h-7 w-0.5 shrink-0 rounded-full", index === 0 ? "bg-[#0d9488]" : "bg-[#99f6e4]")} />
@@ -364,8 +363,8 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {copy.patients.rows.map(([name, code, last], index) => {
-                  const [light, drift, alerts, worsened] = PATIENT_ROWS[index];
+                {copy.patients.rows.map(([name, code, last, observation], index) => {
+                  const [light, alerts, worsened] = PATIENT_ROWS[index];
                   return (
                     <tr key={code}>
                       <td className="px-5 py-3">
@@ -385,23 +384,8 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
                           {worsened && <ArrowDownRight size={14} className="text-red-500" aria-hidden />}
                         </span>
                       </td>
-                      <td className="px-3 py-3">
-                        <span className="flex items-center gap-2">
-                          <span className="h-1.5 w-16 overflow-hidden rounded-full bg-slate-100">
-                            <motion.span
-                              className="block h-full rounded-full"
-                              style={{ background: TRAFFIC[light].color }}
-                              initial={{ width: 0 }}
-                              animate={{ width: `${drift * 100}%` }}
-                              transition={{ duration: 0.9, ease: EASE_OUT, delay: 0.8 + index * 0.08 }}
-                            />
-                          </span>
-                          <span dir="ltr" className="text-xs font-medium text-slate-700 tabular-nums">
-                            {drift.toFixed(2)}
-                          </span>
-                        </span>
-                      </td>
-                      <td className="px-3 py-3 text-end tabular-nums">{alerts > 0 ? <span className="font-semibold text-red-700">{alerts}</span> : <span className="text-slate-400">0</span>}</td>
+                      <td className="px-3 py-3 text-xs leading-5 text-slate-700">{observation}</td>
+                      <td className="px-3 py-3 text-end tabular-nums">{alerts > 0 ? <span className=" text-red-700">{alerts}</span> : <span className="text-slate-400">0</span>}</td>
                       <td className="px-5 py-3 text-end text-xs text-slate-500">{last}</td>
                     </tr>
                   );
@@ -442,7 +426,7 @@ export function RequestsScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
             <Inbox size={17} aria-hidden />
           </span>
           <span>
-            <span className="block text-sm font-semibold text-amber-950">{requests.waiting}</span>
+            <span className="block text-sm  text-amber-950">{requests.waiting}</span>
             <span className="block text-xs text-amber-900/70">{requests.note}</span>
           </span>
         </span>
@@ -451,18 +435,16 @@ export function RequestsScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
       <motion.div {...rise(0.3)}>
         <Panel title={requests.title} description={requests.description} flush>
           <ul className="divide-y divide-slate-100 border-t border-slate-100">
-            {requests.items.map(([name, code, line, wait], index) => {
+            {requests.items.map(([, code, line, wait], index) => {
               const done = index === 0 && accepted;
               return (
                 <li key={code} className={cn("flex gap-3 px-5 py-4", compact ? "flex-col" : "items-center justify-between")}>
                   <span className="flex min-w-0 items-center gap-3">
-                    <Avatar name={name} />
+                    <Avatar name={code} />
                     <span className="min-w-0">
-                      <span className="flex flex-wrap items-center gap-x-2 text-sm font-semibold text-slate-900">
-                        {name}
-                        <span dir="ltr" className="text-xs font-normal text-slate-500">
-                          {code}
-                        </span>
+                      {/* Before the request is accepted the clinician sees a pseudonymous code, never a name. */}
+                      <span className="flex flex-wrap items-center gap-x-2 text-sm  text-slate-900">
+                        <span dir="ltr">{code}</span>
                         {index === 0 && <span className="rounded-md bg-[#f0fdfa] px-1.5 py-0.5 text-[11px] font-medium text-[#115e59]">{requests.primary}</span>}
                       </span>
                       <span className="mt-0.5 block text-xs text-slate-500">{line}</span>
@@ -551,7 +533,7 @@ export function PatientScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
             <div className="flex items-start gap-3.5">
               <Avatar name={patient.name} size="lg" />
               <div className="min-w-0">
-                <h2 className="truncate text-lg font-semibold tracking-tight text-slate-900">{patient.name}</h2>
+                <h2 className="truncate text-lg  tracking-tight text-slate-900">{patient.name}</h2>
                 <p dir="ltr" className="text-start text-[13px] text-slate-500 rtl:text-end">
                   {patient.code}
                 </p>
@@ -577,7 +559,7 @@ export function PatientScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
           </section>
 
           <section className="rounded-2xl border border-red-200 bg-white shadow-sm">
-            <h3 className="flex items-center gap-1.5 px-5 pb-2 pt-4 text-xs font-semibold text-red-800">
+            <h3 className="flex items-center gap-1.5 px-5 pb-2 pt-4 text-xs  text-red-800">
               <AlertTriangle size={13} aria-hidden /> {patient.alertsTitle}
             </h3>
             <p className="flex items-start gap-2.5 px-5 pb-4">
@@ -598,7 +580,7 @@ export function PatientScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
 
           <Panel className="mt-5" title={patient.chartTitle}>
             <LifeChart band={patient.baseline} />
-            <p className="mt-3 flex items-center gap-2 text-[13px] font-semibold text-[#0f766e]">
+            <p className="mt-3 flex items-center gap-2 text-[13px]  text-[#0f766e]">
               <span className="size-2 rounded-full bg-[#0d9488]" />
               {patient.verdict}
             </p>
@@ -670,7 +652,7 @@ export function ReportsScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
             <ul className="grid gap-3 sm:grid-cols-3">
               {report.sections.map((section, index) => (
                 <motion.li key={section} {...rise(0.5 + index * 0.12)} className="rounded-xl border border-slate-100 bg-slate-50/60 p-3">
-                  <p className="text-xs font-semibold text-[#0f766e]">{section}</p>
+                  <p className="text-xs  text-[#0f766e]">{section}</p>
                   {index === 0 ? (
                     <svg style={{ direction: "ltr" }} viewBox="0 0 120 36" className="mt-2 h-9 w-full" preserveAspectRatio="none" aria-hidden>
                       <path d={spark} fill="none" stroke={PSY_COLOR.teal} strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
@@ -691,7 +673,7 @@ export function ReportsScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
               transition={{ duration: 0.6, ease: EASE_OUT, delay: 1.1 }}
               className="mt-4 rounded-xl border border-[#99f6e4] bg-[#f0fdfa]/70 p-4"
             >
-              <p className="flex items-center gap-2 text-xs font-semibold text-[#115e59]">
+              <p className="flex items-center gap-2 text-xs  text-[#115e59]">
                 <NotebookPen size={14} aria-hidden /> {report.annotate}
               </p>
               <p className="mt-1.5 text-[13px] leading-6 text-slate-800">{report.annotation}</p>

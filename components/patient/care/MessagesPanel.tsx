@@ -135,7 +135,7 @@ export function MessagesPanel() {
         <p>
           {copy.notice}{" "}
           {notice?.emergencyNumber ? fill(copy.noticeNumber, { number: notice.emergencyNumber }) : copy.noticeNoNumber}{" "}
-          <strong className="font-semibold">{copy.sosHint}</strong>
+          <strong className="">{copy.sosHint}</strong>
         </p>
       </div>
 

@@ -68,7 +68,7 @@ function MedicationCard({ medication, intakes }: { medication: Medication; intak
       <header className="flex items-start gap-3">
         <span className="stat-tile size-10 shrink-0"><Pill className="size-[1.125rem]" aria-hidden /></span>
         <div className="min-w-0">
-          <h3 className="text-base font-semibold text-ink" dir="auto">{medication.name}</h3>
+          <h3 className="text-base  text-ink" dir="auto">{medication.name}</h3>
           <p className="text-xs text-muted-foreground">{dates}</p>
         </div>
       </header>
@@ -106,7 +106,7 @@ function MedicationCard({ medication, intakes }: { medication: Medication; intak
       </div>
 
       <section aria-label={copy.recent} className="mt-4">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{copy.recent}</h4>
+        <h4 className="text-xs  uppercase tracking-wide text-muted-foreground">{copy.recent}</h4>
         {recent.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">{copy.noRecent}</p>
         ) : (

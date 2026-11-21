@@ -37,7 +37,7 @@ export function LanguageSwitcher({ className, size = "sm", variant = "segmented"
             type="button"
             aria-label={`${dictionary.nav.language} / Language: ${current?.label ?? language}`}
             className={cn(
-              "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-ink-muted transition-colors hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 data-[state=open]:bg-teal-50 data-[state=open]:text-teal-800",
+              "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs  text-ink-muted transition-colors hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 data-[state=open]:bg-teal-50 data-[state=open]:text-teal-800",
               className,
             )}
           >
@@ -63,7 +63,7 @@ export function LanguageSwitcher({ className, size = "sm", variant = "segmented"
                     }}
                     className={cn(
                       "flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 text-sm text-ink transition-colors hover:bg-teal-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-500",
-                      active && "font-semibold text-teal-800",
+                      active && " text-teal-800",
                     )}
                   >
                     {item.label}
@@ -102,7 +102,7 @@ export function LanguageSwitcher({ className, size = "sm", variant = "segmented"
               lang={item.bcp47}
               className={cn(
                 // The ::before extends the hit area to a comfortable touch target without enlarging the control.
-                "relative inline-flex cursor-pointer items-center justify-center rounded-full font-semibold tracking-wide transition-colors duration-200 before:absolute before:-inset-1.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-500",
+                "relative inline-flex cursor-pointer items-center justify-center rounded-full  tracking-wide transition-colors duration-200 before:absolute before:-inset-1.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-500",
                 size === "sm" ? "h-8 min-w-10 px-2.5 text-xs" : "h-10 min-w-14 px-4 text-sm",
                 active ? "text-white" : "text-ink-muted hover:text-ink",
               )}
