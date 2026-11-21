@@ -9,7 +9,7 @@ import { accessCopy } from "@/lib/i18n/access";
 import { invitationTokenFrom } from "@/lib/invitation-link";
 import { cn } from "@/lib/utils";
 import { Check, Copy, Link2, MailOpen } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
@@ -106,10 +106,10 @@ export function InviteScreen() {
       </section>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <section aria-labelledby="invite-parents" className={BLOCK}>
+        <section id="parents" aria-labelledby="invite-parents" className={cn(BLOCK, "scroll-mt-28")}>
           <h2 id="invite-parents" className="text-base  text-ink">{copy.parents.title}</h2>
           <p className="mt-2 text-base leading-6 text-ink-soft">{copy.parents.body}</p>
-          <Link href="/family/register" className={cn(LINK_CLASS, "mt-3 inline-flex min-h-11 items-center")}>
+          <Link href={ROUTES.familyRegister} className={cn(LINK_CLASS, "mt-3 inline-flex min-h-11 items-center")}>
             {copy.parents.link}
           </Link>
         </section>

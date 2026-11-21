@@ -42,7 +42,7 @@ export type MiraPreviewCopy = {
     hello: { greeting: string; ask: string; name: string; cta: string };
     days: { chapter: string; question: string; options: readonly string[] };
     safety: { title: string; status: string; ok: string };
-    result: { title: string; areas: readonly string[]; review: string; reviewValue: string; download: string };
+    result: { title: string; signalsTitle: string; areas: readonly string[]; levels: readonly string[]; note: string; review: string; reviewValue: string; download: string };
   };
 };
 
@@ -59,8 +59,11 @@ export type LuminaPreviewCopy = {
     report: { title: string; sections: readonly string[]; share: string; consent: string };
   };
   bento: { goals: string; week: string };
-  /** The first screen of the app, as the window on /lumina and the hero draw it. */
-  home: { wellbeing: string; wellbeingLine: string; signalsTitle: string; signals: readonly string[]; planTitle: string; plan: readonly string[]; nextTitle: string; nextLine: string };
+  /**
+   * The first screen of the app, as the window on /lumina and the hero draw it. `levels` [lower, usual, higher] read each
+   * ring against the person's usual range, centred on usual (as on /care-paths), never a "higher is better" score.
+   */
+  home: { wellbeing: string; wellbeingLine: string; levels: readonly [string, string, string]; signalsTitle: string; signals: readonly string[]; planTitle: string; plan: readonly string[]; nextTitle: string; nextLine: string };
 };
 
 export type LuminaTracksCopy = {
@@ -111,7 +114,7 @@ export type PsyPreviewCopy = {
   /** [time, patient, kind and length]. */
   agenda: { title: string; description: string; today: string; items: readonly (readonly [time: string, patient: string, line: string])[] };
   /** [name, code, last activity]. */
-  patients: { title: string; description: string; columns: readonly string[]; rows: readonly (readonly [name: string, code: string, last: string, observation: string])[] };
+  patients: { title: string; description: string; all: string; columns: readonly string[]; rows: readonly (readonly [name: string, code: string, last: string, observation: string])[] };
   requests: {
     title: string;
     description: string;
@@ -158,40 +161,41 @@ export type PsyPreviewCopy = {
 export type AgentPagesCopy = {
   mira: AgentPageCopy & { preview: MiraPreviewCopy };
   lumina: AgentPageCopy & { preview: LuminaPreviewCopy; tracks: LuminaTracksCopy };
-  psy: AgentPageCopy & { preview: PsyPreviewCopy };
+  /** `requestAccess` replaces the workspace sign-in label while the clinician app has no public URL (PSY_APP_URL). */
+  psy: AgentPageCopy & { preview: PsyPreviewCopy; requestAccess: string };
 };
 
 const en: AgentPagesCopy = {
   mira: {
     seo: {
-      title: "Mira — guided orientation and structured screening",
+      title: "Mira: 2-minute orientation for ADHD, bipolar and psychosis",
       description:
-        "Mira is SynQ's orientation agent: a private, guided conversation based on established screening tools for ADHD, bipolar disorder and psychosis. Not a diagnosis.",
+        "Mira is SynQ's AI assistant: a 2-minute guided questionnaire built on the ASRS, MDQ and PQ-B screening tools for ADHD, bipolar disorder and psychosis. Not a diagnosis.",
     },
     hero: {
-      eyebrow: "Mira · Orientation agent",
-      titleA: "A first conversation",
-      titleB: "that notices what matters.",
-      body: "A guided conversation, then a clear summary to bring to a professional. An orientation that supports clinical assessment; it is not a diagnosis.",
+      eyebrow: "Mira · AI orientation assistant",
+      titleA: "Mira: a 2-minute first conversation",
+      titleB: "before you see your clinician.",
+      body: "SynQ's AI assistant for your first step: a two-minute guided questionnaire, written as a chat, built on screening tools clinicians use (ASRS, MDQ, PQ-B). You leave with a summary to discuss with a clinician. Mira is software, not a person, and does not diagnose.",
       primary: "Start with Mira",
       secondary: "See how it works",
     },
     stats: [
       ["~2", "minutes"],
-      ["3", "screening areas"],
-      ["1", "per account"],
+      ["3", "conditions covered"],
+      ["1", "time, at the start"],
     ],
     role: {
       eyebrow: "What Mira does",
-      titleA: "Careful,",
-      titleB: "and human-first.",
+      titleA: "What happens",
+      titleB: "in the conversation.",
       items: [
-        ["Gentle intake", "Everyday situations and quick questions, at your own pace.", "Intake"],
-        ["Established screening tools", "ASRS · MDQ · PQ-B, asked in a natural conversation.", "Screening"],
-        ["Structured triage", "Signals become a match level and a next step.", "Triage"],
-        ["Safety check", "A safety check runs the whole time.", "Safety"],
-        ["A report to bring", "Key signals, ready for a professional.", "Report"],
-        ["Private, bilingual", "English or Arabic. Included with your account.", "Private"],
+        ["Everyday questions", "Everyday situations and quick questions, at your own pace.", "Questions"],
+        ["Established screening tools", "Questions adapted from ASRS v1.1 (adult ADHD), MDQ (bipolar disorder) and PQ-B (psychosis), asked as a conversation.", "Tools"],
+        ["A suggested next step", "Your answers are summarised by area, with a suggested next step to discuss with your clinician.", "Next step"],
+        ["Safety check", "If an answer suggests you may be in danger, Mira shows emergency numbers at once, and alerts your clinician if you have connected one.", "Safety"],
+        ["A summary for your clinician", "The main points of your answers, to read with your clinician. Shared only if you choose.", "Summary"],
+        ["Private, bilingual", "English or Arabic. Saved to your account, private by default.", "Private"],
       ],
     },
     flow: {
@@ -202,8 +206,8 @@ const en: AgentPagesCopy = {
       steps: [
         ["Say hello", "Just a first name."],
         ["Talk through your days", "Four short chapters, your own words."],
-        ["Safety stays on", "Anything urgent reaches a human."],
-        ["Get your orientation", "Signals, strength, next step."],
+        ["Safety stays on", "If an answer suggests danger, you see emergency numbers at once."],
+        ["Get your summary", "Your answers by area, and a suggested next step."],
       ],
     },
     trust: {
@@ -211,7 +215,7 @@ const en: AgentPagesCopy = {
       titleA: "Orientation,",
       titleB: "not a diagnosis.",
       doesTitle: "Mira does",
-      does: ["Questions based on established tools", "Plain-language signals", "A next-step suggestion", "Alerts a clinician when you may be at risk"],
+      does: ["Questions based on established tools", "A plain-language summary", "A next-step suggestion", "Emergency numbers the moment you may be at risk"],
       doesNotTitle: "Mira never",
       doesNot: ["Diagnose", "Recommend treatment or medication", "Replace a clinician", "Share without your consent"],
       note: "In an emergency, contact local emergency services or a qualified clinician immediately.",
@@ -219,11 +223,11 @@ const en: AgentPagesCopy = {
     handoff: { eyebrow: "After Mira", title: "Meet Lumina.", body: "Your daily space: check-in, journal, your usual range.", cta: "Discover Lumina" },
     cta: {
       eyebrow: "Begin when you are ready",
-      titleA: "Two minutes.",
-      titleB: "One clear picture.",
-      body: "Create your account and give your consent: the orientation opens right away.",
+      titleA: "Two minutes,",
+      titleB: "then a conversation with your clinician.",
+      body: "Create your account, give your consent, and the orientation opens right away. Connect a clinician later, when you choose.",
       primary: "Start with Mira",
-      benefits: ["Included with your account", "Private by design", "A summary to take away"],
+      benefits: ["Open to adults, no referral needed", "Private by default", "A summary for your clinician"],
     },
     preview: {
       caption: "Illustration — example content",
@@ -233,7 +237,7 @@ const en: AgentPagesCopy = {
         chapter: "Evening",
         question: "How often do you get outside for a walk during the week?",
         answer: "A few times — maybe twice a week.",
-        typing: "Mira is reflecting…",
+        typing: "Next question…",
       },
       chapters: ["Morning", "Midday", "Evening", "Inner voice"],
       safetyChip: "Safety · no urgent flags",
@@ -243,7 +247,10 @@ const en: AgentPagesCopy = {
         safety: { title: "Safety check", status: "Listening", ok: "No urgent flags" },
         result: {
           title: "Your orientation",
-          areas: ["Mood", "Attention", "Perception"],
+          signalsTitle: "Signals observed",
+          areas: ["Mood and energy", "Focus and attention", "Perceptions and beliefs"],
+          levels: ["More prominent signal", "Moderate signal", "Limited signal"],
+          note: "Not a diagnosis. A clinician reads it with you.",
           review: "Clinician review",
           reviewValue: "Recommended",
           download: "Download report",
@@ -253,34 +260,34 @@ const en: AgentPagesCopy = {
   },
   lumina: {
     seo: {
-      title: "Lumina — daily check-ins, journal and reports",
+      title: "Lumina: daily check-in, private journal and monthly summary",
       description:
-        "Lumina is SynQ's daily space: a quick check-in, a private bilingual journal, simple goals and a monthly clinician report shared only with your consent.",
+        "Lumina is SynQ's daily app: a 30-second check-in on mood, energy, focus, stress and sleep, a private journal, and a monthly summary shared only if you choose.",
     },
     hero: {
-      eyebrow: "Lumina · Your daily space",
-      titleA: "Your days,",
-      titleB: "kept and understood.",
-      body: "Check in for a few seconds, write freely, and see your usual range take shape. A clinician sees a report only when you decide to share it.",
-      primary: "Enter Lumina",
+      eyebrow: "Lumina · Daily check-in and journal",
+      titleA: "Lumina: a 30-second daily check-in",
+      titleB: "and a private journal.",
+      body: "The part of SynQ you use every day: a 30-second check-in on mood, energy, focus, stress and sleep, and a private journal. As days add up, Lumina shows your usual range so changes stand out, and prepares a monthly summary you choose whether to share.",
+      primary: "Sign in to Lumina",
       secondary: "See how it works",
     },
     stats: [
-      ["5", "signals a day"],
-      ["30", "days, one picture"],
-      ["1", "monthly report"],
+      ["5", "questions a day"],
+      ["30", "days in each summary"],
+      ["1", "summary a month"],
     ],
     role: {
       eyebrow: "What Lumina holds",
-      titleA: "Everything your day needs,",
-      titleB: "nothing it doesn't.",
+      titleA: "Six parts,",
+      titleB: "one daily routine.",
       items: [
         ["A simple welcome", "Opens on how you are today, not on a wall of numbers.", "Today"],
         ["Daily check-in", "Mood, energy, focus, stress and sleep. Seconds, not forms.", "Check-in"],
-        ["Smart journal", "Write in English, Gulf Arabic or both. Lumina lifts out themes and emotions; it never labels you.", "Journal"],
-        ["Your usual range", "You, compared with you. A line inside your usual range is a steady month.", "Usual range"],
-        ["Goals that bend", "Done, partly done or missed: every day counts and none of them judges you.", "Goals"],
-        ["A report you control", "A monthly summary for your clinician, shared only if you switch it on.", "Report"],
+        ["Smart journal", "Write in English, Gulf Arabic or both. Lumina's AI reads your entries to pick out themes and emotions; it never labels you. Your clinician sees those themes only if you switch sharing on. Entries you mark private are never analysed.", "Journal"],
+        ["Your usual range", "You, compared with you. It takes shape as your check-ins add up; until then, Lumina simply shows your days.", "Usual range"],
+        ["Flexible goals", "Done, partly done or missed: every day counts and none of them judges you.", "Goals"],
+        ["A monthly summary you control", "The month's trends, journal themes and goals, with what the data can and cannot show. Your clinician sees it only if you switch sharing on.", "Summary"],
       ],
     },
     flow: {
@@ -289,29 +296,29 @@ const en: AgentPagesCopy = {
       titleB: "a clearer month.",
       stepLabel: "Step",
       steps: [
-        ["Check in", "Five signals, a few taps. That is the whole routine."],
+        ["Check in", "Five quick questions, a few taps. That is the whole routine."],
         ["Write freely", "English, Gulf Arabic or both, in your own words."],
         ["See it take shape", "Your usual range, your trends and the patterns worth noticing."],
-        ["Share by choice", "A monthly report for your clinician, only when you switch it on."],
+        ["Share by choice", "A monthly summary for your clinician, only when you switch it on."],
       ],
     },
     trust: {
       eyebrow: "Your data, your call",
-      titleA: "Private by design,",
-      titleB: "shared by choice.",
+      titleA: "What Lumina does,",
+      titleB: "and never does.",
       doesTitle: "Lumina does",
-      does: ["Compares you with you", "Shows evidence and limits", "Describes patterns, not causes", "Reports only with consent"],
+      does: ["Compares you with you", "Shows what each summary is based on", "Describes patterns, not causes", "Shares only with your consent"],
       doesNotTitle: "Lumina never",
-      doesNot: ["Diagnose or label", "Score you against others", "Replace your clinician", "Share your journal"],
-      note: "Lumina is not an emergency service. If you are in danger, contact local emergency services right away.",
+      doesNot: ["Diagnose or label", "Score you against others", "Replace your clinician", "Share your journal without your consent"],
+      note: "Lumina is not an emergency service. If something you write suggests you may be in danger, Lumina shows emergency numbers, and alerts your clinician if you have connected one. If you are in danger now, contact local emergency services right away.",
     },
     handoff: { eyebrow: "Before Lumina", title: "Start with Mira.", body: "A private orientation in about two minutes, done once with your account.", cta: "Meet Mira" },
     cta: {
       eyebrow: "Make the days count",
-      titleA: "Your next month,",
-      titleB: "already clearer.",
-      body: "Your daily space opens once Mira's orientation is done.",
-      primary: "Enter Lumina",
+      titleA: "Lumina opens",
+      titleB: "after your first conversation.",
+      body: "Lumina is part of your SynQ account. Once Mira's orientation is done, your daily space opens.",
+      primary: "Sign in to Lumina",
       benefits: ["Daily check-in and journal", "Private by design", "You decide what is shared"],
     },
     tracks: {
@@ -344,7 +351,7 @@ const en: AgentPagesCopy = {
         {
           tag: "Bipolar disorder · Psychosis",
           title: "Psychoeducation and self-management",
-          line: "A library of approved resources to understand your condition, practise coping strategies and recognise your own triggers.",
+          line: "A library of short readings drawn from WHO, NIMH, NICE and NHS sources, to understand your condition, practise coping strategies and recognise your own triggers.",
           points: ["Psychoeducation in plain language", "Coping strategies you can practise", "Trigger and early-warning awareness", "Reading chosen from your own check-ins"],
         },
       ],
@@ -388,6 +395,7 @@ const en: AgentPagesCopy = {
       home: {
         wellbeing: "Today's wellbeing",
         wellbeingLine: "How you are, at a glance",
+        levels: ["Lower", "Usual", "Higher"],
         signalsTitle: "Recent signals",
         signals: ["Your sleep has improved this week", "Mood steady over seven days", "Focus is higher in the morning"],
         planTitle: "Today's plan",
@@ -399,34 +407,34 @@ const en: AgentPagesCopy = {
   },
   psy: {
     seo: {
-      title: "Clinician Workspace — care between sessions",
+      title: "Clinician workspace for ADHD, bipolar and psychosis care",
       description:
-        "SynQ's Clinician Workspace lets a licensed clinician follow patients who choose to share: alerts, sessions, notes and reports. It never replaces judgment.",
+        "A web workspace for licensed clinicians in the UAE and Tunisia: see only what each patient chose to share, plus safety alerts with their evidence. No diagnosis.",
     },
     hero: {
       eyebrow: "Clinician Workspace · Consent-based care",
-      titleA: "Your patients, between",
-      titleB: "sessions, in view.",
-      body: "A workspace for licensed clinicians: requests, alerts, sessions and monthly reports from patients who chose to share. It supports your judgment; it never replaces it.",
-      primary: "Open the workspace",
+      titleA: "See what changed since the last visit,",
+      titleB: "only what your patient chose to share.",
+      body: "A web workspace for licensed clinicians in the UAE and Tunisia. Patients choose you; you see only what each one shares, plus safety alerts with their evidence. The SynQ team reviews every application, and the decision always stays yours.",
+      primary: "Sign in to the workspace",
       secondary: "See how it works",
     },
     stats: [
-      ["3", "conditions followed"],
-      ["30", "days, one picture"],
-      ["1", "monthly report each"],
+      ["3", "care paths"],
+      ["30", "days in each summary"],
+      ["1", "summary per patient a month"],
     ],
     role: {
       eyebrow: "What the workspace holds",
-      titleA: "Everything a follow-up needs,",
-      titleB: "nothing it doesn't.",
+      titleA: "What you see,",
+      titleB: "for each patient.",
       items: [
-        ["Patient requests", "Accept who you can follow. Patients choose their clinician; you choose your caseload.", "Requests"],
+        ["Patient requests", "Patients choose their clinician; you choose your caseload. Nothing is shared until you accept.", "Requests"],
         ["Clinical alerts", "A signal outside someone's usual range reaches you, with the evidence behind it.", "Alerts"],
         ["Patient profiles", "Usual range, trends and what Mira's orientation found, in one record.", "Patients"],
         ["Sessions and coverage", "Schedule, prepare and follow up, and see who covers when you are away.", "Sessions"],
         ["Monthly reports", "Read what the patient shared, then review and annotate it.", "Reports"],
-        ["Structured notes", "Your clinical notes, kept beside the journal themes the patient chose to share.", "Notes"],
+        ["Structured notes", "Your clinical notes, kept beside the journal themes a patient chose to share.", "Notes"],
       ],
     },
     flow: {
@@ -454,17 +462,17 @@ const en: AgentPagesCopy = {
     handoff: { eyebrow: "What your patients use", title: "Meet Lumina.", body: "The daily check-in and journal your patients keep, and share with you only by choice.", cta: "Meet Lumina" },
     cta: {
       eyebrow: "For licensed clinicians",
-      titleA: "Follow care,",
-      titleB: "with what matters.",
-      body: "Sign in to your workspace, or ask for access.",
-      primary: "Open the workspace",
+      titleA: "Apply",
+      titleB: "as a clinician.",
+      body: "For licensed clinicians in the UAE and Tunisia. Send your application: the SynQ team reviews it and replies by e-mail.",
+      primary: "Sign in to the workspace",
       benefits: ["Consent-based sharing", "Alerts with evidence", "Monthly reports"],
     },
     preview: {
       caption: "Illustrative screens of the clinician app, with example content. No real patients.",
       shared: "Shared by the patient",
-      greeting: `Good morning, ${DEMO_CLINICIAN.firstName.en}`,
-      summary: "1 high-priority alert and 3 sessions today.",
+      greeting: "Today",
+      summary: "1 high-priority alert and 3 sessions",
       clinician: [DEMO_CLINICIAN.fullName.en, DEMO_CLINICIAN.role.en],
       search: "Search patients, sessions…",
       nav: [
@@ -483,7 +491,7 @@ const en: AgentPagesCopy = {
         ["Pending reviews", "4", "2 assessments · 2 monthly reports"],
       ],
       activity: { title: "Clinical activity", description: "Last 30 days", tabs: ["Sessions", "Alerts", "Patient activity"], legend: ["Completed", "Scheduled", "Cancelled"] },
-      risk: { title: "Caseload risk", description: "12 patients in your care", labels: ["Priority", "Follow up", "Stable"], worsened: "1 patient worsened since last week" },
+      risk: { title: "Caseload by status", description: "12 patients in your care", labels: ["Priority", "Follow up", "Stable"], worsened: "1 patient worsened since last week" },
       attention: {
         title: "Needs your attention",
         description: "Alerts, priority reports and pending reviews",
@@ -507,6 +515,7 @@ const en: AgentPagesCopy = {
       patients: {
         title: "Priority patients",
         description: "Ranked by status and open alerts",
+        all: "All",
         columns: ["Patient", "Status", "Shared observation", "Open alerts", "Last activity"],
         rows: [
           [DEMO_PATIENT.shortName.en, DEMO_PATIENT.code, "2 hours ago", DEMO_OBSERVATIONS.sleep.en],
@@ -548,7 +557,7 @@ const en: AgentPagesCopy = {
         signals: ["Sleep", "Focus", "Energy"],
         alertsTitle: "Open alerts",
         alert: DEMO_OBSERVATIONS.sleep.en,
-        notShared: "Not shared by the patient: journal entries. Safety alerts still reach you.",
+        notShared: "Not shared by the patient: journal entries. Journal themes appear only if the patient switches sharing on. Safety alerts always reach you.",
       },
       report: {
         title: "Monthly reports",
@@ -563,40 +572,41 @@ const en: AgentPagesCopy = {
         acknowledged: "Acknowledged",
       },
     },
+    requestAccess: "Apply for access",
   },
 };
 
 const ar: AgentPagesCopy = {
   mira: {
     seo: {
-      title: "ميرا — توجيه موجَّه وفحص منظَّم",
+      title: "ميرا: توجيه في دقيقتين لفرط الحركة وثنائي القطب والذهان",
       description:
-        "تعرّف على ميرا، وكيلة التوجيه في SynQ: محادثة خاصة وموجَّهة مبنية على أدوات فحص معروفة حول اضطراب فرط الحركة وتشتت الانتباه والاضطراب ثنائي القطب وأعراض الذهان، وملخص واضح تحمله إلى مختص. ضمن حسابك في SynQ.",
+        "ميرا مساعدة SynQ بالذكاء الاصطناعي: استبيان موجَّه في دقيقتين مبني على أدوات الفحص ASRS وMDQ وPQ-B لفرط الحركة وثنائي القطب والذهان. ليس تشخيصاً.",
     },
     hero: {
-      eyebrow: "ميرا · وكيلة التوجيه",
-      titleA: "محادثة أولى",
-      titleB: "تلاحظ ما يهم.",
-      body: "محادثة موجَّهة، ثم ملخص واضح تحمله إلى مختص. توجيه يدعم التقييم السريري، وليس تشخيصاً.",
+      eyebrow: "ميرا · مساعدة التوجيه بالذكاء الاصطناعي",
+      titleA: "ميرا: محادثة أولى في دقيقتين",
+      titleB: "قبل لقائك بمختصك.",
+      body: "مساعدة SynQ بالذكاء الاصطناعي لخطوتك الأولى: استبيان موجَّه في دقيقتين، مكتوب على شكل محادثة، مبني على أدوات فحص يستخدمها المختصون (ASRS وMDQ وPQ-B). تخرج بملخص تناقشه مع مختص. ميرا برنامج وليست شخصاً، ولا تشخّص.",
       primary: "ابدأ مع ميرا",
       secondary: "اكتشف كيف تعمل",
     },
     stats: [
       ["~2", "دقائق"],
-      ["3", "مجالات فحص"],
-      ["1", "لكل حساب"],
+      ["3", "حالات مشمولة"],
+      ["1", "مرة، في البداية"],
     ],
     role: {
       eyebrow: "ما تفعله ميرا",
-      titleA: "حذرة،",
-      titleB: "والإنسان أولاً.",
+      titleA: "ما يحدث",
+      titleB: "خلال المحادثة.",
       items: [
-        ["استقبال بسيط", "مواقف يومية وأسئلة سريعة، على مهلك.", "استقبال"],
-        ["أدوات فحص معروفة", "ASRS · MDQ · PQ-B، تُطرح ضمن محادثة طبيعية.", "فحص"],
-        ["فرز منظَّم", "تتحول الإشارات إلى مستوى تطابق وخطوة تالية.", "فرز"],
-        ["فحص الأمان", "فحص أمان يعمل طوال الوقت.", "أمان"],
-        ["تقرير تحمله معك", "الإشارات الرئيسية جاهزة لمختص.", "تقرير"],
-        ["خاصة وبلغتين", "العربية أو الإنجليزية. ضمن حسابك.", "خاص"],
+        ["أسئلة يومية", "مواقف يومية وأسئلة سريعة، على مهلك.", "أسئلة"],
+        ["أدوات فحص معروفة", "أسئلة مقتبسة من ASRS v1.1 (فرط الحركة لدى البالغين) وMDQ (ثنائي القطب) وPQ-B (الذهان)، تُطرح كمحادثة.", "أدوات"],
+        ["خطوة تالية مقترحة", "تُلخَّص إجاباتك حسب كل مجال، مع خطوة تالية مقترحة تناقشها مع مختصك.", "الخطوة التالية"],
+        ["فحص الأمان", "إن أشارت إجابة إلى أنك قد تكون في خطر، تعرض ميرا أرقام الطوارئ فوراً، وتنبّه مختصك إن كنت قد ربطت حسابك بمختص.", "أمان"],
+        ["ملخص لمختصك", "أهم ما في إجاباتك، لتقرأه مع مختصك. لا يُشارَك إلا إن اخترت.", "ملخص"],
+        ["خاصة وبلغتين", "العربية أو الإنجليزية. محفوظة في حسابك وخاصة افتراضياً.", "خاص"],
       ],
     },
     flow: {
@@ -607,8 +617,8 @@ const ar: AgentPagesCopy = {
       steps: [
         ["ابدأ بالتحية", "اسمك الأول فقط."],
         ["تحدّث عن أيامك", "أربعة فصول قصيرة، بكلماتك."],
-        ["الأمان حاضر دائماً", "أي أمر عاجل يصل إلى إنسان."],
-        ["تلقَّ توجيهك", "الإشارات والقوة والخطوة التالية."],
+        ["الأمان حاضر دائماً", "إن أشارت إجابة إلى خطر، ترى أرقام الطوارئ فوراً."],
+        ["تلقَّ ملخصك", "إجاباتك حسب كل مجال، وخطوة تالية مقترحة."],
       ],
     },
     trust: {
@@ -616,19 +626,19 @@ const ar: AgentPagesCopy = {
       titleA: "توجيه،",
       titleB: "وليس تشخيصاً.",
       doesTitle: "ما تفعله ميرا",
-      does: ["أسئلة مبنية على أدوات معروفة", "إشارات بلغة بسيطة", "اقتراح خطوة تالية", "تنبّه مختصاً حين قد تكون في خطر"],
+      does: ["أسئلة مبنية على أدوات معروفة", "ملخص بلغة بسيطة", "اقتراح خطوة تالية", "أرقام الطوارئ فور أن تكون في خطر"],
       doesNotTitle: "ما لا تفعله ميرا",
       doesNot: ["لا تشخّص", "لا توصي بعلاج أو دواء", "لا تحلّ محل المختص", "لا تشارك دون موافقتك"],
       note: "في حالات الطوارئ، تواصل فوراً مع خدمات الطوارئ المحلية أو مع مختص مؤهل.",
     },
-    handoff: { eyebrow: "بعد ميرا", title: "تعرّف على لومينا.", body: "مساحتك اليومية: فحص ومفكرة وخط مرجعي.", cta: "اكتشف لومينا" },
+    handoff: { eyebrow: "بعد ميرا", title: "تعرّف على لومينا.", body: "مساحتك اليومية: فحص ومفكرة ونطاقك المعتاد.", cta: "اكتشف لومينا" },
     cta: {
       eyebrow: "ابدأ حين تكون مستعداً",
-      titleA: "دقيقتان.",
-      titleB: "صورة واحدة واضحة.",
-      body: "أنشئ حسابك وامنح موافقتك: يُفتح التوجيه فوراً.",
+      titleA: "دقيقتان،",
+      titleB: "ثم حديث مع مختصك.",
+      body: "أنشئ حسابك وامنح موافقتك، فيُفتح التوجيه فوراً. واربط حسابك بمختص لاحقاً، متى اخترت.",
       primary: "ابدأ مع ميرا",
-      benefits: ["ضمن حسابك", "خاص في التصميم", "ملخص تحمله معك"],
+      benefits: ["مفتوحة للبالغين، دون إحالة", "خاص افتراضياً", "ملخص لمختصك"],
     },
     preview: {
       caption: "توضيحي — محتوى تجريبي",
@@ -638,7 +648,7 @@ const ar: AgentPagesCopy = {
         chapter: "المساء",
         question: "كم مرة تخرج للمشي خلال الأسبوع؟",
         answer: "عدة مرات — ربما مرتين في الأسبوع.",
-        typing: "ميرا تتأمل…",
+        typing: "السؤال التالي…",
       },
       chapters: ["الصباح", "منتصف النهار", "المساء", "الصوت الداخلي"],
       safetyChip: "الأمان · لا مؤشرات عاجلة",
@@ -648,7 +658,10 @@ const ar: AgentPagesCopy = {
         safety: { title: "فحص الأمان", status: "تصغي", ok: "لا مؤشرات عاجلة" },
         result: {
           title: "توجيهك",
-          areas: ["المزاج", "الانتباه", "الإدراك"],
+          signalsTitle: "الإشارات المرصودة",
+          areas: ["المزاج والطاقة", "التركيز والانتباه", "الإدراك والمعتقدات"],
+          levels: ["إشارة أوضح", "إشارة متوسطة", "إشارة محدودة"],
+          note: "ليس تشخيصاً. يقرؤه معك مختص.",
           review: "مراجعة المختص",
           reviewValue: "موصى بها",
           download: "نزّل التقرير",
@@ -658,34 +671,34 @@ const ar: AgentPagesCopy = {
   },
   lumina: {
     seo: {
-      title: "لومينا — الفحص اليومي والمفكرة والتقارير",
+      title: "لومينا: فحص يومي ومفكرة خاصة وملخص شهري",
       description:
-        "تعرّف على لومينا، رفيقة SynQ اليومية: فحص سريع، ومفكرة خاصة بلغتين، وأهداف بسيطة، ونطاقك المعتاد، وتقرير شهري للمختص لا يُشارَك إلا بموافقتك.",
+        "لومينا تطبيق SynQ اليومي: فحص في 30 ثانية للمزاج والطاقة والتركيز والتوتر والنوم، ومفكرة خاصة، وملخص شهري لا يُشارَك إلا إن اخترت.",
     },
     hero: {
-      eyebrow: "لومينا · مساحتك اليومية",
-      titleA: "أيامك،",
-      titleB: "محفوظة ومفهومة.",
-      body: "سجّل يومك في ثوانٍ، واكتب بحرية، وترى نطاقك المعتاد يتشكّل. لا يرى المختص تقريراً إلا حين تقرر أنت مشاركته.",
-      primary: "ادخل إلى لومينا",
+      eyebrow: "لومينا · الفحص اليومي والمفكرة",
+      titleA: "لومينا: فحص يومي في 30 ثانية",
+      titleB: "ومفكرة خاصة.",
+      body: "الجزء الذي تستخدمه كل يوم في SynQ: فحص في 30 ثانية للمزاج والطاقة والتركيز والتوتر والنوم، ومفكرة خاصة. ومع مرور الأيام تُظهر لومينا نطاقك المعتاد فتبرز التغيّرات، وتُعدّ ملخصاً شهرياً تختار أنت مشاركته.",
+      primary: "سجّل الدخول إلى لومينا",
       secondary: "اكتشف كيف تعمل",
     },
     stats: [
-      ["5", "إشارات يومياً"],
-      ["30", "يوماً، صورة واحدة"],
-      ["1", "تقرير شهري"],
+      ["5", "أسئلة يومياً"],
+      ["30", "يوماً في كل ملخص"],
+      ["1", "ملخص شهرياً"],
     ],
     role: {
       eyebrow: "ما تحمله لومينا",
-      titleA: "كل ما يحتاجه يومك،",
-      titleB: "ولا شيء زائد.",
+      titleA: "ستة أجزاء،",
+      titleB: "وروتين يومي واحد.",
       items: [
         ["استقبال بسيط", "تفتح على حالك اليوم، لا على جدار من الأرقام.", "اليوم"],
         ["الفحص اليومي", "المزاج والطاقة والتركيز والتوتر والنوم. ثوانٍ، لا استمارات.", "فحص"],
-        ["المفكرة الذكية", "اكتب بالعربية الخليجية أو الإنجليزية أو بهما معاً. تستخرج لومينا المواضيع والمشاعر ولا تصنّفك أبداً.", "مفكرة"],
-        ["نطاقك المعتاد", "أنت مقارنةً بنفسك. خط داخل نطاقك المعتاد يعني شهراً مستقراً.", "النطاق المعتاد"],
+        ["المفكرة الذكية", "اكتب بالعربية الخليجية أو الإنجليزية أو بهما معاً. يقرأ الذكاء الاصطناعي في لومينا مدخلاتك ليستخرج المواضيع والمشاعر، ولا يصنّفك أبداً. لا يرى مختصك هذه المواضيع إلا إن فعّلت المشاركة. ولا تُحلَّل المدخلات التي تجعلها خاصة.", "مفكرة"],
+        ["نطاقك المعتاد", "أنت مقارنةً بنفسك. يتشكّل مع تراكم فحوصاتك، وحتى ذلك الحين تعرض لومينا أيامك ببساطة.", "النطاق المعتاد"],
         ["أهداف مرنة", "منجزة أو جزئية أو فائتة: كل يوم يُحسب ولا حكم على أحد.", "أهداف"],
-        ["تقرير بيدك", "ملخص شهري لمختصك، لا يُشارَك إلا إن فعّلته أنت.", "تقرير"],
+        ["ملخص شهري بيدك", "اتجاهات الشهر ومواضيع المفكرة والأهداف، مع ما تستطيع البيانات إظهاره وما لا تستطيع. لا يراه مختصك إلا إن فعّلت المشاركة.", "ملخص"],
       ],
     },
     flow: {
@@ -694,29 +707,29 @@ const ar: AgentPagesCopy = {
       titleB: "وشهر أوضح.",
       stepLabel: "الخطوة",
       steps: [
-        ["سجّل يومك", "خمس إشارات ببضع لمسات. هذا هو الروتين كله."],
+        ["سجّل يومك", "خمسة أسئلة سريعة ببضع لمسات. هذا هو الروتين كله."],
         ["اكتب بحرية", "بالعربية الخليجية أو الإنجليزية أو بهما، بكلماتك."],
         ["الصورة تتشكّل", "نطاقك المعتاد واتجاهاتك والأنماط التي تستحق الانتباه."],
-        ["شارك بالاختيار", "تقرير شهري لمختصك، حين تفعّله فقط."],
+        ["شارك بالاختيار", "ملخص شهري لمختصك، حين تفعّله فقط."],
       ],
     },
     trust: {
       eyebrow: "بياناتك، وقرارك",
-      titleA: "خاصة في التصميم،",
-      titleB: "ومُشارَكة بالاختيار.",
+      titleA: "ما تفعله لومينا،",
+      titleB: "وما لا تفعله أبداً.",
       doesTitle: "ما تفعله لومينا",
-      does: ["تقارنك بنفسك", "تُظهر الأدلة وحدودها", "تصف الأنماط لا الأسباب", "تقارير بموافقتك فقط"],
+      does: ["تقارنك بنفسك", "تُظهر ما يستند إليه كل ملخص", "تصف الأنماط لا الأسباب", "لا تشارك إلا بموافقتك"],
       doesNotTitle: "ما لا تفعله لومينا",
-      doesNot: ["لا تشخّص ولا تصنّف", "لا تقيّمك مقارنةً بغيرك", "لا تحلّ محل مختصك", "لا تشارك مفكرتك"],
-      note: "لومينا ليست خدمة طوارئ. إن كنت في خطر، تواصل فوراً مع خدمات الطوارئ المحلية.",
+      doesNot: ["لا تشخّص ولا تصنّف", "لا تقيّمك مقارنةً بغيرك", "لا تحلّ محل مختصك", "لا تشارك مفكرتك دون موافقتك"],
+      note: "لومينا ليست خدمة طوارئ. إن أشار ما تكتبه إلى أنك قد تكون في خطر، تعرض لومينا أرقام الطوارئ، وتنبّه مختصك إن كنت قد ربطت حسابك بمختص. وإن كنت في خطر الآن، تواصل فوراً مع خدمات الطوارئ المحلية.",
     },
     handoff: { eyebrow: "قبل لومينا", title: "ابدأ مع ميرا.", body: "توجيه خاص في نحو دقيقتين، يُجرى مرة واحدة مع حسابك.", cta: "تعرّف على ميرا" },
     cta: {
       eyebrow: "اجعل أيامك محسوبة",
-      titleA: "شهرك القادم،",
-      titleB: "أوضح من الآن.",
-      body: "تُفتح مساحتك اليومية فور اكتمال توجيه ميرا.",
-      primary: "ادخل إلى لومينا",
+      titleA: "تُفتح لومينا",
+      titleB: "بعد محادثتك الأولى.",
+      body: "لومينا جزء من حسابك في SynQ. وبعد اكتمال توجيه ميرا، تُفتح مساحتك اليومية.",
+      primary: "سجّل الدخول إلى لومينا",
       benefits: ["فحص يومي ومفكرة", "خاص في التصميم", "أنت تقرر ما يُشارَك"],
     },
     tracks: {
@@ -749,7 +762,7 @@ const ar: AgentPagesCopy = {
         {
           tag: "ثنائي القطب · الذهان",
           title: "التثقيف النفسي والإدارة الذاتية",
-          line: "مكتبة موارد معتمدة لفهم حالتك، وممارسة استراتيجيات التكيّف، والتعرّف على محفّزاتك الخاصة.",
+          line: "مكتبة قراءات قصيرة مأخوذة من مصادر منظمة الصحة العالمية وNIMH وNICE وNHS، لفهم حالتك، وممارسة استراتيجيات التكيّف، والتعرّف على محفّزاتك الخاصة.",
           points: ["تثقيف نفسي بلغة بسيطة", "استراتيجيات تكيّف يمكنك ممارستها", "الوعي بالمحفّزات والإنذارات المبكرة", "قراءات تُختار من فحوصاتك اليومية"],
         },
       ],
@@ -793,6 +806,7 @@ const ar: AgentPagesCopy = {
       home: {
         wellbeing: "حالك اليوم",
         wellbeingLine: "نظرة سريعة على حالك",
+        levels: ["أقل", "كالمعتاد", "أعلى"],
         signalsTitle: "إشارات حديثة",
         signals: ["نومك تحسّن هذا الأسبوع", "مزاجك مستقر منذ سبعة أيام", "تركيزك أعلى في الصباح"],
         planTitle: "خطة اليوم",
@@ -804,29 +818,29 @@ const ar: AgentPagesCopy = {
   },
   psy: {
     seo: {
-      title: "مساحة عمل المختص — رعاية بين الجلسات",
+      title: "مساحة عمل المختص لرعاية فرط الحركة وثنائي القطب والذهان",
       description:
-        "تعرّف على مساحة عمل المختص، حيث يتابع فيها المختص المرخّص مرضاه الذين يختارون المشاركة: الطلبات والتنبيهات والجلسات والملاحظات والتقارير الشهرية. تدعم الحكم السريري ولا تحلّ محله.",
+        "مساحة عمل على الويب للمختصين المرخّصين في الإمارات وتونس: لا ترى إلا ما اختار كل مريض مشاركته، مع تنبيهات السلامة وأدلتها. ليست تشخيصاً أبداً.",
     },
     hero: {
       eyebrow: "مساحة عمل المختص · رعاية بالموافقة",
-      titleA: "مرضاك بين الجلسات،",
-      titleB: "أمام ناظريك.",
-      body: "مساحة للمختصين المرخّصين: طلبات وتنبيهات وجلسات وتقارير شهرية من مرضى اختاروا المشاركة. تدعم حكمك ولا تحلّ محله.",
-      primary: "افتح مساحة العمل",
+      titleA: "انظر ما تغيّر منذ الزيارة الأخيرة،",
+      titleB: "فقط ما اختار مريضك مشاركته.",
+      body: "مساحة عمل على الويب للمختصين المرخّصين في الإمارات وتونس. يختارك المرضى، ولا ترى إلا ما يشاركه كل منهم، مع تنبيهات السلامة وأدلتها. يراجع فريق SynQ كل طلب انضمام، ويبقى القرار لك دائماً.",
+      primary: "سجّل الدخول إلى مساحة العمل",
       secondary: "اكتشف كيف تعمل",
     },
     stats: [
-      ["3", "اضطرابات تتم متابعتها"],
-      ["30", "يوماً، صورة واحدة"],
-      ["1", "تقرير شهري لكل مريض"],
+      ["3", "مسارات رعاية"],
+      ["30", "يوماً في كل ملخص"],
+      ["1", "ملخص لكل مريض شهرياً"],
     ],
     role: {
       eyebrow: "ما تحمله مساحة العمل",
-      titleA: "كل ما تحتاجه المتابعة،",
-      titleB: "ولا شيء زائد.",
+      titleA: "ما تراه",
+      titleB: "لكل مريض.",
       items: [
-        ["طلبات المرضى", "اقبل من تستطيع متابعته. يختار المريض مختصه، وتختار أنت حالاتك.", "الطلبات"],
+        ["طلبات المرضى", "يختار المريض مختصه، وتختار أنت حالاتك. لا يُشارَك شيء قبل أن تقبل.", "الطلبات"],
         ["تنبيهات سريرية", "إشارة خارج النطاق المعتاد لمريض ما تصلك مع الأدلة التي وراءها.", "التنبيهات"],
         ["ملفات المرضى", "النطاق المعتاد والاتجاهات وما وجده توجيه ميرا، في سجل واحد.", "المرضى"],
         ["الجلسات والتغطية", "جدولة وتحضير ومتابعة، مع رؤية من يغطي مكانك عند غيابك.", "الجلسات"],
@@ -859,17 +873,17 @@ const ar: AgentPagesCopy = {
     handoff: { eyebrow: "ما يستخدمه مرضاك", title: "تعرّف على لومينا.", body: "الفحص اليومي والمفكرة اللذان يحتفظ بهما مرضاك، ولا يشاركونهما معك إلا بالاختيار.", cta: "تعرّف على لومينا" },
     cta: {
       eyebrow: "للمختصين المرخّصين",
-      titleA: "تابع الرعاية،",
-      titleB: "بما يهم.",
-      body: "سجّل الدخول إلى مساحتك، أو اطلب الوصول.",
-      primary: "افتح مساحة العمل",
+      titleA: "قدّم طلبك",
+      titleB: "كمختص.",
+      body: "للمختصين المرخّصين في الإمارات وتونس. أرسل طلبك: يراجعه فريق SynQ ويرد عليك بالبريد الإلكتروني.",
+      primary: "سجّل الدخول إلى مساحة العمل",
       benefits: ["مشاركة بموافقة المريض", "تنبيهات مع الأدلة", "تقارير شهرية"],
     },
     preview: {
       caption: "شاشات توضيحية من تطبيق المختص بمحتوى تجريبي. لا مرضى حقيقيين.",
       shared: "شاركه المريض",
-      greeting: `صباح الخير، ${DEMO_CLINICIAN.firstName.ar}`,
-      summary: "تنبيه واحد عالي الأولوية و3 جلسات اليوم.",
+      greeting: "اليوم",
+      summary: "تنبيه واحد عالي الأولوية و3 جلسات",
       clinician: [DEMO_CLINICIAN.fullName.ar, DEMO_CLINICIAN.role.ar],
       search: "ابحث عن مريض أو جلسة…",
       nav: [
@@ -888,7 +902,7 @@ const ar: AgentPagesCopy = {
         ["مراجعات معلّقة", "4", "تقييمان · تقريران شهريان"],
       ],
       activity: { title: "النشاط السريري", description: "آخر 30 يوماً", tabs: ["الجلسات", "التنبيهات", "نشاط المرضى"], legend: ["مكتملة", "مجدولة", "ملغاة"] },
-      risk: { title: "مستوى الخطر في الحالات", description: "12 مريضاً في رعايتك", labels: ["أولوية", "متابعة", "مستقر"], worsened: "مريض واحد ساءت حالته منذ الأسبوع الماضي" },
+      risk: { title: "الحالات حسب الوضع", description: "12 مريضاً في رعايتك", labels: ["أولوية", "متابعة", "مستقر"], worsened: "مريض واحد ساءت حالته منذ الأسبوع الماضي" },
       attention: {
         title: "يحتاج انتباهك",
         description: "تنبيهات وتقارير ذات أولوية ومراجعات معلّقة",
@@ -912,6 +926,7 @@ const ar: AgentPagesCopy = {
       patients: {
         title: "المرضى ذوو الأولوية",
         description: "مرتّبون حسب الحالة والتنبيهات المفتوحة",
+        all: "الكل",
         columns: ["المريض", "الحالة", "ملاحظة مشارَكة", "تنبيهات مفتوحة", "آخر نشاط"],
         rows: [
           [DEMO_PATIENT.shortName.ar, DEMO_PATIENT.code, "قبل ساعتين", DEMO_OBSERVATIONS.sleep.ar],
@@ -953,7 +968,7 @@ const ar: AgentPagesCopy = {
         signals: ["النوم", "التركيز", "الطاقة"],
         alertsTitle: "تنبيهات مفتوحة",
         alert: DEMO_OBSERVATIONS.sleep.ar,
-        notShared: "لم يُشارَك من قبل المريض: مدخلات المفكرة. تنبيهات السلامة تصلك دائماً.",
+        notShared: "لم يُشارَك من قبل المريض: مدخلات المفكرة. لا تظهر مواضيع المفكرة إلا إن فعّل المريض المشاركة. تنبيهات السلامة تصلك دائماً.",
       },
       report: {
         title: "التقارير الشهرية",
@@ -968,6 +983,7 @@ const ar: AgentPagesCopy = {
         acknowledged: "تم الإقرار",
       },
     },
+    requestAccess: "قدّم طلب انضمام",
   },
 };
 

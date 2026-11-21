@@ -14,8 +14,8 @@ import { PhoneFrame } from "../frames";
 import { PillLink, StatsStrip, useAgentPage } from "../shared";
 import { ChatScreen } from "./MiraScreens";
 
-/** A glass chip that bobs gently beside the phone. */
-function Floater({ children, className, delay = 0, seconds = 6, dot }: { children: ReactNode; className?: string; delay?: number; seconds?: number; dot?: string }) {
+/** A glass chip beside the phone: it fades in once, then stays still. */
+function Floater({ children, className, delay = 0, dot }: { children: ReactNode; className?: string; delay?: number; dot?: string }) {
   const reduce = useReducedMotion();
   return (
     <motion.div
@@ -25,8 +25,6 @@ function Floater({ children, className, delay = 0, seconds = 6, dot }: { childre
       className={cn("absolute z-10", className)}
     >
       <motion.span
-        animate={reduce ? undefined : { y: [0, -8, 0] }}
-        transition={{ duration: seconds, repeat: Infinity, ease: "easeInOut", delay }}
         className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/80 bg-white/85 px-3.5 py-2 text-[0.8125rem]  text-ink shadow-float backdrop-blur-md"
       >
         {dot ? <span className={cn("size-2 rounded-full", dot)} /> : null}
@@ -52,14 +50,10 @@ export function MiraHero() {
       <motion.span
         aria-hidden
         className="pointer-events-none absolute -top-20 end-[-8%] -z-10 size-[34rem] rounded-full bg-[radial-gradient(closest-side,rgb(134_186_188/0.45),transparent)]"
-        animate={reduce ? undefined : { x: [0, -40, 0], y: [0, 30, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.span
         aria-hidden
         className="pointer-events-none absolute bottom-[-6rem] start-[30%] -z-10 size-[26rem] rounded-full bg-[radial-gradient(closest-side,rgb(230_213_170/0.5),transparent)]"
-        animate={reduce ? undefined : { x: [0, 50, 0], y: [0, -26, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="page-container grid items-center gap-16 lg:grid-cols-12 lg:gap-8">
@@ -106,14 +100,12 @@ export function MiraHero() {
 
         <figure className="mx-auto w-full max-w-lg lg:col-span-6">
           <div aria-hidden className="relative flex items-center justify-center py-10 sm:py-14">
-            {/* Rings that breathe around the phone */}
-            {["62%", "84%", "108%"].map((size, index) => (
+            {/* Still rings around the phone */}
+            {["62%", "84%", "108%"].map((size) => (
               <motion.span
                 key={size}
                 className="absolute start-1/2 top-1/2 aspect-square -translate-x-1/2 -translate-y-1/2 rounded-full border border-teal-200/80 rtl:translate-x-1/2"
                 style={{ width: size }}
-                animate={reduce ? undefined : { scale: [1, 1.04, 1], opacity: [0.9, 0.45, 0.9] }}
-                transition={{ duration: 7 + index * 1.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.8 }}
               />
             ))}
 
@@ -123,16 +115,16 @@ export function MiraHero() {
               </PhoneFrame>
             </motion.div>
 
-            <Floater className="start-0 top-1 sm:top-[7%]" dot="bg-teal-500" seconds={6}>
+            <Floater className="start-0 top-1 sm:top-[7%]" dot="bg-teal-500">
               {preview.tools[0]}
             </Floater>
-            <Floater className="end-0 top-[30%] hidden sm:block" dot="bg-gold" delay={0.6} seconds={7}>
+            <Floater className="end-0 top-[30%] hidden sm:block" dot="bg-gold" delay={0.6}>
               {preview.tools[1]}
             </Floater>
-            <Floater className="start-[2%] bottom-[26%] hidden sm:block" dot="bg-sage" delay={1.1} seconds={6.5}>
+            <Floater className="start-[2%] bottom-[26%] hidden sm:block" dot="bg-sage" delay={1.1}>
               {preview.tools[2]}
             </Floater>
-            <Floater className="end-0 bottom-0 sm:end-[2%] sm:bottom-[7%]" delay={0.3} seconds={7.5}>
+            <Floater className="end-0 bottom-0 sm:end-[2%] sm:bottom-[7%]" delay={0.3}>
               <ShieldCheck className="size-4 text-sage-700" />
               {preview.safetyChip}
             </Floater>

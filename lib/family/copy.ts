@@ -10,7 +10,21 @@ const en = {
   auth: {
     signInTitle: "Sign in to SynQ Family",
     registerTitle: "Create your parent account",
-    registerLead: "This is your own account, separate from any patient account. Your child's space opens once their clinician approves it.",
+    registerLead: "Your own account, separate from any patient account. Once it is created, you ask to link your child; their clinician approves it before anything opens.",
+    /** The panel beside the form: what SynQ Family is, and the approval path step by step. */
+    panel: {
+      eyebrow: "SynQ Family",
+      titleA: "Support your child,",
+      titleB: "with their clinician.",
+      body: "A separate parent account: note how your child's days go, and use the guidance and safety plan their clinician allows. It never diagnoses and never replaces the care team.",
+      points: [
+        "1 · Create your parent account",
+        "2 · Ask to link your child, naming their clinician",
+        "3 · The clinician approves and sets what you can see",
+        "4 · Your child's space opens",
+      ],
+      quote: "Nothing about your child is shared until their clinician approves it.",
+    },
     email: "Email", password: "Password", firstName: "First name", lastName: "Last name", phone: "Phone (optional)",
     terms: "I accept the SynQ Family terms and privacy policy.",
     submitSignIn: "Sign in", submitRegister: "Create account",
@@ -201,7 +215,20 @@ const ar: FamilyCopy = {
   auth: {
     signInTitle: "تسجيل الدخول إلى SynQ للعائلة",
     registerTitle: "إنشاء حساب ولي الأمر",
-    registerLead: "هذا حسابك الخاص، منفصل عن أي حساب مريض. تُفتح مساحة طفلك بعد موافقة المختص المعالج.",
+    registerLead: "حسابك الخاص، منفصل عن أي حساب مريض. بعد إنشائه تطلب ربط طفلك، ويوافق مختصه قبل أن يُفتح أي شيء.",
+    panel: {
+      eyebrow: "SynQ للعائلة",
+      titleA: "ادعم طفلك،",
+      titleB: "مع مختصه.",
+      body: "حساب منفصل لولي الأمر: سجّل كيف تمضي أيام طفلك، واستخدم الإرشادات وخطة الأمان التي يسمح بها مختصه. لا يشخّص أبداً ولا يحلّ محل فريق الرعاية.",
+      points: [
+        "1 · أنشئ حساب ولي الأمر",
+        "2 · اطلب ربط طفلك، مع ذكر مختصه",
+        "3 · يوافق المختص ويحدد ما يمكنك رؤيته",
+        "4 · تُفتح مساحة طفلك",
+      ],
+      quote: "لا يُشارَك شيء عن طفلك قبل موافقة مختصه.",
+    },
     email: "البريد الإلكتروني", password: "كلمة المرور", firstName: "الاسم", lastName: "اسم العائلة", phone: "الهاتف (اختياري)",
     terms: "أوافق على شروط SynQ للعائلة وسياسة الخصوصية.",
     submitSignIn: "تسجيل الدخول", submitRegister: "إنشاء الحساب",

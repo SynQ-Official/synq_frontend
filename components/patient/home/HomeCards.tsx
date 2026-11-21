@@ -10,7 +10,7 @@ import {
 import { ErrorState, GlassCard, SectionTitle, Skeleton } from "@/components/patient/ui/primitives";
 import { ExerciseSession } from "@/components/patient/ui/ExerciseSession";
 import { ScoreRing } from "@/components/patient/ui/ScoreRing";
-import { Sparkline, TrendChart } from "@/components/patient/ui/TrendChart";
+import { TrendChart } from "@/components/patient/ui/TrendChart";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { useCheckinHistory, useTodayCheckin } from "@/hooks/patient/useCheckin";
 import { useAssignedExercises, useCompleteExercise, useCompletedToday, useExerciseCatalog } from "@/hooks/patient/useCare";
@@ -20,7 +20,7 @@ import type { Exercise } from "@/lib/api/patient-types";
 import { fill } from "@/lib/i18n/patient";
 import { addDaysLocal, formatDay, localDay } from "@/lib/patient/format";
 import { localizeExercise, suggestedExercises } from "@/lib/patient/exercises";
-import { bandLabel, deriveSignals, readWellbeing, ringValue, WELLBEING_KEYS, type SignalTone, type WellbeingKey } from "@/lib/patient/home";
+import { bandLabel, deriveSignals, readWellbeing, WELLBEING_KEYS, type SignalTone, type WellbeingKey } from "@/lib/patient/home";
 import { scaleColor } from "@/lib/patient/moods";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ export function WellbeingCard() {
       {today.error ? (
         <ErrorState onRetry={() => void today.refresh()} />
       ) : (
-        <div className="lm-soft grid grid-cols-2 gap-x-3 gap-y-6 px-3 py-6 sm:grid-cols-4 sm:px-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 py-2 sm:grid-cols-4">
           {WELLBEING_KEYS.map((key) => {
             const reading = readWellbeing(key, today.data ?? null);
             const Icon = DIM_ICON[key];
@@ -155,7 +155,7 @@ export function SignalsCard() {
       ) : loading ? (
         <div className="space-y-3"><Skeleton className="h-12" /><Skeleton className="h-12" /><Skeleton className="h-12" /></div>
       ) : signals.length ? (
-        <ul className="lm-soft space-y-2 p-2.5">
+        <ul className="space-y-2">
           {signals.map((signal, index) => {
             const Icon = DIM_ICON[signal.dimension];
             return (
@@ -211,7 +211,7 @@ export function PlanCard() {
       {loading ? (
         <div className="space-y-3"><Skeleton className="h-16" /><Skeleton className="h-16" /><Skeleton className="h-16" /></div>
       ) : rows.length ? (
-        <ul className="lm-soft space-y-2 p-2.5">
+        <ul className="grid gap-2">
           {rows.map((row) => {
             const item = localizeExercise(row.exercise, language);
             const Icon = EXERCISE_ICON[row.exercise.type];
@@ -257,18 +257,19 @@ export function PlanCard() {
   );
 }
 
-/** A quiet strip that turns the streak into encouragement. */
+/** A quiet strip that turns the streak into encouragement, with the last seven days as a row of dots (oldest first). */
 export function ProgressStrip() {
   const copy = usePatientCopy();
+  const { language } = useLanguage();
   const history = useCheckinHistory(14);
-  const days = useMemo(() => {
+  const week = useMemo(() => {
     const set = new Set((history.data ?? []).map((row) => row.date.slice(0, 10)));
-    return Array.from({ length: 7 }, (_, i) => set.has(localDay(addDaysLocal(new Date(), -i)))).filter(Boolean).length;
-  }, [history.data]);
-  const moodSeries = useMemo(() => {
-    const byDay = new Map((history.data ?? []).map((row) => [row.date.slice(0, 10), ringValue(row.mood)]));
-    return Array.from({ length: 14 }, (_, i) => byDay.get(localDay(addDaysLocal(new Date(), -(13 - i)))) ?? null);
-  }, [history.data]);
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = addDaysLocal(new Date(), -(6 - i));
+      return { key: localDay(date), label: formatDay(date, language, { weekday: "narrow" }), done: set.has(localDay(date)), today: i === 6 };
+    });
+  }, [history.data, language]);
+  const days = week.filter((day) => day.done).length;
 
   return (
     <GlassCard className="flex flex-col gap-4 sm:flex-row sm:items-center" aria-labelledby="progress-title">
@@ -280,10 +281,23 @@ export function ProgressStrip() {
           <p className="mt-0.5 text-sm leading-relaxed text-ink-soft">{days ? fill(copy.home.progress.body, { n: days }) : copy.home.progress.bodyZero}</p>
         )}
       </div>
-      <div className="w-full sm:w-64 lg:w-80">
-        <p className="mb-1 text-xs text-muted-foreground">{copy.home.progress.moodTrend}</p>
-        <Sparkline values={moodSeries} color="var(--color-teal-600)" height={44} domain={[0, 10]} />
-      </div>
+      {/* The sentence beside it already says "n of the last 7 days": the dots are its picture, hidden from screen readers. */}
+      {!history.error && (
+        <ol aria-hidden className="flex shrink-0 items-end gap-2 sm:gap-3">
+          {week.map((day) => (
+            <li key={day.key} className="flex w-6 flex-col items-center gap-1.5">
+              <span
+                className={cn(
+                  "size-3 rounded-full",
+                  history.isLoading ? "bg-ink/10" : day.done ? "bg-teal-600" : "bg-ink/10",
+                  day.today && "ring-2 ring-teal-600/30 ring-offset-2 ring-offset-white",
+                )}
+              />
+              <span className={cn("text-xs tabular-nums", day.today ? "font-medium text-ink" : "text-ink-muted")}>{day.label}</span>
+            </li>
+          ))}
+        </ol>
+      )}
     </GlassCard>
   );
 }

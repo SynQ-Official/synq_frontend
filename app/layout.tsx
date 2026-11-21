@@ -1,9 +1,9 @@
 import { AppProviders } from "@/components/providers/AppProviders";
 import { BRAND } from "@/lib/config/brand";
 import { ROOT_SOCIAL, SITE } from "@/lib/config/site";
-import { LANGS, LANGUAGE_STORAGE_KEY, normalizeLanguage } from "@/lib/i18n/config";
+import { LANGS } from "@/lib/i18n/config";
+import { requestLanguage, routeLanguage } from "@/lib/server/request-language";
 import type { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
 import { IBM_Plex_Sans, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
@@ -61,20 +61,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Server-render in the visitor's language so Arabic arrives RTL on first paint (no hydration flip).
-  const language = normalizeLanguage((await cookies()).get(LANGUAGE_STORAGE_KEY)?.value);
+  // Server-render in the URL's language on public pages (/ar/*), else the visitor's cookie: Arabic arrives RTL on first
+  // paint (no hydration flip).
+  const language = await requestLanguage();
   const locale = LANGS.find((item) => item.code === language)!;
 
   return (
     <html
-      lang={locale.bcp47}
+      lang={locale.code}
       dir={locale.dir}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${plexSans.variable} ${plexSansArabic.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <AppProviders initialLanguage={language}>{children}</AppProviders>
+        <AppProviders initialLanguage={language} routeLanguage={await routeLanguage()}>{children}</AppProviders>
       </body>
     </html>
   );

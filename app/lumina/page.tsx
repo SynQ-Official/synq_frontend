@@ -4,16 +4,22 @@ import { LuminaPage } from "@/components/agents/lumina/LuminaPage";
 import { ROUTES } from "@/lib/config/routes";
 import { pageMetadata, softwareApplicationNode } from "@/lib/config/site";
 import { agentPagesCopy } from "@/lib/i18n/agents";
+import { requestLanguage } from "@/lib/server/request-language";
 
-const { seo } = agentPagesCopy.en.lumina;
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await requestLanguage();
+  const { seo } = agentPagesCopy[lang].lumina;
+  return pageMetadata({ title: seo.title, description: seo.description, path: ROUTES.lumina, lang });
+}
 
-export const metadata: Metadata = pageMetadata({ title: seo.title, description: seo.description, path: ROUTES.lumina });
-
-export default function Page() {
+export default async function Page() {
+  const lang = await requestLanguage();
+  const { seo } = agentPagesCopy[lang].lumina;
   return (
     <>
       <AgentJsonLd
         path={ROUTES.lumina}
+        lang={lang}
         name={seo.title}
         description={seo.description}
         extra={[softwareApplicationNode({ path: ROUTES.lumina, name: "Lumina", description: seo.description })]}

@@ -1,27 +1,24 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { AgentJsonLd } from "@/components/agents/AgentJsonLd";
 import { PrivacyPage } from "@/components/legal/PrivacyPage";
 import { ROUTES } from "@/lib/config/routes";
-import { pageMetadata } from "@/lib/config/site";
-import { LANGUAGE_STORAGE_KEY, normalizeLanguage } from "@/lib/i18n/config";
+import { PRIVACY_NOINDEX, pageMetadata } from "@/lib/config/site";
 import { legalUi } from "@/lib/i18n/legal";
+import { requestLanguage } from "@/lib/server/request-language";
 
-async function seoCopy() {
-  return legalUi[normalizeLanguage((await cookies()).get(LANGUAGE_STORAGE_KEY)?.value)];
-}
-
-/** Title and description follow the visitor's language, like the page itself. */
+/** Title and description follow the page language. Not indexed while the policy still has fields to confirm. */
 export async function generateMetadata(): Promise<Metadata> {
-  const { seoTitle, seoDescription } = await seoCopy();
-  return pageMetadata({ title: seoTitle, description: seoDescription, path: ROUTES.privacy });
+  const lang = await requestLanguage();
+  const { seoTitle, seoDescription } = legalUi[lang];
+  return pageMetadata({ title: seoTitle, description: seoDescription, path: ROUTES.privacy, lang, noindex: PRIVACY_NOINDEX });
 }
 
 export default async function Page() {
-  const { seoTitle, seoDescription } = await seoCopy();
+  const lang = await requestLanguage();
+  const { seoTitle, seoDescription } = legalUi[lang];
   return (
     <>
-      <AgentJsonLd path={ROUTES.privacy} name={seoTitle} description={seoDescription} />
+      <AgentJsonLd path={ROUTES.privacy} lang={lang} name={seoTitle} description={seoDescription} />
       <PrivacyPage />
     </>
   );

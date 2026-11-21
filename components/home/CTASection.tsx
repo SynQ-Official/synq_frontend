@@ -7,7 +7,7 @@ import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Check, Mail } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useRef } from "react";
 import { Magnetic, WordReveal } from "./AnimationUtilities";
 import { CURTAIN } from "./HomeSection";
@@ -18,29 +18,20 @@ const ACCENT_CHAMPAGNE = " text-white";
 
 /**
  * A sunrise behind the horizon: a warm disc of champagne and gold climbs from below as the section arrives, and its light
- * slowly breathes. Gradients only — no blur filter, so it stays cheap.
+ * holds. Gradients only — no blur filter, so it stays cheap.
  */
 function Horizon({ progress }: { progress: ReturnType<typeof useScroll>["scrollYProgress"] }) {
     const reduce = useReducedMotion();
     const rise = useTransform(progress, [0, 0.7], [reduce ? 0 : 38, 0]);
     const grow = useTransform(progress, [0, 0.7], [reduce ? 1 : 0.76, 1]);
     const y = useTransform(rise, (value) => `${value}%`);
-    const breathe = reduce ? undefined : { scale: [1, 1.07, 1], opacity: [0.86, 1, 0.86] };
 
     return (
         <motion.div aria-hidden style={{ y, scale: grow }} className="pointer-events-none absolute -bottom-[70vmin] left-1/2 -z-10 size-[130vmin] -translate-x-1/2">
             {/* The glow of the sun, spreading into the teal */}
-            <motion.div
-                className="absolute -inset-[16%] rounded-full bg-[radial-gradient(closest-side,rgb(230_213_170/0.55),rgb(201_175_111/0.28)_46%,transparent_72%)]"
-                animate={breathe}
-                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-            />
+            <div className="absolute -inset-[16%] rounded-full bg-[radial-gradient(closest-side,rgb(230_213_170/0.55),rgb(201_175_111/0.28)_46%,transparent_72%)]" />
             {/* The disc itself: champagne at the heart, gold at the rim */}
-            <motion.div
-                className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,#f3e8c6_0%,#e6d5aa_34%,#c9af6f_70%,rgb(201_175_111/0.35)_88%,transparent_100%)]"
-                animate={breathe}
-                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-            />
+            <div className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,#f3e8c6_0%,#e6d5aa_34%,#c9af6f_70%,rgb(201_175_111/0.35)_88%,transparent_100%)]" />
         </motion.div>
     );
 }
@@ -51,7 +42,6 @@ export const CTASection = () => {
     const copy = dictionary.homeLanding.cta;
     const { signedIn } = useAuthSession();
     const ref = useRef<HTMLElement>(null);
-    const reduce = useReducedMotion();
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
 
     return (
@@ -89,17 +79,11 @@ export const CTASection = () => {
                             </motion.p>
 
                             <motion.div variants={fadeUp(0, 24)} className="relative m-4 lg:m-0">
-                                {/* A slow dashed ring turns around the button */}
-                                <motion.span
-                                    aria-hidden
-                                    className="pointer-events-none absolute -inset-4 rounded-full border border-dashed border-white/30"
-                                    animate={reduce ? undefined : { rotate: 360 }}
-                                    transition={{ duration: 36, repeat: Infinity, ease: "linear" }}
-                                />
+                                <span aria-hidden className="pointer-events-none absolute -inset-4 rounded-full border border-white/20" />
                                 <Magnetic strength={0.3}>
                                     <Link
                                         href={agentEntryHref("mira", signedIn)}
-                                        className="group relative grid size-40 place-items-center overflow-hidden rounded-full bg-white text-ink shadow-[0_24px_48px_-28px_rgb(0_0_0/0.45)] transition-transform duration-500 ease-out-soft hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-gold-300 md:size-48"
+                                        className="group relative grid size-40 place-items-center overflow-hidden rounded-full bg-white text-ink shadow-[0_24px_48px_-28px_rgb(0_0_0/0.45)] active:scale-[0.98] transition-transform duration-200 ease-out-soft focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-gold-300 md:size-48"
                                     >
                                         {/* Warmth floods in from the pointer's side of the disc */}
                                         <span aria-hidden className="absolute inset-0 origin-bottom scale-y-0 rounded-full bg-gold-300 transition-transform duration-700 ease-out-soft group-hover:scale-y-100" />

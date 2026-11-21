@@ -108,7 +108,7 @@ export function PsyProcess() {
                 <span dir="ltr" className={cn("mt-4 block font-mono text-[0.8125rem] tabular-nums transition-colors duration-300", isActive ? "text-gold-100" : "text-teal-200/70")}>
                   {pad(index + 1)}
                 </span>
-                <span className={cn(LABEL, "mt-1.5 block !tracking-[0.12em] transition-colors duration-300 rtl:!tracking-normal", isActive ? "text-white" : "text-teal-200/70 group-hover:text-white")}>{stepTitle}</span>
+                <span className={cn(LABEL, "mt-1.5 block transition-colors duration-300 rtl:!tracking-normal", isActive ? "text-white" : "text-teal-200/70 group-hover:text-white")}>{stepTitle}</span>
               </button>
             );
           })}
@@ -134,15 +134,9 @@ export function PsyProcess() {
           </div>
 
           <div className="lg:col-span-8">
-            <div className="relative overflow-hidden rounded-[2rem] p-[1.5px] shadow-[0_50px_100px_-40px_rgb(0_0_0/0.7),0_0_90px_-30px_rgb(127_176_174/0.5)]">
-              <motion.span
-                aria-hidden
-                className="absolute -inset-[60%] bg-[conic-gradient(from_0deg,rgb(255_255_255/0.08),rgb(201_175_111/0.9)_70deg,rgb(255_255_255/0.08)_140deg,rgb(255_255_255/0.08)_220deg,rgb(127_176_174/0.85)_290deg,rgb(255_255_255/0.08))]"
-                animate={reduce ? undefined : { rotate: 360 }}
-                transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-              />
-              <div className="relative rounded-[calc(2rem-1.5px)] bg-deep">
-                <PsyWindow screen={SCREENS[active]} copy={preview} crop={820} className="!rounded-[calc(2rem-1.5px)] !border-0 !ring-0">
+            <div className="rounded-[2rem] bg-deep shadow-[0_40px_80px_-40px_rgb(0_0_0/0.7)] ring-1 ring-white/15">
+              <div>
+                <PsyWindow screen={SCREENS[active]} copy={preview} crop={820} className="!rounded-[2rem] !border-0 !ring-0">
                   {(compact) => (
                     <AnimatePresence mode="wait" initial={false}>
                       <motion.div

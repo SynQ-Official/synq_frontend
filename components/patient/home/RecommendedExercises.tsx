@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { Activity, BatteryMedium, Brain, Check, Clock, Link2, ListChecks, Moon, Play, RotateCcw, Sparkles, Wind } from "lucide-react";
 import { ExerciseSession } from "@/components/patient/ui/ExerciseSession";
 import { GlassCard, Skeleton } from "@/components/patient/ui/primitives";
@@ -10,7 +9,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useCompleteExercise, useCompletedToday, useExerciseCatalog } from "@/hooks/patient/useCare";
 import { useTodayCheckin } from "@/hooks/patient/useCheckin";
 import { usePatient } from "@/hooks/patient/usePatient";
-import { useCalmTrack } from "@/hooks/useCalmTrack";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import type { Exercise } from "@/lib/api/patient-types";
 import { fill } from "@/lib/i18n/patient";
@@ -36,8 +34,6 @@ export function RecommendedExercises() {
   const doneToday = useCompletedToday();
   const today = useTodayCheckin();
   const { complete } = useCompleteExercise();
-  const reduce = useReducedMotion();
-  const calm = useCalmTrack();
   const [kind, setKind] = useState<Exercise["type"] | "ALL">("ALL");
   const [active, setActive] = useState<Exercise | null>(null);
   const [open, setOpen] = useState(false);
@@ -49,7 +45,6 @@ export function RecommendedExercises() {
   const visible = kind === "ALL" ? ranked : ranked.filter((item) => item.type === kind);
   const [featured, ...rest] = visible;
   const done = new Set(doneToday.data ?? []);
-  const still = reduce || calm;
 
   if (catalog.isLoading) {
     return <GlassCard><Skeleton className="h-80" /></GlassCard>;
@@ -73,8 +68,7 @@ export function RecommendedExercises() {
     <GlassCard className="p-0" aria-labelledby="recommended-title">
       <div className="flex flex-col gap-4 p-5 pb-4 sm:flex-row sm:items-end sm:justify-between sm:p-6 sm:pb-4">
         <div className="min-w-0">
-          <p className="lm-eyebrow">{ex.section}</p>
-          <h2 id="recommended-title" className="mt-1 text-xl  leading-snug text-ink">{ex.title}</h2>
+          <h2 id="recommended-title" className="text-xl leading-snug text-ink">{ex.title}</h2>
           <p className="mt-1 max-w-xl text-sm leading-relaxed text-ink-soft">{ex.lead[profile.track]}</p>
         </div>
         {kinds.length > 1 && (
@@ -103,19 +97,13 @@ export function RecommendedExercises() {
           <div className="lm-hero relative flex min-h-40 items-end overflow-hidden rounded-none border-0 p-5" style={{ boxShadow: "none" }}>
             <div aria-hidden className="pointer-events-none absolute end-5 top-1/2 flex size-28 -translate-y-1/2 items-center justify-center sm:size-32">
               {[1, 0.72, 0.46].map((scale, index) => (
-                <motion.span
-                  key={scale}
-                  className="absolute inset-0 rounded-full border border-teal-500/30 bg-white/25"
-                  style={{ scale }}
-                  animate={still ? undefined : { scale: [scale, scale * 1.1, scale], opacity: [0.9, 0.55, 0.9] }}
-                  transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: index * 0.5 }}
-                />
+                <span key={scale} className="absolute inset-0 rounded-full border border-teal-500/25 bg-white/25" style={{ scale, opacity: 1 - index * 0.15 }} />
               ))}
               <span className="relative flex size-14 items-center justify-center rounded-2xl bg-white/80 text-teal-700 shadow-lg shadow-teal-900/10 ring-1 ring-white">
                 <FeaturedIcon className="size-7" aria-hidden />
               </span>
             </div>
-            <span className="relative inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-[0.6875rem]  uppercase tracking-wide text-teal-800 ring-1 ring-white rtl:normal-case rtl:tracking-normal">
+            <span className="relative inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-xs font-medium text-teal-800 ring-1 ring-white">
               <Sparkles className="size-3 text-gold-600" aria-hidden />
               {kind === "ALL" ? ex.featured : ex.kinds[featured.type]}
             </span>
@@ -151,7 +139,7 @@ export function RecommendedExercises() {
 
         {/* The rest, ranked. */}
         <div className="min-w-0">
-          {rest.length > 0 && <p className="mb-2.5 text-xs  uppercase tracking-wide text-ink-muted rtl:normal-case rtl:tracking-normal">{ex.more}</p>}
+          {rest.length > 0 && <p className="mb-3 text-sm text-ink-soft">{ex.more}</p>}
           <ul className="grid gap-2.5">
             {rest.slice(0, LIST_SIZE).map((exercise) => {
               const local = localizeExercise(exercise, language);

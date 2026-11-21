@@ -90,10 +90,12 @@ type WordRevealProps = {
     delay?: number;
     /** Seconds between words. */
     step?: number;
+    /** Render the words in place on first paint (no rise): for the page's LCP headline, which must not wait for JS. */
+    instant?: boolean;
 };
 
 /** Word-by-word masked rise for display headings. Static under reduced motion. */
-export const WordReveal = ({ children, className, delay = 0, step = 0.055 }: WordRevealProps) => {
+export const WordReveal = ({ children, className, delay = 0, step = 0.055, instant = false }: WordRevealProps) => {
     const ref = useRef<HTMLSpanElement>(null);
     const reduce = useReducedMotion();
     const isInView = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
@@ -108,8 +110,8 @@ export const WordReveal = ({ children, className, delay = 0, step = 0.055 }: Wor
                         {/* Opacity rides with the rise so a word never peeks above the mask edge before its turn. */}
                         <motion.span
                             className="inline-block will-change-transform"
-                            initial={reduce ? false : { y: "110%", opacity: 0 }}
-                            animate={isInView || reduce ? { y: 0, opacity: 1 } : { y: "110%", opacity: 0 }}
+                            initial={reduce || instant ? false : { y: "110%", opacity: 0 }}
+                            animate={isInView || reduce || instant ? { y: 0, opacity: 1 } : { y: "110%", opacity: 0 }}
                             transition={{
                                 y: { duration: 1.1, ease: EASE_OUT, delay: delay + i * step },
                                 opacity: { duration: 0.5, ease: "easeOut", delay: delay + i * step },

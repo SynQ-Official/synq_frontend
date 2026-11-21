@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EASE_OUT, SPRING_SOFT } from "@/lib/motion";
@@ -110,7 +110,7 @@ export function ProductMenu({ triggerClassName, indicator, current, onOpenChange
             {/* pt-3 above bridges the gap under the trigger so hover intent survives the trip to the panel. */}
             <div className="relative overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/85 p-2 shadow-float ring-1 ring-line/60 backdrop-blur-2xl">
               <div aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-              <p className="flex items-center gap-2.5 px-3.5 pb-2 pt-3 text-[0.6875rem]  uppercase leading-none tracking-[0.18em] text-ink-muted rtl:normal-case rtl:tracking-normal">
+              <p className="flex items-center gap-2.5 px-3.5 pb-2 pt-3 text-[0.8125rem] leading-none text-ink-muted">
                 <span aria-hidden className="h-px w-5 bg-gold" />
                 {copy.menu.title}
               </p>

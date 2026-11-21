@@ -23,7 +23,10 @@ export function LuminaMoodCard({ copy, className }: { copy: LuminaTracksCopy["mo
     const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
     if (!step) return;
     event.preventDefault();
-    setIndex((current) => Math.max(0, Math.min(MOOD_LEVELS.length - 1, current + step)));
+    const next = Math.max(0, Math.min(MOOD_LEVELS.length - 1, index + step));
+    setIndex(next);
+    // Roving tabindex: focus follows the selection, or it stays on a button that just left the tab order.
+    event.currentTarget.querySelectorAll<HTMLElement>('[role="radio"]')[next]?.focus();
   }
 
   return (
@@ -65,7 +68,7 @@ export function LuminaMoodCard({ copy, className }: { copy: LuminaTracksCopy["mo
               style={active ? { boxShadow: `0 0 0 2px ${item.color}, 0 14px 26px -14px ${item.color}` } : undefined}
             >
               <MoodEmoji level={item} className={cn("text-[2.25rem] transition-[opacity,filter] duration-300 sm:text-[2.75rem]", active ? "" : "opacity-75 grayscale-[0.2]")} />
-              <span className={cn("max-w-full truncate text-[0.6875rem] font-medium sm:text-xs", active ? "" : "text-ink-muted")} style={active ? { color: item.color } : undefined}>
+              <span className={cn("max-w-full truncate text-[0.6875rem] rtl:text-[0.75rem] font-medium sm:text-xs", active ? "" : "text-ink-muted")} style={active ? { color: item.color } : undefined}>
                 {copy.levels[position]}
               </span>
             </motion.button>
@@ -85,7 +88,7 @@ export function LuminaMoodCard({ copy, className }: { copy: LuminaTracksCopy["mo
             {copy.messages[index]}
           </motion.p>
         </AnimatePresence>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sage-100 bg-sage-50 px-2.5 py-1 text-[0.6875rem]  text-sage-700">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-sage-100 bg-sage-50 px-2.5 py-1 text-[0.6875rem] rtl:text-[0.75rem]  text-sage-700">
           <Check className="size-3" strokeWidth={3} aria-hidden />
           {copy.saved}
         </span>

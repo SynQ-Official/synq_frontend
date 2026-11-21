@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlarmClock, CalendarCheck, CloudOff, Wifi, X } from "lucide-react";
 import { useRouter } from "next/navigation";

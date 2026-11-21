@@ -17,7 +17,7 @@ import { REVEAL_VIEWPORT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { ArrowRight, BadgeCheck, Check, Database, FileText, LifeBuoy, Lock, Mail, MapPin, Phone, Scale, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
 import { MotionConfig, motion, useScroll, useSpring } from "framer-motion";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useEffect, useMemo, useState } from "react";
 import { PendingLegalField } from "./PendingLegalField";
 import { TrustSeal } from "./TrustSeal";
@@ -201,10 +201,13 @@ export function PrivacyPage() {
                 {ui.intro}
               </motion.p>
               <motion.dl variants={fadeUp(0.2)} className="mt-6 flex flex-wrap items-start gap-3">
+                {/* Confirmed facts each get a pill; whatever is still pending shares one line, not one warning each. */}
                 {[
                   [ui.version, LEGAL.version],
                   [ui.lastUpdated, LEGAL.lastUpdated],
-                ].map(([label, value]) =>
+                ]
+                  .filter(([, value], index, all) => value || index === all.findIndex(([, other]) => !other))
+                  .map(([label, value]) =>
                   value ? (
                     <div key={label} className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-white px-4 py-2 text-[0.9375rem]">
                       <FileText className="size-4 text-teal-700" aria-hidden />
@@ -215,7 +218,7 @@ export function PrivacyPage() {
                     <div key={label}>
                       <dt className="sr-only">{label}</dt>
                       <dd>
-                        <PendingLegalField label={label ?? ""} />
+                        <PendingLegalField label={!LEGAL.version && !LEGAL.lastUpdated ? `${ui.version} · ${ui.lastUpdated}` : (label ?? "")} />
                       </dd>
                     </div>
                   ),

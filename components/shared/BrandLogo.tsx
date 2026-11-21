@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { BRAND } from "@/lib/config/brand";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,8 @@ export function BrandLogo({ size = "md", href = "/", className, priority = true 
     <>
       <Image
         src="/assets/logo.svg"
-        alt={href ? "" : BRAND.name}
+        // The home link carries its own aria-label; the alt still names the logo for crawlers and image search.
+        alt={`${BRAND.name} logo`}
         aria-hidden={href ? true : undefined}
         width={512}
         height={512}

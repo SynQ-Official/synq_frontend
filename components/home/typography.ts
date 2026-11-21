@@ -13,8 +13,8 @@ export const DISPLAY_M = `${SERIF} text-[clamp(1.875rem,2.2vw+1.1rem,3rem)] font
 /** Card title. */
 export const DISPLAY_S = `${SERIF} text-[clamp(1.375rem,0.7vw+1.15rem,1.75rem)] font-normal leading-[1.2] tracking-[-0.015em] rtl:tracking-normal`;
 
-/** Quiet uppercase label. Arabic keeps joined letters (no tracking, no caps). */
-export const LABEL = "text-[0.75rem]  uppercase leading-[1.4] tracking-[0.18em] rtl:normal-case rtl:tracking-normal";
+/** Quiet label in sentence case: hierarchy from size and colour, never caps or tracking (Arabic has neither). */
+export const LABEL = "text-[0.8125rem] leading-[1.4] tracking-normal";
 
 /** Reading copy: Soft ink with real contrast — never the pale grey. */
 export const BODY = "text-[clamp(1.0625rem,0.3vw+1rem,1.25rem)] leading-[1.75] text-ink-soft";

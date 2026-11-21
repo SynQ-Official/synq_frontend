@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { usePathname } from "next/navigation";
 import { LogOut, type LucideIcon } from "lucide-react";
 import { motion, type Variants } from "framer-motion";

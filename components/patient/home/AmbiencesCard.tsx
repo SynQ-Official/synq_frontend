@@ -17,15 +17,15 @@ export function AmbiencesCard() {
   if (!ambiences || !available) return null;
 
   return (
-    <GlassCard className="flex h-full flex-col gap-4">
-      <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-800" aria-hidden>
-        <Headphones className="size-5" />
+    <GlassCard className="flex items-center gap-3">
+      <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-teal-800" aria-hidden>
+        <Headphones className="size-[1.125rem]" />
       </span>
-      <div className="min-w-0">
-        <h2 className="text-base text-ink">{copy.title[ambiences.track]}</h2>
-        <p className="mt-1 text-sm leading-relaxed text-ink-soft">{copy.subtitle[ambiences.track]}</p>
+      <div className="min-w-0 flex-1">
+        <h2 className="text-sm font-medium text-ink">{copy.title[ambiences.track]}</h2>
+        <p className="mt-0.5 text-xs leading-snug text-ink-soft">{copy.subtitle[ambiences.track]}</p>
       </div>
-      <Button asChild variant="outline" size="lg" className="mt-auto min-h-11 w-full rounded-full sm:w-auto sm:self-start">
+      <Button asChild variant="outline" size="sm" className="min-h-11 shrink-0 rounded-full px-4">
         <Link href="/dashboard/ambiances">{copy.open}</Link>
       </Button>
     </GlassCard>

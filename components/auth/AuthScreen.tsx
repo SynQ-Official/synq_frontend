@@ -16,7 +16,7 @@ import { DURATION, EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, ArrowRight, Check, Eye, EyeOff, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { toast } from "sonner";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
 import { ROUTES } from "@/lib/config/routes";

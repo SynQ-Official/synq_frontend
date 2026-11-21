@@ -67,9 +67,12 @@ const nextConfig: NextConfig = {
       { source: "/home", destination: "/", permanent: true },
       { source: "/psy", destination: "/clinician", permanent: true },
       { source: "/trust", destination: "/privacy", permanent: true },
-      // The Terms of Use are the second document on /privacy (one page, two anchored documents). The language is a
-      // cookie, not a path, so this one rule covers English and Arabic.
+      { source: "/tracks", destination: "/care-paths", permanent: true },
+      { source: "/ar/tracks", destination: "/ar/care-paths", permanent: true },
+      // The Terms of Use are the second document on /privacy (one page, two anchored documents), with its
+      // Arabic twin under /ar.
       { source: "/terms", destination: "/privacy#terms", permanent: true },
+      { source: "/ar/terms", destination: "/ar/privacy#terms", permanent: true },
       { source: "/diagnostic", destination: "/orientation", permanent: true },
       { source: "/diagnostic/:path*", destination: "/orientation/:path*", permanent: true },
       // The e-mail the API sends to a clinician-created account links to `/login`; the sign-in page is /auth/signin.

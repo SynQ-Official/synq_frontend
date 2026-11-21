@@ -3,6 +3,11 @@
 import { Grain } from "@/components/home/Atmosphere";
 import { ACCENT_DARK, DISPLAY_L } from "@/components/home/typography";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { familyCopy } from "@/lib/family/copy";
+import { accessCopy } from "@/lib/i18n/access";
+
+/** Who the page beside the panel is for: the panel speaks to them (patients, parents, or clinicians applying). */
+export type AuthAudience = "patient" | "parent" | "clinic";
 import { EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -12,9 +17,10 @@ import { motion } from "framer-motion";
  * points as a ruled list and the quote closing it. It sits at its own height and stays in view while a long form
  * scrolls, instead of stretching to the form's height.
  */
-export function AuthBrandPanel() {
-  const { dictionary } = useLanguage();
-  const brand = dictionary.auth.brand;
+export function AuthBrandPanel({ audience = "patient" }: { audience?: AuthAudience }) {
+  const { dictionary, language } = useLanguage();
+  const brand =
+    audience === "clinic" ? accessCopy[language].clinic.brand : audience === "parent" ? familyCopy[language].auth.panel : dictionary.auth.brand;
 
   return (
     <motion.aside

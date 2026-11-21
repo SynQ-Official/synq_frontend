@@ -2,7 +2,7 @@
 
 import { LayoutGroup, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BrandLogo } from "@/components/shared/BrandLogo";
@@ -52,8 +52,8 @@ export function MarketingHeader() {
   // The pill follows the pointer, rests on the current page, and sits under "Companions" while its list is open.
   const pillId = productOpen ? "product" : (hovered ?? activeId);
 
-  // The end of the header follows the visitor: their own menu when signed in, otherwise the way in (and, for an adult
-  // with no account, "Create account") and on an auth page, the other auth page (never a link to where they already are).
+  // The end of the header follows the visitor: their own menu when signed in, otherwise the way in (and "Create
+  // account" for an adult with none). On an auth page, the other auth page: never a link to where they already are.
   const onSignIn = pathname === ROUTES.signIn;
   const onSignUp = pathname === ROUTES.signUp;
   const primary = onSignIn ? { href: ROUTES.signUp, label: dictionary.nav.signUp } : { href: ROUTES.signIn, label: dictionary.nav.signIn };

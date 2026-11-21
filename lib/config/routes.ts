@@ -5,7 +5,8 @@ export const ROUTES = {
   mira: "/mira",
   lumina: "/lumina",
   psy: "/clinician",
-  tracks: "/tracks",
+  /** The three care paths (ADHD, bipolar disorder, psychosis). Was /tracks (301 in next.config.ts). */
+  tracks: "/care-paths",
   privacy: "/privacy",
   /** The Terms of Use are the second document on /privacy; /terms redirects here (next.config.ts). */
   terms: "/privacy#terms",
@@ -17,8 +18,10 @@ export const ROUTES = {
   /** Short form for clinicians and clinics who want SynQ. */
   clinicAccess: "/clinic-access",
   signIn: "/auth/signin",
-  /** Adults create their own patient account here. Patients a clinic invites use ROUTES.invitation instead. */
+  /** Open patient sign-up for adults. A clinician's invitation uses ROUTES.invitation instead. */
   signUp: "/auth/signup",
+  /** Parent account: registration, then a request the child's clinician approves. */
+  familyRegister: "/family/register",
   /** First sign-in of an account a clinician created: replace the temporary password. */
   changePassword: "/auth/change-password",
   /** The link in a clinician's invitation e-mail (the API puts `?token=` after it). */
@@ -38,9 +41,9 @@ export const PSY_APP_URL = (process.env.NEXT_PUBLIC_PSY_URL ?? "").replace(/\/+$
 export type AgentEntry = "mira" | "lumina" | "psy";
 
 /**
- * Where an agent's button leads. A signed-in patient goes straight in; an adult who is not signed in is asked to create
- * an account (Mira) or sign in (Lumina) first, with a `from` hint so the form can say why. A patient a clinic invited
- * uses the e-mailed link (ROUTES.invitation) or /invite. Clinicians go to their own sign-in.
+ * Where an agent's button leads. A signed-in patient goes straight in; a signed-out adult creates an account (Mira) or
+ * signs in (Lumina) first, with a `from` hint so the form can say why. Clinicians go to their own sign-in once the
+ * clinician app is live, and to the application form (reviewed by the SynQ team) until then.
  */
 export function agentEntryHref(agent: AgentEntry, signedIn: boolean) {
   if (agent === "psy") return PSY_APP_URL ? `${PSY_APP_URL}/signin` : ROUTES.clinicAccess;

@@ -85,9 +85,8 @@ function SparkPreview({ demo }: { demo: LuminaTracksCopy["demo"]["spark"] }) {
   );
 }
 
-/** The bipolar / schizophrenia card's picture: approved reading and a practice, with a slow breathing circle. */
+/** The bipolar / schizophrenia card's picture: approved reading and a practice, beside a still breathing circle. */
 function LibraryPreview({ demo }: { demo: LuminaTracksCopy["demo"]["library"] }) {
-  const reduce = useReducedMotion();
   return (
     <motion.div variants={stagger(0.12, 0.25)} initial="hidden" whileInView="show" viewport={REVEAL_VIEWPORT} aria-hidden className="grid items-center gap-4 sm:grid-cols-[minmax(0,1fr)_auto] rounded-2xl bg-white/80 p-4 ring-1 ring-white">
       <div>
@@ -116,8 +115,6 @@ function LibraryPreview({ demo }: { demo: LuminaTracksCopy["demo"]["library"] })
       <div className="relative hidden size-24 shrink-0 items-center justify-center sm:flex">
         <motion.span
           className="absolute inset-0 rounded-full bg-[radial-gradient(closest-side,rgb(230_213_170/0.75),rgb(201_175_111/0.18)_70%,transparent)]"
-          animate={reduce ? undefined : { scale: [0.7, 1, 0.7], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <span className="relative text-[0.75rem]  text-gold-700">{demo.breathe}</span>
       </div>

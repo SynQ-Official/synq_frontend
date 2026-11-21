@@ -4,16 +4,22 @@ import { MiraPage } from "@/components/agents/mira/MiraPage";
 import { ROUTES } from "@/lib/config/routes";
 import { pageMetadata, softwareApplicationNode } from "@/lib/config/site";
 import { agentPagesCopy } from "@/lib/i18n/agents";
+import { requestLanguage } from "@/lib/server/request-language";
 
-const { seo } = agentPagesCopy.en.mira;
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await requestLanguage();
+  const { seo } = agentPagesCopy[lang].mira;
+  return pageMetadata({ title: seo.title, description: seo.description, path: ROUTES.mira, lang });
+}
 
-export const metadata: Metadata = pageMetadata({ title: seo.title, description: seo.description, path: ROUTES.mira });
-
-export default function Page() {
+export default async function Page() {
+  const lang = await requestLanguage();
+  const { seo } = agentPagesCopy[lang].mira;
   return (
     <>
       <AgentJsonLd
         path={ROUTES.mira}
+        lang={lang}
         name={seo.title}
         description={seo.description}
         extra={[softwareApplicationNode({ path: ROUTES.mira, name: "Mira", description: seo.description })]}

@@ -7,7 +7,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { AlertTriangle, ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, CalendarDays, CalendarPlus, Check, ChevronRight, ClipboardCheck, FileText, Inbox, NotebookPen, ShieldCheck, TrendingDown, X } from "lucide-react";
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { monthSeries, smoothPath } from "../lumina/chartData";
-import { ACTIVITY, ATTENTION_KINDS, ATTENTION_TONES, KPI_DELTAS, KPI_SPARKS, KPI_SPARK_COLORS, PATIENT_ROWS, PSY_COLOR, RISK_VALUES, TRAFFIC } from "./psyData";
+import { ACTIVITY, ATTENTION_BADGES, ATTENTION_KINDS, ATTENTION_TONES, KPI_DELTAS, PATIENT_ROWS, PSY_COLOR, RISK_VALUES, TRAFFIC } from "./psyData";
 
 const ARROW = "rtl:-scale-x-100";
 
@@ -28,7 +28,7 @@ function Panel({ title, description, action, children, className, flush }: { tit
     <section className={cn("flex min-w-0 flex-col rounded-2xl border border-slate-200/80 bg-white shadow-sm", className)}>
       <header className="flex items-start justify-between gap-3 px-5 pb-3 pt-4">
         <div className="min-w-0">
-          <h2 className="text-[15px]  tracking-tight text-slate-900">{title}</h2>
+          <p className="text-[15px]  tracking-tight text-slate-900">{title}</p>
           {description && <p className="mt-0.5 text-xs text-slate-500">{description}</p>}
         </div>
         {action}
@@ -47,39 +47,6 @@ function Segmented({ options, active = 0 }: { options: readonly string[]; active
         </span>
       ))}
     </div>
-  );
-}
-
-function Sparkline({ values, color, delay }: { values: readonly number[]; color: string; delay: number }) {
-  const reduce = useReducedMotion();
-  const id = useId().replace(/:/g, "");
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const span = max - min || 1;
-  const points = values.map((value, index) => [(index / (values.length - 1)) * 100, 28 - ((value - min) / span) * 24] as const);
-  const line = points.map(([x, y], index) => `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
-  return (
-    <svg viewBox="0 0 100 32" preserveAspectRatio="none" className="h-9 w-24 shrink-0 overflow-visible rtl:-scale-x-100" aria-hidden>
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.26} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
-        </linearGradient>
-      </defs>
-      <motion.path d={`${line} L100,32 L0,32 Z`} fill={`url(#${id})`} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: delay + 0.6, duration: 0.8 }} />
-      <motion.path
-        d={line}
-        fill="none"
-        stroke={color}
-        strokeWidth={1.9}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-        initial={reduce ? false : { pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ delay, duration: 1.2, ease: EASE_OUT }}
-      />
-    </svg>
   );
 }
 
@@ -125,8 +92,8 @@ function PageHeader({ eyebrow, title, description, actions }: { eyebrow?: string
     <div className="flex items-end justify-between gap-4">
       <div className="min-w-0">
         {eyebrow && <p className="text-xs font-medium text-[#0f766e]">{eyebrow}</p>}
-        {/* A screen inside the product mockup, not the page's own heading (that is the hero <h1>). */}
-        <h3 className="mt-1 text-[1.625rem]  leading-tight tracking-tight text-slate-900">{title}</h3>
+        {/* A screen inside the product mockup, not a heading of the page: plain text, out of the document outline. */}
+        <p className="mt-1 text-[1.625rem]  leading-tight tracking-tight text-slate-900">{title}</p>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
@@ -249,8 +216,8 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
               {index === 3 && <span aria-hidden className="size-1.5 rounded-full bg-amber-500" />}
               <span className="truncate">{label}</span>
             </dt>
-            <dd className="mt-2 flex items-end justify-between gap-2">
-              <span className="min-w-0">
+            <dd className="mt-2">
+              <span className="block min-w-0">
                 <span dir="ltr" className="block text-[1.75rem] leading-none tracking-tight text-slate-900 tabular-nums rtl:text-end">
                   {value}
                 </span>
@@ -258,7 +225,6 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
                   <Delta pct={KPI_DELTAS[index].pct} goodWhen={KPI_DELTAS[index].goodWhen} caption={caption} />
                 </span>
               </span>
-              {!compact && KPI_SPARKS[index].length > 0 && <Sparkline values={KPI_SPARKS[index]} color={KPI_SPARK_COLORS[index]} delay={0.4 + index * 0.12} />}
             </dd>
           </div>
         ))}
@@ -310,7 +276,6 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
             {copy.attention.items.map(([title, meta, badge], index) => {
               const kind = ATTENTION_KINDS[index];
               const Icon = kind === "alert" ? AlertTriangle : kind === "report" ? FileText : ClipboardCheck;
-              const badgeTone = ["bg-orange-50 text-orange-700 ring-orange-200", "bg-amber-50 text-amber-700 ring-amber-200", "bg-red-50 text-red-700 ring-red-200", "bg-sky-50 text-sky-700 ring-sky-200"][index];
               return (
                 <li key={title} className="flex items-center gap-3 px-5 py-3">
                   <span aria-hidden className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", ATTENTION_TONES[kind])}>
@@ -320,7 +285,7 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
                     <span className="block truncate text-[13px] font-medium text-slate-900">{title}</span>
                     <span className="block truncate text-xs text-slate-500">{meta}</span>
                   </span>
-                  <span className={cn("shrink-0 rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset", badgeTone)}>{badge}</span>
+                  <span className={cn("shrink-0 rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset", ATTENTION_BADGES[kind])}>{badge}</span>
                   <ChevronRight size={15} aria-hidden className={cn("shrink-0 text-slate-300", ARROW)} />
                 </li>
               );
@@ -349,9 +314,37 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
         )}
       </motion.div>
 
-      {!compact && (
-        <motion.div {...rise(0.6)}>
-          <Panel title={copy.patients.title} description={copy.patients.description} flush>
+      <motion.div {...rise(0.6)}>
+        <Panel title={copy.patients.title} description={copy.patients.description} flush action={compact ? undefined : <Segmented options={[copy.patients.all, ...copy.risk.labels]} />}>
+          {compact ? (
+            /* On a phone the table becomes a list: who, their status, then what they shared, one patient per row. */
+            <ul className="divide-y divide-slate-100 border-t border-slate-100">
+              {copy.patients.rows.map(([name, code, last, observation], index) => {
+                const [light, alerts] = PATIENT_ROWS[index];
+                return (
+                  <li key={code} className="flex items-start gap-3 px-5 py-3">
+                    <Avatar name={name} />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="truncate text-[13px] font-medium text-slate-900">{name}</span>
+                        <TrafficChip light={light} label={copy.risk.labels[light]} />
+                      </span>
+                      <span className="mt-1 block text-xs leading-5 text-slate-700">{observation}</span>
+                      <span className="mt-1 flex items-center gap-3 text-[11px] text-slate-500">
+                        {last}
+                        {alerts > 0 && (
+                          <span className="inline-flex items-center gap-1 font-medium text-red-700 tabular-nums">
+                            <AlertTriangle size={11} aria-hidden />
+                            {alerts}
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-y border-slate-100 bg-slate-50/60 text-start text-xs font-medium text-slate-500">
@@ -385,16 +378,16 @@ export function OverviewScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
                         </span>
                       </td>
                       <td className="px-3 py-3 text-xs leading-5 text-slate-700">{observation}</td>
-                      <td className="px-3 py-3 text-end tabular-nums">{alerts > 0 ? <span className=" text-red-700">{alerts}</span> : <span className="text-slate-400">0</span>}</td>
+                      <td className="px-3 py-3 text-end tabular-nums">{alerts > 0 ? <span className="font-medium text-red-700">{alerts}</span> : <span className="text-slate-400">—</span>}</td>
                       <td className="px-5 py-3 text-end text-xs text-slate-500">{last}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-          </Panel>
-        </motion.div>
-      )}
+          )}
+        </Panel>
+      </motion.div>
     </div>
   );
 }
@@ -406,11 +399,11 @@ export function RequestsScreen({ copy, compact }: { copy: PsyPreviewCopy; compac
   const reduce = useReducedMotion();
   const rise = useRise();
   const { requests } = copy;
-  const [accepted, setAccepted] = useState(reduce ?? false);
+  // Starts like the server render (which cannot know the motion preference), or hydration fails under reduced motion.
+  const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
-    if (reduce) return;
-    const timer = window.setTimeout(() => setAccepted(true), 1600);
+    const timer = window.setTimeout(() => setAccepted(true), reduce ? 0 : 1600);
     return () => window.clearTimeout(timer);
   }, [reduce]);
 
@@ -502,7 +495,7 @@ export function LifeChart({ band }: { band: string }) {
         <motion.rect x="0" y={CHART.top} width={CHART.w} height={CHART.bottom - CHART.top} rx="10" fill={PSY_COLOR.tealFaint} stroke={PSY_COLOR.tealSoft} strokeOpacity="0.6" initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7 }} />
         <motion.path d={`${LINE} L ${CHART.w} ${CHART.h} L 0 ${CHART.h} Z`} fill={`url(#${id})`} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 0.9 }} />
         <motion.path d={LINE} fill="none" stroke={PSY_COLOR.teal} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.6, ease: EASE_OUT, delay: 0.3 }} />
-        <motion.circle cx={LAST[0]} cy={LAST[1]} r="5" fill={PSY_COLOR.teal} stroke="#fff" strokeWidth="2" initial={reduce ? false : { scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.8, type: "spring", stiffness: 300, damping: 16 }} style={{ transformBox: "fill-box", transformOrigin: "center" }} />
+        <motion.circle cx={LAST[0]} cy={LAST[1]} r="5" fill={PSY_COLOR.teal} stroke="#fff" strokeWidth="2" initial={reduce ? false : { scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.8, duration: 0.4, ease: EASE_OUT }} style={{ transformBox: "fill-box", transformOrigin: "center" }} />
       </svg>
       <p className="mt-1 flex items-center gap-2 text-xs text-slate-500">
         <span className="h-2 w-4 rounded-sm bg-[#f0fdfa] ring-1 ring-[#99f6e4]" />
@@ -533,7 +526,7 @@ export function PatientScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
             <div className="flex items-start gap-3.5">
               <Avatar name={patient.name} size="lg" />
               <div className="min-w-0">
-                <h2 className="truncate text-lg  tracking-tight text-slate-900">{patient.name}</h2>
+                <p className="truncate text-lg  tracking-tight text-slate-900">{patient.name}</p>
                 <p dir="ltr" className="text-start text-[13px] text-slate-500 rtl:text-end">
                   {patient.code}
                 </p>
@@ -559,9 +552,9 @@ export function PatientScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
           </section>
 
           <section className="rounded-2xl border border-red-200 bg-white shadow-sm">
-            <h3 className="flex items-center gap-1.5 px-5 pb-2 pt-4 text-xs  text-red-800">
+            <p className="flex items-center gap-1.5 px-5 pb-2 pt-4 text-xs  text-red-800">
               <AlertTriangle size={13} aria-hidden /> {patient.alertsTitle}
-            </h3>
+            </p>
             <p className="flex items-start gap-2.5 px-5 pb-4">
               <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: PSY_COLOR.orange }} />
               <span className="text-[13px] font-medium text-slate-900">{patient.alert}</span>
@@ -590,7 +583,7 @@ export function PatientScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
                   key={signal}
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ type: "spring", stiffness: 320, damping: 20, delay: 0.9 + index * 0.1 }}
+                  transition={{ duration: 0.4, ease: EASE_OUT, delay: 0.9 + index * 0.1 }}
                   className="inline-flex items-center gap-1.5 rounded-full border border-[#99f6e4] bg-[#f0fdfa] px-3 py-1 text-xs font-medium text-[#115e59]"
                 >
                   <span className="size-1.5 rounded-full bg-[#0d9488]" />
@@ -612,12 +605,12 @@ export function ReportsScreen({ copy, compact }: { copy: PsyPreviewCopy; compact
   const reduce = useReducedMotion();
   const rise = useRise();
   const { report } = copy;
-  const [done, setDone] = useState(reduce ?? false);
+  // Starts like the server render (which cannot know the motion preference), or hydration fails under reduced motion.
+  const [done, setDone] = useState(false);
   const spark = smoothPath(monthSeries(120, 6, 30));
 
   useEffect(() => {
-    if (reduce) return;
-    const timer = window.setTimeout(() => setDone(true), 2000);
+    const timer = window.setTimeout(() => setDone(true), reduce ? 0 : 2000);
     return () => window.clearTimeout(timer);
   }, [reduce]);
 

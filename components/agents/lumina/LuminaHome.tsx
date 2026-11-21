@@ -19,18 +19,18 @@ const AREA = `${LINE} L ${W} ${H} L 0 ${H} Z`;
 const LAST = SERIES[SERIES.length - 1];
 
 /** Today's four rings, by their place in the copy's five signals: mood, energy, focus, sleep (stress has no ring). */
-const RINGS: readonly { signal: number; value: number; icon: LucideIcon }[] = [
-  { signal: 0, value: 8, icon: HeartPulse },
-  { signal: 1, value: 6, icon: Zap },
-  { signal: 2, value: 7, icon: Target },
-  { signal: 4, value: 7, icon: Moon },
+const RINGS: readonly { signal: number; value: number; level: 0 | 1 | 2; icon: LucideIcon }[] = [
+  { signal: 0, value: 7, level: 1, icon: HeartPulse },
+  { signal: 1, value: 6, level: 0, icon: Zap },
+  { signal: 2, value: 7, level: 1, icon: Target },
+  { signal: 4, value: 7, level: 1, icon: Moon },
 ];
 
 const SIGNAL_ICONS = [Moon, HeartPulse, Target] as const;
 const PLAN_ICONS = [Wind, Sparkles, Flame] as const;
 
 /** One of today's rings: the stroke draws round, the number counts up. Reads the way the app's ScoreRing does. */
-export function WellbeingRing({ value, label, icon: Icon, delay = 0 }: { value: number; label: string; icon: LucideIcon; delay?: number }) {
+export function WellbeingRing({ value, label, level, icon: Icon, delay = 0 }: { value: number; label: string; level: string; icon: LucideIcon; delay?: number }) {
   const reduce = useReducedMotion();
   const color = scaleColor(value);
   return (
@@ -55,11 +55,9 @@ export function WellbeingRing({ value, label, icon: Icon, delay = 0 }: { value: 
           <Icon className="size-[1.0625rem]" strokeWidth={1.75} />
         </span>
       </span>
-      <span className="block w-full truncate text-[0.6875rem] text-ink sm:text-[0.75rem]">{label}</span>
-      <span dir="ltr" className="-mt-1 text-[0.6875rem] tabular-nums text-ink-soft">
-        {String(value)}
-        /10
-      </span>
+      <span className="block w-full truncate text-[0.6875rem] rtl:text-[0.75rem] text-ink sm:text-[0.75rem]">{label}</span>
+      {/* Centred on the person's usual range (as on /care-paths): for bipolar disorder, "higher" is not "better". */}
+      <span className="-mt-1 text-[0.6875rem] rtl:text-[0.75rem] text-ink-soft">{level}</span>
     </div>
   );
 }
@@ -98,8 +96,8 @@ export function BaselineChart({ className, delay = 0.5 }: { className?: string; 
         animate={{ pathLength: 1 }}
         transition={{ duration: 1.7, ease: EASE_OUT, delay: delay + 0.2 }}
       />
-      <motion.g initial={reduce ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: delay + 1.8, type: "spring", stiffness: 300, damping: 16 }} style={{ transformOrigin: `${LAST[0]}px ${LAST[1]}px` }}>
-        <motion.circle cx={LAST[0]} cy={LAST[1]} r="6" fill="var(--color-gold)" animate={reduce ? undefined : { r: [5, 11, 5], opacity: [0.45, 0.05, 0.45] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
+      <motion.g initial={reduce ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: delay + 1.8, duration: 0.4, ease: EASE_OUT }} style={{ transformOrigin: `${LAST[0]}px ${LAST[1]}px` }}>
+        <motion.circle cx={LAST[0]} cy={LAST[1]} r="6" fill="var(--color-gold)" />
         <circle cx={LAST[0]} cy={LAST[1]} r="4.5" fill="var(--color-gold)" stroke="#fff" strokeWidth="2" />
       </motion.g>
     </svg>
@@ -124,7 +122,7 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
           <AgentAvatar agent="lumina" className="size-8 rounded-xl ring-1 ring-gold-100 sm:size-9" />
           <span className={cn(SERIF, "truncate text-[1.125rem] font-light tracking-[-0.02em] text-ink rtl:font-normal rtl:tracking-normal sm:text-[1.375rem]")}>{copy.greeting}</span>
         </span>
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem]  text-sage-700 ring-1 ring-sage-100 sm:text-[0.6875rem]">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem] rtl:text-[0.6875rem]  text-sage-700 ring-1 ring-sage-100 sm:text-[0.6875rem] sm:rtl:text-[0.75rem]">
           <Check className="size-3" strokeWidth={3} />
           {copy.saved}
         </span>
@@ -132,10 +130,10 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
 
       <motion.section {...rise(0.25)} className={card}>
         <p className="text-[0.75rem]  text-ink sm:text-[0.8125rem]">{home.wellbeing}</p>
-        <p className="text-[0.6875rem] text-ink-muted">{home.wellbeingLine}</p>
+        <p className="text-[0.6875rem] rtl:text-[0.75rem] text-ink-muted">{home.wellbeingLine}</p>
         <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-3">
           {RINGS.map((ring, index) => (
-            <WellbeingRing key={ring.signal} value={ring.value} label={signals[ring.signal]} icon={ring.icon} delay={0.5 + index * 0.14} />
+            <WellbeingRing key={ring.signal} value={ring.value} label={signals[ring.signal]} level={home.levels[ring.level]} icon={ring.icon} delay={0.5 + index * 0.14} />
           ))}
         </div>
       </motion.section>
@@ -144,13 +142,13 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
         <motion.section {...rise(0.4)} className={card}>
           <div className="flex items-center justify-between gap-2">
             <p className="text-[0.75rem]  text-ink sm:text-[0.8125rem]">{views.trend.title}</p>
-            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem]  text-sage-700 ring-1 ring-sage-100">
+            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-sage-50 px-2 py-0.5 text-[0.625rem] rtl:text-[0.6875rem]  text-sage-700 ring-1 ring-sage-100">
               <TrendingUp className="size-3" strokeWidth={2.5} />
               {home.nextTitle}
             </span>
           </div>
           <BaselineChart className="mt-2" />
-          <p className="mt-1.5 flex items-center gap-1.5 text-[0.6875rem] text-ink-muted">
+          <p className="mt-1.5 flex items-center gap-1.5 text-[0.6875rem] rtl:text-[0.75rem] text-ink-muted">
             <span className="h-2 w-4 rounded-sm bg-teal-100 ring-1 ring-teal-200" />
             {views.trend.baseline}
           </p>
@@ -166,7 +164,7 @@ export function HomeScreen({ copy, compact = false }: { copy: LuminaPreviewCopy;
                   <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-lg", index === 2 ? "bg-gold-100 text-gold-700" : index === 0 ? "bg-sage-100 text-sage-700" : "bg-teal-100 text-teal-700")}>
                     <Icon className="size-3.5" strokeWidth={2} />
                   </span>
-                  <span className="min-w-0 text-[0.6875rem] leading-snug text-ink sm:text-[0.75rem]">{line}</span>
+                  <span className="min-w-0 text-[0.6875rem] rtl:text-[0.75rem] leading-snug text-ink sm:text-[0.75rem]">{line}</span>
                 </li>
               );
             })}

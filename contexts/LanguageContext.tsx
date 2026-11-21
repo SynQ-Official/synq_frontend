@@ -5,10 +5,12 @@ import {
   useContext,
   useEffect,
   useCallback,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { LANGS, LANGUAGE_STORAGE_KEY, copy, getDirection, normalizeLanguage, type Lang } from "@/lib/i18n/config";
+import { LANGUAGE_STORAGE_KEY, copy, getDirection, normalizeLanguage, type Lang } from "@/lib/i18n/config";
+import { isLocalizedPath, localizedPath, splitLangPrefix } from "@/lib/i18n/routing";
 
 type LanguageContextValue = {
   language: Lang;
@@ -44,7 +46,27 @@ function subscribeToLanguageChange(callback: () => void) {
   };
 }
 
-export function LanguageProvider({ children, initialLanguage = "en" }: { children: ReactNode; initialLanguage?: Lang }) {
+export function LanguageProvider({
+  children,
+  initialLanguage = "en",
+  routeLanguage = null,
+}: {
+  children: ReactNode;
+  initialLanguage?: Lang;
+  /** Set on public pages, whose URL fixes the language (/mira English, /ar/mira Arabic). */
+  routeLanguage?: Lang | null;
+}) {
+  // A localized URL wins over an older stored choice, before the first client snapshot is read.
+  useState(() => {
+    if (routeLanguage && typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, routeLanguage);
+      } catch {
+        // Storage blocked: the snapshot falls back to the server's language.
+      }
+    }
+  });
+
   // The server renders `initialLanguage` (from the cookie); the client keeps localStorage as its source of truth.
   const getSnapshot = useCallback(() => {
     const stored = readStoredLanguage();
@@ -54,15 +76,45 @@ export function LanguageProvider({ children, initialLanguage = "en" }: { childre
   const language = useSyncExternalStore(subscribeToLanguageChange, getSnapshot, () => initialLanguage);
 
   const setLanguage = useCallback((nextLanguage: Lang) => {
-    window.localStorage.setItem(STORAGE_KEY, nextLanguage);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, nextLanguage);
+    } catch {
+      // Storage blocked: the cookie still carries the choice.
+    }
     writeLanguageCookie(nextLanguage);
+    // A public page has one URL per language: switching opens its twin, so the address and the content always agree.
+    const { lang, path } = splitLangPrefix(window.location.pathname);
+    if (isLocalizedPath(path) && lang !== nextLanguage) {
+      window.location.assign(localizedPath(path, nextLanguage) + window.location.search + window.location.hash);
+      return;
+    }
     window.dispatchEvent(new Event("vitamind-language-change"));
   }, []);
 
   useEffect(() => {
-    const selected = LANGS.find((item) => item.code === language);
-    document.documentElement.lang = selected?.bcp47 ?? language;
-    document.documentElement.dir = selected?.dir ?? "ltr";
+    if (!routeLanguage) return;
+    // A public page's URL is the reader's latest language, also when the page came from the browser cache, not the proxy.
+    writeLanguageCookie(routeLanguage);
+    // Back/forward restores this page as it was, while another page may have changed the choice since: the URL still
+    // decides, so the stored language is brought back in line with the page on screen.
+    const restore = (event: PageTransitionEvent) => {
+      if (!event.persisted || readStoredLanguage() === routeLanguage) return;
+      try {
+        window.localStorage.setItem(STORAGE_KEY, routeLanguage);
+      } catch {
+        // Storage blocked: the page keeps rendering in its URL's language.
+      }
+      writeLanguageCookie(routeLanguage);
+      window.dispatchEvent(new Event("vitamind-language-change"));
+    };
+    window.addEventListener("pageshow", restore);
+    return () => window.removeEventListener("pageshow", restore);
+  }, [routeLanguage]);
+
+  useEffect(() => {
+    // Short tag on <html> ("en", "ar"): the product serves the UAE and Tunisia, not only the US.
+    document.documentElement.lang = language;
+    document.documentElement.dir = getDirection(language);
     // Keep the cookie aligned for visitors whose preference predates the cookie.
     if (language !== initialLanguage) writeLanguageCookie(language);
   }, [language, initialLanguage]);

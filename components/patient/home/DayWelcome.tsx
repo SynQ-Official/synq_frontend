@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Flame, Moon, Sun, Sunrise, Sunset, type LucideIcon } from "lucide-react";
 import { Magnetic, WordReveal } from "@/components/home/AnimationUtilities";
-import { DISPLAY_M, LABEL } from "@/components/home/typography";
+import { DISPLAY_M } from "@/components/home/typography";
 import { LuminaLogo } from "@/components/patient/ui/LuminaLogo";
 import { Skeleton } from "@/components/patient/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -114,15 +114,15 @@ export function DayWelcome() {
   );
 
   return (
-    <section data-tour="welcome" aria-labelledby="day-welcome-title" className="lm-welcome mb-6">
-      <div className="relative grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-12 lg:p-10">
+    <section data-tour="welcome" aria-labelledby="day-welcome-title" className="lm-welcome mb-5 lg:mb-6">
+      <div className="relative grid gap-6 p-6 sm:p-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-10 lg:px-8 lg:py-7">
         <div className="min-w-0">
           <motion.div {...enter(0)} className="flex flex-wrap items-center gap-2">
             <span className="lm-welcome-chip">
               <DayIcon className="size-4" style={{ color: "var(--color-teal-600)" }} aria-hidden />
               {formatDay(new Date(), language, { weekday: "long", month: "long", day: "numeric" })}
             </span>
-            <span className={cn(LABEL, "lm-welcome-chip uppercase")}>
+            <span className="lm-welcome-chip">
               <span aria-hidden className="size-1.5 rounded-full" style={{ background: "var(--cond)" }} />
               {w.motif[profile.track]}
             </span>
@@ -152,7 +152,7 @@ export function DayWelcome() {
           </motion.div>
         </div>
 
-        <div aria-hidden className="relative mx-auto hidden size-44 shrink-0 items-center justify-center sm:flex lg:mx-0 lg:size-52">
+        <div aria-hidden className="relative mx-auto hidden size-32 shrink-0 items-center justify-center sm:flex lg:mx-0 lg:size-36">
           <motion.span
             initial={reduce ? false : calm ? { opacity: 0 } : { scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -164,7 +164,7 @@ export function DayWelcome() {
         </div>
       </div>
 
-      <motion.div {...enter(0.45)} className="relative grid grid-cols-3 gap-4 divide-x divide-ink/10 bg-white/45 px-6 py-5 sm:px-8 lg:px-10 [&>*:not(:first-child)]:ps-4 sm:[&>*:not(:first-child)]:ps-8">
+      <motion.div {...enter(0.45)} className="relative grid grid-cols-3 gap-4 divide-x divide-ink/10 bg-white/45 px-6 py-4 sm:px-7 lg:px-8[&>*:not(:first-child)]:ps-4 sm:[&>*:not(:first-child)]:ps-8">
         <Stat value={history.error ? null : history.data?.length ?? 0} label={w.stats.checkins} loading={history.isLoading} />
         <Stat value={history.error ? null : history.streak} label={w.stats.streak} loading={history.isLoading} />
         <Stat value={together} label={w.stats.together} loading={false} />
