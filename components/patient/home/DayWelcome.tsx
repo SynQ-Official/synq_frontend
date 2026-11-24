@@ -19,7 +19,7 @@ import { dayPart, formatDay, type DayPart } from "@/lib/patient/format";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-const PLAYED_KEY = "vitamind_day_welcome_played";
+const PLAYED_KEY = "synq_day_welcome_played";
 const DAY_ICON: Record<DayPart, LucideIcon> = { morning: Sunrise, afternoon: Sun, evening: Sunset, night: Moon };
 const DAY_MS = 86_400_000;
 

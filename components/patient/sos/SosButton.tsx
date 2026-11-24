@@ -6,8 +6,10 @@ import { PatientModal } from "@/components/patient/ui/PatientModal";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
 import { Button } from "@/components/ui/button";
 import { usePatient } from "@/hooks/patient/usePatient";
-import { useSos } from "@/hooks/patient/useSos";
+import { useSos, useSosStatus } from "@/hooks/patient/useSos";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
+import { SosTracker } from "@/components/patient/sos/SosTracker";
+import { sosIsOpen, sosSentKey } from "@/lib/patient/messages";
 import { telHref } from "@/lib/patient/sos";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +51,10 @@ export function SosButton({ variant }: { variant: "wide" | "compact" }) {
   const [open, setOpen] = useState(false);
   const { state, send, reset } = useSos();
   const sending = state.phase === "sending";
+  // Where my SOS stands, read only while the dialog is open (and kept fresh until it is closed).
+  const { data: tracked } = useSosStatus(open);
+  const followed = sosIsOpen(tracked) ? tracked : null;
+  const sentKey = state.phase === "sent" ? sosSentKey(state.result) : "sentSupport";
 
   const onOpenChange = (next: boolean) => {
     if (!next && sending) return; // the alert is on its way: keep the status on screen
@@ -78,9 +84,12 @@ export function SosButton({ variant }: { variant: "wide" | "compact" }) {
           {state.phase === "sent" ? (
             <>
               <p className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-sage-700" aria-hidden />
-                <span>{state.result.alreadyOpen ? s.already : state.result.careTeamAlerted ? s.sentTeam : s.sentSupport}</span>
+                {sentKey === "unrouted"
+                  ? <TriangleAlert className="mt-0.5 size-5 shrink-0 text-gold-700" aria-hidden />
+                  : <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-sage-700" aria-hidden />}
+                <span>{sentKey === "unrouted" ? s.status.unrouted : s[sentKey]}</span>
               </p>
+              {followed && <SosTracker status={followed} className="mt-4" />}
               <Resources lines={state.result.emergencyResources} title={s.resources} />
               <p className="mt-4 text-sm font-medium text-ink">{s.emergency}</p>
             </>
@@ -94,6 +103,7 @@ export function SosButton({ variant }: { variant: "wide" | "compact" }) {
             </>
           ) : (
             <>
+              {followed && <SosTracker status={followed} className="mb-4" />}
               <p className="text-sm leading-relaxed text-ink-soft">{s.body}</p>
               {!profile.careTeam.hasClinician && <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.noTeam}</p>}
               <p className="mt-4 flex items-start gap-2.5 rounded-2xl border border-gold-100 bg-gold-50 p-3.5 text-sm font-medium leading-relaxed text-ink">

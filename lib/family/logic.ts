@@ -52,7 +52,7 @@ export function fromObservation(o: Partial<Record<ObsField, number | null>> & { 
   return form;
 }
 
-export type FamilyErrorKind = "not-active" | "denied" | "not-found" | "stale" | "clinician" | "consent" | "adult" | "legal" | "exists" | "invalid" | "network" | "other";
+export type FamilyErrorKind = "not-active" | "denied" | "not-found" | "stale" | "clinician" | "consent" | "adult" | "legal" | "exists" | "invalid" | "network" | "unverified" | "other";
 
 export function errorKind(error: unknown): FamilyErrorKind {
   if (!(error instanceof ApiError)) return "other";
@@ -65,6 +65,7 @@ export function errorKind(error: unknown): FamilyErrorKind {
   if (code === "CONSENT_REQUIRED") return "consent";
   if (code === "CHILD_IS_ADULT") return "adult";
   if (code === "LEGAL_REPRESENTATIVE_REQUIRED") return "legal";
+  if (code === "EMAIL_NOT_VERIFIED") return "unverified";
   if (error.status === 404) return "not-found";
   if (error.status === 409) return "exists";
   if (error.status === 401 || error.status === 400) return "invalid";

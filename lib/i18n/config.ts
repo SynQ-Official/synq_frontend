@@ -1,7 +1,9 @@
 export type Lang = "en" | "ar";
 
 /** Shared by the client (localStorage + cookie) and the server (root layout) so SSR renders the right language. */
-export const LANGUAGE_STORAGE_KEY = "vitamind-language";
+export const LANGUAGE_STORAGE_KEY = "synq-language";
+// legacy: read until 2026-12-22, then remove (a browser that has not run the key migration yet)
+export const LEGACY_LANGUAGE_STORAGE_KEY = "vitamind-language";
 
 export function normalizeLanguage(value: string | null | undefined): Lang {
   return value === "ar" ? "ar" : "en";

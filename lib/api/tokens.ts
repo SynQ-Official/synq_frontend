@@ -1,5 +1,7 @@
 "use client";
 
+import { migrateLegacyKeys } from "@/lib/storage/migrate-keys";
+
 /**
  * Patient session, split the safe way:
  * - the short-lived ACCESS token lives only in this module's memory: no storage, nothing for an injected
@@ -9,11 +11,11 @@
  * Only the non-secret `{ id, nickname }` of the user is kept in localStorage (the profile cache and greetings
  * need it before the first network answer).
  */
-const USER_KEY = "vitamind_user";
+const USER_KEY = "synq_user";
 /** The last loaded profile (see lib/patient/profile-cache.ts); it never outlives the session. */
-export const PROFILE_CACHE_KEY = "vitamind_profile_cache";
+export const PROFILE_CACHE_KEY = "synq_profile_cache";
 /** The last account that signed in on this device (an id, not a secret): a different id arriving means the device changed hands. */
-const OWNER_KEY = "vitamind_device_owner";
+const OWNER_KEY = "synq_device_owner";
 /** Keys of the old localStorage sessions and of retired features: removed on first load, so nothing stale is left lying in storage. */
 const LEGACY_KEYS = [
   "vitamind_token",
@@ -40,10 +42,15 @@ const LEGACY_KEYS = [
  */
 const PATIENT_DATA_PREFIXES = [
   PROFILE_CACHE_KEY,
-  "vitamind_journal_draft",
-  "vitamind-mira-session:", // `:<userId>:<chatId>` → the open Mira conversation's id (the conversation itself lives server-side)
-  "vitamind-visitor-name", // `:<userId>` → the first name typed to Mira (sessionStorage)
+  "synq_journal_draft",
+  "synq-mira-session:", // `:<userId>:<chatId>` → the open Mira conversation's id (the conversation itself lives server-side)
+  "synq-visitor-name", // `:<userId>` → the first name typed to Mira (sessionStorage)
   "mira:last-attempt-notice:", // sessionStorage
+  // legacy: pre-rename data still on a device, cleared on sign-out too (remove after 2026-12-22)
+  "vitamind_journal_draft",
+  "vitamind_profile_cache",
+  "vitamind-mira-session:",
+  "vitamind-visitor-name",
 ];
 
 export type SessionUser = { id: string; nickname: string };
@@ -74,6 +81,7 @@ function setState(next: SessionState) {
 if (typeof window !== "undefined") {
   try {
     LEGACY_KEYS.forEach((key) => window.localStorage.removeItem(key));
+    migrateLegacyKeys(window.localStorage);
     // The retired user record shared this key with the session identity and added the email (and a password field).
     const raw = window.localStorage.getItem(USER_KEY);
     if (raw && /"(email|password|disease)"/.test(raw)) window.localStorage.removeItem(USER_KEY);

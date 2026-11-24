@@ -8,6 +8,7 @@ import { FAMILY_TERMS_VERSION } from "@/lib/family/copy";
 import { errorKind } from "@/lib/family/logic";
 import { familyRegister } from "@/lib/family/session";
 import { AUTH_CARD, AUTH_TITLE } from "@/components/auth/AuthLayout";
+import { PasswordChecklist, passwordMeetsPolicy, passwordTooLong } from "@/components/auth/PasswordChecklist";
 import { cn } from "@/lib/utils";
 import { inputClass, Notice, PrimaryButton, useFamilyCopy } from "./FamilyShell";
 
@@ -27,7 +28,8 @@ export function FamilyAuth() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (form.password.length < 8) return setError(t.auth.errors.password);
+    if (!passwordMeetsPolicy(form.password)) return setError(t.auth.errors.password);
+    if (passwordTooLong(form.password)) return setError(t.auth.errors.passwordTooLong);
     if (!form.terms) return setError(t.auth.errors.terms);
     setBusy(true);
     try {
@@ -53,7 +55,11 @@ export function FamilyAuth() {
             <label className="block text-sm font-medium">{t.auth.lastName}<input required className={inputClass} value={form.lastName} onChange={set("lastName")} autoComplete="family-name" /></label>
           </div>
           <label className="block text-sm font-medium">{t.auth.email}<input type="email" required dir="ltr" className={inputClass} value={form.email} onChange={set("email")} autoComplete="email" /></label>
-          <label className="block text-sm font-medium">{t.auth.password}<input type="password" required dir="ltr" className={inputClass} value={form.password} onChange={set("password")} autoComplete="new-password" /></label>
+          <div className="block text-sm font-medium">
+            <label htmlFor="family-register-password">{t.auth.password}</label>
+            <input id="family-register-password" type="password" required dir="ltr" className={inputClass} value={form.password} onChange={set("password")} autoComplete="new-password" aria-describedby="family-register-password-rules" />
+            <PasswordChecklist id="family-register-password-rules" value={form.password} copy={t.auth.passwordRules} />
+          </div>
           <label className="block text-sm font-medium">{t.auth.phone}<input type="tel" dir="ltr" className={inputClass} value={form.phone} onChange={set("phone")} autoComplete="tel" /></label>
           <label className="flex items-start gap-2 text-sm">
             <input type="checkbox" className="mt-1 size-4" checked={form.terms} onChange={set("terms")} /> {t.auth.terms}

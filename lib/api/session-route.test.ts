@@ -55,7 +55,7 @@ describe.each([
     expect(json).not.toHaveProperty("refresh_token");
     // The refresh token goes into an HttpOnly cookie instead.
     const cookie = res.headers.get("set-cookie") ?? "";
-    expect(cookie).toContain("vitamind_rt=refresh-1");
+    expect(cookie).toContain("synq_rt=refresh-1");
     expect(cookie).toContain("HttpOnly");
     expect(fetchMock.mock.calls[0][0]).toBe(apiUrl(path));
     expect(JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body))).toEqual(body);
@@ -90,5 +90,25 @@ describe.each([
     expect(blocked.status).toBe(429);
     expect(Number(blocked.headers.get("retry-after"))).toBeGreaterThan(0);
     expect(fetchMock).toHaveBeenCalledTimes(10);
+  });
+});
+
+describe("refresh with the cookie from before the rename", () => {
+  it("refreshes from a legacy vitamind_rt alone, sets synq_rt, and expires both legacy cookies", async () => {
+    fetchMock.mockResolvedValueOnce(reply(issued));
+    const res = await call("refresh", {}, { cookie: "vitamind_rt=legacy-refresh" });
+
+    expect(res.status).toBe(200);
+    expect(JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body))).toEqual({ refresh_token: "legacy-refresh" });
+    const cookies = res.headers.getSetCookie();
+    expect(cookies.some((c) => c.startsWith("synq_rt=refresh-1"))).toBe(true);
+    expect(cookies.some((c) => c.startsWith("vitamind_rt=;") && c.includes("Max-Age=0") && c.includes("Path=/api/session"))).toBe(true);
+    expect(cookies.some((c) => c.startsWith("vitamind_s=;") && c.includes("Max-Age=0") && c.includes("Path=/"))).toBe(true);
+  });
+
+  it("prefers the new cookie when both are present", async () => {
+    fetchMock.mockResolvedValueOnce(reply(issued));
+    await call("refresh", {}, { cookie: "vitamind_rt=old; synq_rt=new" });
+    expect(JSON.parse(String((fetchMock.mock.calls[0][1] as RequestInit).body))).toEqual({ refresh_token: "new" });
   });
 });

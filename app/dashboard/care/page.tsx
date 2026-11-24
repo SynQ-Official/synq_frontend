@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { HeartHandshake } from "lucide-react";
+import { CareRelationships, CareRequestCard } from "@/components/patient/care/CareRelationships";
 import { MedicationsPanel } from "@/components/patient/care/MedicationsPanel";
 import { MessagesPanel } from "@/components/patient/care/MessagesPanel";
 import { PageIntro } from "@/components/patient/ui/primitives";
@@ -18,6 +19,9 @@ export default function CarePage() {
   return (
     <div className="lm-rise">
       <PageIntro eyebrow={copy.shell.eyebrows.care} icon={HeartHandshake} title={copy.care.title} subtitle={copy.care.subtitle} />
+
+      <CareRequestCard />
+      <CareRelationships />
 
       <div role="tablist" aria-label={copy.care.title} className="mb-5 inline-flex gap-1 rounded-full border border-white/80 bg-white/60 p-1">
         {(["messages", "medications"] as const).map((tab) => (

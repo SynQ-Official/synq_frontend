@@ -6,6 +6,7 @@ import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react
 import { House, LogOut, Settings } from "lucide-react";
 import { motion, MotionConfig } from "framer-motion";
 import { BrandLogo } from "@/components/shared/BrandLogo";
+import { EmailVerificationBanner } from "@/components/auth/EmailVerificationBanner";
 import { HelpNow } from "@/components/help/HelpNow";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { LogoLoader, LogoSpinner } from "@/components/shared/LogoLoader";
@@ -176,12 +177,22 @@ export function FamilyShell({ children, guarded = true }: { children: ReactNode;
         <FamilyRail pathname={pathname} signingOut={signingOut} onSignOut={() => void signOut()} />
         <div className="min-w-0 flex-1">
           <FamilyMobileStrip pathname={pathname} signingOut={signingOut} onSignOut={() => void signOut()} />
-          <main id="family-main" className="mx-auto w-full max-w-[88rem] px-4 pb-10 pt-5 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
+          <main id="family-main" className="mx-auto w-full max-w-[88rem] px-4 pb-10 pt-5 sm:px-6 lg:px-8 lg:pt-8">
+            <FamilyVerificationNotice />
+            {children}
+          </main>
           <footer className="mx-auto w-full max-w-[88rem] px-4 pb-8 text-xs leading-relaxed text-ink-muted sm:px-6 lg:px-8">{t.disclaimer}</footer>
         </div>
       </div>
     </MotionConfig>
   );
+}
+
+/** A soft notice while the parent's e-mail is unconfirmed; the portal stays usable. Reads the same parent profile as the rail. */
+function FamilyVerificationNotice() {
+  const me = useLoad(() => familyApi.me().then((r) => r.data), []);
+  if (me.data?.isEmailVerified !== false) return null;
+  return <EmailVerificationBanner audience="parent" />;
 }
 
 /** Desktop rail: brand, the parent, every child with an open space, then settings and a separate sign-out. */

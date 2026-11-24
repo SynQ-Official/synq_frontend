@@ -23,6 +23,10 @@ describe("auth role routing", () => {
     }
     expect(roleDestination("parent", "/family/register")).toBeNull();
     expect(roleDestination("parent", "/family/sign-in?redirect=/family")).toBeNull();
+    for (const publicPage of ["/family/forgot-password", "/family/reset-password?token=x", "/family/verify-email?token=x"]) {
+      expect(roleDestination("parent", publicPage)).toBeNull();
+    }
+    expect(roleDestination("parent", "/family/children")).toBe("/family/children");
   });
 
   it("builds the canonical sign-in URL", () => {

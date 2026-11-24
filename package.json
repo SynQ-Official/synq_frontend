@@ -1,5 +1,6 @@
 {
-  "name": "vitamind_frontend",
+  "name": "synq_frontend",
+  "description": "SynQ patient web app: onboarding, daily check-ins and calm support in English and Arabic.",
   "version": "0.1.0",
   "private": true,
   "scripts": {

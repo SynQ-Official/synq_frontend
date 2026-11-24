@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import VitamindLayout from "@/components/dashboard/VitamindLayout";
+import SynqLayout from "@/components/dashboard/SynqLayout";
 import { NO_INDEX } from "@/lib/config/site";
 
 // The signed-in space is personal: never indexed, never in previews.
@@ -10,5 +10,5 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <VitamindLayout>{children}</VitamindLayout>;
+  return <SynqLayout>{children}</SynqLayout>;
 }

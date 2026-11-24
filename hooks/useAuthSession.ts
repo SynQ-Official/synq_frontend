@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { useSessionState } from "@/hooks/useSessionState";
 import { getSessionUser, subscribeSession } from "@/lib/api/tokens";
 
-const SESSION_EVENT = "vitamind:session";
+const SESSION_EVENT = "synq:session";
 
 /** Tell every `useAuthSession` that the session changed in this tab (storage events cover other tabs). */
 export function notifySessionChange() {

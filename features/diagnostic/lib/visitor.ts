@@ -13,7 +13,7 @@ import { getSessionUser, patientKey, subscribeSession } from "@/lib/api/tokens";
  * decoupled result route both address the person by name. It lives in sessionStorage: a name typed by an
  * anonymous visitor must not outlast their tab and greet whoever uses this device next.
  */
-const NAME_KEY = "vitamind-visitor-name";
+const NAME_KEY = "synq-visitor-name";
 
 export function readVisitorName(): string {
   if (typeof window === "undefined") return "";
@@ -35,7 +35,7 @@ export function sanitizeName(raw: string): string {
   return raw.replace(/\s+/g, " ").trim().replace(/[\u0000-\u001f]/g, "").slice(0, 40);
 }
 
-const CHANGE_EVENT = "vitamind-visitor-name-change";
+const CHANGE_EVENT = "synq-visitor-name-change";
 
 function subscribe(onChange: () => void) {
   const onStorage = (event: StorageEvent) => event.key?.startsWith(NAME_KEY) && onChange();

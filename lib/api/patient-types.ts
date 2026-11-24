@@ -1,4 +1,4 @@
-/** Response shapes of `/api/v1/me/*` (vitamind_backend/apps/api/src/modules/patient). */
+/** Response shapes of `/api/v1/me/*` (synq_backend/apps/api/src/modules/patient). */
 
 export type PatientTrack = "ADHD" | "BIPOLAR" | "SCHIZOPHRENIA" | "UNSPECIFIED";
 export type Trend = "UP" | "DOWN" | "STEADY" | "UNKNOWN";
@@ -19,6 +19,8 @@ export type Profile = {
   trackAssignedByClinician?: boolean;
   memberSince: string;
   careTeam: { hasClinician: boolean; count: number };
+  /** False while the sign-up address is unconfirmed (the shell shows a banner). Absent on older API answers. */
+  isEmailVerified?: boolean;
 };
 
 export type GoalStatus = "PENDING" | "COMPLETED" | "PARTIAL" | "MISSED";
@@ -182,6 +184,8 @@ export type Consent = {
   categories: { diagnostics: boolean; mood: boolean; sleep: boolean; medication: boolean; exercises: boolean; ambiences: boolean; journal: "NONE" | "FLAGGED_EXCERPTS" | "FULL" };
   safetyAlertsConsentAt: string | null;
   monitoringNoticeAckAt: string | null;
+  /** Set when the patient asked for this clinician (a request still PENDING shows "waiting for the clinician"). */
+  requestedByPatientAt: string | null;
   /** Relationships created while sharing was pre-ticked: confirm what is shared (`required` once the 30 days have passed). */
   reconfirm?: { pending: boolean; required: boolean; dueAt: string | null };
 };
@@ -221,6 +225,9 @@ export type SecureMessage = { id: string; senderRole: "PATIENT" | "CLINICIAN" | 
 export type MessagingNotice = { monitored24x7: boolean; text: string; emergencyNumber: string | null };
 export type Conversation = { notice: MessagingNotice; messages: SecureMessage[] };
 
+/** How far an SOS got towards a person (backend-owned, additive; absent from older APIs). NOTIFICATION_DISPATCHED is an in-app notice on record, not a read or a reply. */
+export type SosDelivery = "NO_CLINICAL_ALERT" | "ALERT_UNROUTED" | "RECIPIENT_ASSIGNED" | "NOTIFICATION_DISPATCHED" | "CLINICIAN_ACKNOWLEDGED";
+
 /**
  * What `POST /me/sos` answers. One open SOS per patient: pressing again while one is open answers the same alert with
  * `alreadyOpen`. `emergencyResources` are lines such as "Clinic name: number" taken from the care team's clinics (or the
@@ -230,7 +237,26 @@ export type SosResult = {
   crisisEventId: string;
   alreadyOpen: boolean;
   careTeamAlerted: boolean;
+  /** False when an alert exists but no clinician was given it. */
+  recipientAssigned?: boolean;
+  delivery?: SosDelivery;
   emergencyResources: string[];
+};
+
+/**
+ * Where the patient's latest SOS stands (`GET /me/sos/latest`). `ACKNOWLEDGED` only after a clinician took the alert (then
+ * `clinicianName` is set): until then it is only `TRANSMITTED`, and the app never says help is on its way.
+ */
+export type SosStatus = {
+  crisisEventId: string;
+  state: "TRANSMITTED" | "ACKNOWLEDGED" | "ESCALATED" | "RESOLVED";
+  raisedAt: string;
+  careTeamAlerted: boolean;
+  /** False when an alert exists but no clinician was given it. */
+  recipientAssigned?: boolean;
+  delivery?: SosDelivery;
+  acknowledgedAt: string | null;
+  clinicianName: string | null;
 };
 
 /** The consent to orientation and follow-up on file (`/me/orientation-consent`). */

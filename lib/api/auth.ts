@@ -14,19 +14,28 @@ export type RegisterInput = {
   lang?: "en" | "ar";
   /** Version of the consent text accepted at signup; the API stores it with the account. */
   consentVersion?: string;
+  /** "YYYY-MM-DD". The API refuses anyone under 18 (UNDER_18) and an impossible date (INVALID_BIRTH_DATE). */
+  birthDate: string;
+  /** ISO 3166-1 alpha-2, uppercase. */
+  country: string;
 };
 
 /** The patient app has no two-factor flow: an account that answers with a challenge cannot sign in here. */
 type LoginResponse = z.infer<typeof loginResponseSchema>;
 
-/** `password_change_required`: a clinician-created account just proved its temporary password. There is NO session yet. */
-export type LoginOutcome = "signed_in" | "password_change_required";
+/**
+ * `password_change_required`: a clinician-created account just proved its temporary password. There is NO session yet.
+ * `adult_consent_required`: an adult account must accept its own account first (family access ends). No session yet either.
+ */
+export type LoginOutcome = "signed_in" | "password_change_required" | "adult_consent_required";
 
 export type AcceptInvitationInput = {
   token: string;
   /** The address the invitation was sent to: the API refuses any other. */
   email: string;
   nickname: string;
+  /** "YYYY-MM-DD". The API refuses anyone under 18 (UNDER_18) and an impossible date (INVALID_BIRTH_DATE). */
+  birthDate: string;
   password: string;
   confirmPassword: string;
   phone?: string;
@@ -57,12 +66,27 @@ export function cancelPasswordChange(): void {
   passwordChange = null;
 }
 
+/** The adult-consent token, held exactly like the password-change proof: memory only, short-lived, single use. */
+let adultConsent: { token: string; expiresAt: number } | null = null;
+// shortcut: lifetime assumed equal to the password-change token (15 min), upgrade if the API documents another value.
+const ADULT_CONSENT_WINDOW_MS = 14 * 60_000;
+
+/** True while the adult consent waits to be accepted (the consent screen asks; with none it sends the patient to sign in). */
+export function hasPendingAdultConsent(): boolean {
+  if (adultConsent && adultConsent.expiresAt <= Date.now()) adultConsent = null;
+  return adultConsent !== null;
+}
+
+export function cancelAdultConsent(): void {
+  adultConsent = null;
+}
+
 function withoutEmpty<T extends Record<string, unknown>>(input: T): Partial<T> {
   return Object.fromEntries(Object.entries(input).filter(([, v]) => v !== undefined && v !== null && v !== "")) as Partial<T>;
 }
 
 /** The credentials go to the same-origin session route, which keeps the refresh token in an HttpOnly cookie. */
-async function session<T>(action: "login" | "register" | "logout" | "change-password" | "accept-invitation", body: unknown, schema?: Schema<T>): Promise<T> {
+async function session<T>(action: "login" | "register" | "logout" | "change-password" | "accept-invitation" | "adult-consent", body: unknown, schema?: Schema<T>): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`/api/session/${action}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), cache: "no-store" });
@@ -91,9 +115,32 @@ export const authApi = {
       passwordChange = { token: res.password_change_token, expiresAt: Date.now() + PASSWORD_CHANGE_WINDOW_MS };
       return "password_change_required";
     }
+    if (res.requires_adult_consent && res.adult_consent_token && !res.access_token) {
+      adultConsent = { token: res.adult_consent_token, expiresAt: Date.now() + ADULT_CONSENT_WINDOW_MS };
+      return "adult_consent_required";
+    }
     if (!res.access_token) throw new Error("This account cannot sign in here.");
     saveTokens({ access_token: res.access_token, user: res.user });
     return "signed_in";
+  },
+
+  /**
+   * Accepts the adult account (single use). The API answers with a session, or with a two-factor challenge this app
+   * cannot run (the same refusal as login). A 401 means the token is spent or expired: it is dropped.
+   */
+  async acceptAdultConsent(): Promise<void> {
+    if (!hasPendingAdultConsent() || !adultConsent) throw new ApiError("Your sign-in expired. Please sign in again.", 401, "ADULT_CONSENT_EXPIRED");
+    const { token } = adultConsent;
+    let res: LoginResponse;
+    try {
+      res = await session("adult-consent", { token, accept: true }, loginResponseSchema);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) adultConsent = null;
+      throw error;
+    }
+    adultConsent = null;
+    if (!res.access_token) throw new Error("This account cannot sign in here.");
+    saveTokens({ access_token: res.access_token, user: res.user });
   },
 
   /**

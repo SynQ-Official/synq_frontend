@@ -24,6 +24,9 @@ import { moodForLevel, type MoodLevel } from "@/lib/patient/moods";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
+import { RatingRow } from "@/components/patient/lumina/RatingRow";
+import { useLuminaFeedback, useLuminaToday } from "@/hooks/patient/useLumina";
+import { checkinSubjectKey, introText, promptTitle } from "@/lib/patient/lumina";
 
 type StepKey = "mood" | "energy" | "focus" | "sleep" | "goals";
 type Answers = { mood?: number; energy?: number; focus?: number; sleepHours?: number };
@@ -96,6 +99,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
   const { direction } = useLanguage();
   const reduce = useReducedMotion();
   const { submit, isSubmitting, error, clearError } = useSubmitCheckin();
+  const lumina = useLuminaToday();
 
   const seed = useMemo(() => seedFrom(saved), [saved]);
   const [answers, setAnswers] = useState<Answers>(seed.answers);
@@ -147,6 +151,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
   }
 
   const q = copy.checkin.q[item.key];
+  const title = item.key === "goals" ? q.title : promptTitle(copy, item.key, lumina.data?.checkin.prompts[item.key]);
   const progress = ((index + (answered ? 1 : 0)) / STEPS.length) * 100;
   const missingRequired = !ready;
 
@@ -171,7 +176,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
             className="flex-1"
           >
             <span className="stat-tile mb-4 size-11">{(() => { const Icon = STEP_ICON[item.key]; return <Icon className="size-5" aria-hidden />; })()}</span>
-            <h2 className="text-[clamp(1.375rem,1.1rem+1vw,1.875rem)]  leading-snug tracking-tight text-ink">{q.title}</h2>
+            <h2 className="text-[clamp(1.375rem,1.1rem+1vw,1.875rem)]  leading-snug tracking-tight text-ink">{title}</h2>
             {item.key === "mood" && <p className="mt-1.5 text-sm text-ink-soft">{copy.checkin.companion.pickMood}</p>}
 
             <div className="mt-7">
@@ -181,7 +186,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
                     value={answers.mood !== undefined ? answers.mood * 2 : null}
                     onChange={(score) => set("mood", { mood: score / 2 })}
                     labels={copy.checkin.moods}
-                    ariaLabel={q.title}
+                    ariaLabel={title}
                   />
                   <AnimatePresence mode="wait">
                     {mood && (
@@ -205,7 +210,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
                   min={0}
                   max={24}
                   step={0.5}
-                  ariaLabel={q.title}
+                  ariaLabel={title}
                   format={(value) => `${value}${copy.checkin.q.sleep.unit}`}
                 />
               )}
@@ -215,7 +220,7 @@ function CheckinStepper({ saved }: { saved: Checkin | null }) {
                   onChange={(value) => set(item.key, { [item.key]: value })}
                   min={1}
                   max={5}
-                  ariaLabel={q.title}
+                  ariaLabel={title}
                   format={(value) => `${value}/5`}
                   lowLabel={copy.checkin.q[item.key].low}
                   highLabel={copy.checkin.q[item.key].high}
@@ -397,6 +402,8 @@ function CompanionPanel({ mood, children }: { mood: MoodLevel | null; children?:
 function StartCard({ onBegin }: { onBegin: () => void }) {
   const copy = usePatientCopy();
   const history = useCheckinHistory(30);
+  const lumina = useLuminaToday();
+  const intro = introText(copy, lumina.data?.checkin.intro);
   const s = copy.checkin.start;
   return (
     <MoodStage mood={null} className="grid lg:grid-cols-[minmax(0,1fr)_21rem]">
@@ -405,6 +412,7 @@ function StartCard({ onBegin }: { onBegin: () => void }) {
         <div>
           <h2 id="checkin-start-title" className="text-[clamp(1.625rem,1.2rem+1.4vw,2.25rem)]  leading-tight tracking-tight text-ink">{s.title}</h2>
           <p className="mt-2 text-sm font-medium text-teal-800">{fill(s.duration, { n: STEPS.length })}</p>
+          {intro && <p className="mt-1 text-sm text-ink-soft">{intro}</p>}
         </div>
 
         <div>
@@ -564,6 +572,8 @@ function CheckinResultView({ checkin }: { checkin: Checkin }) {
           </div>
         )}
 
+        <CheckinRelevance />
+
         <div className="flex flex-wrap gap-2.5">
           <Button asChild size="lg"><Link href="/dashboard/journal"><BookOpen aria-hidden />{copy.checkin.result.journal}</Link></Button>
           <Button asChild size="lg" variant="ghost"><Link href="/dashboard">{copy.checkin.result.home}</Link></Button>
@@ -571,5 +581,23 @@ function CheckinResultView({ checkin }: { checkin: Checkin }) {
       </motion.section>
       <CompanionPanel mood={mood} />
     </MoodStage>
+  );
+}
+
+/** Lumina P2.07: was today's wording relevant? Rates the wording set actually shown, linked to its decision. */
+function CheckinRelevance() {
+  const copy = usePatientCopy();
+  const lumina = useLuminaToday();
+  const { rate, sent, failed } = useLuminaFeedback();
+  const checkin = lumina.data?.checkin;
+  if (!checkin || lumina.data?.mode === "SAFETY_YIELD") return null;
+  const key = checkinSubjectKey(checkin.prompts);
+  return (
+    <RatingRow
+      question={copy.lumina.rate.checkin}
+      value={sent[key]}
+      failed={failed === key}
+      onRate={(usefulness) => void rate({ subject: "CHECKIN", subjectKey: key, usefulness, decisionId: checkin.decisionId ?? undefined })}
+    />
   );
 }

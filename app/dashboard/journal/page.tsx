@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BookHeart } from "lucide-react";
 import { JournalCompanion } from "@/components/patient/journal/JournalCompanion";
+import { JournalSynthesis } from "@/components/patient/lumina/JournalSynthesis";
 import { JournalHistory } from "@/components/patient/journal/JournalHistory";
 import { JournalInsights } from "@/components/patient/journal/JournalInsights";
 import { JournalWrite } from "@/components/patient/journal/JournalWrite";
@@ -58,7 +59,12 @@ export default function JournalPage() {
           </div>
         )}
         {tab === "history" && <JournalHistory />}
-        {tab === "insights" && <JournalInsights />}
+        {tab === "insights" && (
+          <div className="grid gap-5">
+            <JournalSynthesis />
+            <JournalInsights />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { LANGUAGE_STORAGE_KEY, copy, getDirection, normalizeLanguage, type Lang } from "@/lib/i18n/config";
+import { LANGUAGE_STORAGE_KEY, LEGACY_LANGUAGE_STORAGE_KEY, copy, getDirection, normalizeLanguage, type Lang } from "@/lib/i18n/config";
 import { isLocalizedPath, localizedPath, splitLangPrefix } from "@/lib/i18n/routing";
 
 type LanguageContextValue = {
@@ -26,7 +26,8 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 function readStoredLanguage(): string | null {
   try {
-    return window.localStorage.getItem(STORAGE_KEY);
+    // legacy: the migration (lib/api/tokens.ts) may not have run yet on this page, so the old key still holds the choice
+    return window.localStorage.getItem(STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_LANGUAGE_STORAGE_KEY);
   } catch {
     return null;
   }
@@ -34,15 +35,17 @@ function readStoredLanguage(): string | null {
 
 function writeLanguageCookie(language: Lang) {
   document.cookie = `${STORAGE_KEY}=${language}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
+  // legacy: expire the pre-rename cookie (remove after 2026-12-22)
+  document.cookie = `${LEGACY_LANGUAGE_STORAGE_KEY}=; path=/; max-age=0; samesite=lax`;
 }
 
 function subscribeToLanguageChange(callback: () => void) {
   window.addEventListener("storage", callback);
-  window.addEventListener("vitamind-language-change", callback);
+  window.addEventListener("synq-language-change", callback);
 
   return () => {
     window.removeEventListener("storage", callback);
-    window.removeEventListener("vitamind-language-change", callback);
+    window.removeEventListener("synq-language-change", callback);
   };
 }
 
@@ -88,7 +91,7 @@ export function LanguageProvider({
       window.location.assign(localizedPath(path, nextLanguage) + window.location.search + window.location.hash);
       return;
     }
-    window.dispatchEvent(new Event("vitamind-language-change"));
+    window.dispatchEvent(new Event("synq-language-change"));
   }, []);
 
   useEffect(() => {
@@ -105,7 +108,7 @@ export function LanguageProvider({
         // Storage blocked: the page keeps rendering in its URL's language.
       }
       writeLanguageCookie(routeLanguage);
-      window.dispatchEvent(new Event("vitamind-language-change"));
+      window.dispatchEvent(new Event("synq-language-change"));
     };
     window.addEventListener("pageshow", restore);
     return () => window.removeEventListener("pageshow", restore);

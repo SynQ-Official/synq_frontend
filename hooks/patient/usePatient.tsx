@@ -7,7 +7,7 @@ import { authApi } from "@/lib/api/auth";
 import { profileApi } from "@/lib/api/patient";
 import type { Profile } from "@/lib/api/patient-types";
 import { useSessionState } from "@/hooks/useSessionState";
-import { clearTokens } from "@/lib/api/tokens";
+import { clearTokens, purgePatientData } from "@/lib/api/tokens";
 import { ROUTES } from "@/lib/config/routes";
 import { hasSeenWelcome } from "@/lib/patient/onboarding";
 import { readCachedProfile, writeCachedProfile } from "@/lib/patient/profile-cache";
@@ -21,7 +21,7 @@ type PatientContextValue = {
   name: string;
   refreshProfile: () => Promise<void>;
   /** Resolves `true` once the server has ended the session; `false` leaves the patient signed in, to retry. */
-  signOut: () => Promise<boolean>;
+  signOut: (options?: { force?: boolean }) => Promise<boolean>;
 };
 
 const PatientContext = createContext<PatientContextValue | null>(null);
@@ -74,7 +74,7 @@ export function PatientProvider({
   const accountId = profile?.id;
   useEffect(() => {
     if (!accountLanguage || !accountId) return;
-    const key = `vitamind_lang_synced:${accountId}`;
+    const key = `synq_lang_synced:${accountId}`;
     try {
       if (window.sessionStorage.getItem(key)) return;
       window.sessionStorage.setItem(key, "1");
@@ -148,14 +148,19 @@ export function PatientProvider({
   }, [lacksOrientation, inDashboard, orientationChecked, refresh, router]);
   const holdForOrientation = lacksOrientation && inDashboard && !orientationChecked;
 
-  const signOut = useCallback(async () => {
+  const signOut = useCallback(async (options?: { force?: boolean }) => {
     // The live stream closes first: nothing keeps listening for a patient who is leaving.
     setSigningOut(true);
     try {
       await authApi.logout();
     } catch {
-      setSigningOut(false); // the server could not end the session: stay signed in so the patient can retry
-      return false;
+      // `force`: the account is already closed on the server, so this device lets go of it anyway.
+      if (!options?.force) {
+        setSigningOut(false); // the server could not end the session: stay signed in so the patient can retry
+        return false;
+      }
+      clearTokens();
+      purgePatientData();
     }
     clearPatientCache();
     router.replace(`${ROUTES.signIn}?role=patient`);

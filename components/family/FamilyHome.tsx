@@ -8,8 +8,10 @@ import { RoomLive } from "./ChildRoom";
 import { familyApi, type ChildLink, type Permission, type Relationship } from "@/lib/family/api";
 import { FAMILY_CONSENT_VERSION } from "@/lib/family/copy";
 import { errorKind } from "@/lib/family/logic";
+import { VerifyToUseNotice } from "@/components/auth/EmailVerificationBanner";
 import { cn } from "@/lib/utils";
 import { Card, inputClass, LoadError, Notice, PrimaryButton, SecondaryButton, useFamilyCopy, useLoad } from "./FamilyShell";
+import { WithdrawRequest } from "./FamilySettings";
 
 const PERMISSIONS: Permission[] = ["canCheckin", "canJournal", "canViewReports", "canUseGuidance", "canViewResources", "canUseSafetyPlan", "childSelfReport", "viewChildSelfReport", "showClinician"];
 const RELATIONSHIPS: Relationship[] = ["MOTHER", "FATHER", "LEGAL_GUARDIAN", "OTHER_CAREGIVER"];
@@ -56,6 +58,8 @@ export function FamilyHome() {
   );
 }
 
+const WITHDRAWABLE: ChildLink["status"][] = ["DRAFT", "PENDING_REVIEW", "APPROVED", "REJECTED"];
+
 /** Where a request stands on the way to an open space (REJECTED is back at the first step; REVOKED has no path). */
 const STEP: Record<ChildLink["status"], number> = { DRAFT: 0, REJECTED: 0, PENDING_REVIEW: 1, APPROVED: 2, ACTIVE: 3, SUSPENDED: 3, REVOKED: -1 };
 
@@ -96,6 +100,8 @@ function ChildCard({ link, onChange }: { link: ChildLink; onChange: () => void }
       {link.decisionReason && <p className="rounded-xl bg-white/70 p-3 text-sm text-ink-muted">“{link.decisionReason}”</p>}
       {(link.status === "DRAFT" || link.status === "REJECTED") && <SubmitRequest link={link} onDone={onChange} />}
       {link.status === "APPROVED" && <ReviewAccess link={link} onDone={onChange} />}
+      {/* Cancelling a request that has not opened yet. Once ACTIVE, access is ended in Settings instead. */}
+      {WITHDRAWABLE.includes(link.status) && <WithdrawRequest link={link} onDone={onChange} label={t.home.withdraw} confirmText={t.home.withdrawConfirm} />}
       {/* The child's room, live, straight from the home: the API gates it with the same permission as the Room tab. */}
       {link.status === "ACTIVE" && link.permissions?.canViewResources && (
         <div className="-mx-5 overflow-hidden border-t border-line/70 sm:-mx-6">
@@ -122,6 +128,7 @@ function AddChild({ onDone, onCancel }: { onDone: () => void; onCancel: () => vo
   const { t } = useFamilyCopy();
   const [form, setForm] = useState({ firstName: "", birthDate: "", relationship: "MOTHER" as Relationship, legal: false, verification: "" });
   const [error, setError] = useState("");
+  const [unverified, setUnverified] = useState(false);
   const [busy, setBusy] = useState(false);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,7 +139,8 @@ function AddChild({ onDone, onCancel }: { onDone: () => void; onCancel: () => vo
       await familyApi.addChild({ firstName: form.firstName.trim(), birthDate: form.birthDate, relationship: form.relationship, isLegalRepresentative: form.legal, verificationNote: form.verification.trim() || undefined });
       onDone();
     } catch (err) {
-      setError(errorKind(err) === "adult" ? t.addChild.errors.adult : t.error);
+      if (errorKind(err) === "unverified") setUnverified(true);
+      else setError(errorKind(err) === "adult" ? t.addChild.errors.adult : t.error);
     } finally {
       setBusy(false);
     }
@@ -157,6 +165,7 @@ function AddChild({ onDone, onCancel }: { onDone: () => void; onCancel: () => vo
           <span className="mt-1 block text-xs font-normal text-ink-muted">{t.addChild.verificationHint}</span>
         </label>
         {error && <Notice kind="error">{error}</Notice>}
+        {unverified && <VerifyToUseNotice audience="parent" />}
         <div className="flex flex-wrap gap-2">
           <PrimaryButton type="submit" disabled={busy}>{t.addChild.save}</PrimaryButton>
           <SecondaryButton type="button" onClick={onCancel}>{t.addChild.cancel}</SecondaryButton>
@@ -171,6 +180,7 @@ function SubmitRequest({ link, onDone }: { link: ChildLink; onDone: () => void }
   const [email, setEmail] = useState("");
   const [consents, setConsents] = useState([false, false, false]);
   const [error, setError] = useState("");
+  const [unverified, setUnverified] = useState(false);
   const [busy, setBusy] = useState(false);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +192,8 @@ function SubmitRequest({ link, onDone }: { link: ChildLink; onDone: () => void }
       onDone();
     } catch (err) {
       const kind = errorKind(err);
-      setError(kind === "clinician" ? t.submit.errors.clinician : kind === "legal" ? t.submit.errors.legal : kind === "consent" ? t.submit.errors.consents : t.error);
+      if (kind === "unverified") setUnverified(true);
+      else setError(kind === "clinician" ? t.submit.errors.clinician : kind === "legal" ? t.submit.errors.legal : kind === "consent" ? t.submit.errors.consents : t.error);
     } finally {
       setBusy(false);
     }
@@ -201,6 +212,7 @@ function SubmitRequest({ link, onDone }: { link: ChildLink; onDone: () => void }
       ))}
       {!link.isLegalRepresentative && <Notice kind="info">{t.submit.errors.legal}</Notice>}
       {error && <Notice kind="error">{error}</Notice>}
+      {unverified && <VerifyToUseNotice audience="parent" />}
       <PrimaryButton type="submit" disabled={busy}>{t.submit.send}</PrimaryButton>
     </form>
   );

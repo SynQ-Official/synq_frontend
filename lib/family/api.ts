@@ -99,7 +99,7 @@ export interface Report {
 export interface SafetyContact { name: string; relation?: string; phone: string; role: "trusted" | "professional" | "emergency" }
 export interface SafetyPlan { contacts: SafetyContact[]; emergencyNumber: string | null; warningSigns: string[]; communication: string | null; agreedActions: string[]; reviewedWithProfessional: boolean; updatedAt?: string }
 export interface Resource { id: string; title: string; titleAr: string | null; summary: string | null; url: string | null; sourceOrg: string | null; readingTimeMinutes: number | null }
-export interface ParentProfile { id: string; email: string; firstName: string; lastName: string; phoneNumber: string | null; language: "EN" | "AR" }
+export interface ParentProfile { id: string; email: string; firstName: string; lastName: string; phoneNumber: string | null; language: "EN" | "AR"; /** False while the address is unconfirmed. Absent on older answers. */ isEmailVerified?: boolean }
 export interface Consent { id: string; purpose: string; version: string; grantedAt: string; withdrawnAt: string | null; childId: string | null; childFirstName: string | null }
 
 export type CheckinInput = Partial<Record<ObsField, number | null>> & { date?: string; difficulties?: string[]; behaviors?: string[]; sources?: Partial<Record<ObsField, Source>> };
@@ -111,6 +111,12 @@ export const familyApi = {
   me: () => familyRequest<One<ParentProfile>>("GET", "/parent/me"),
   updateMe: (input: { firstName?: string; lastName?: string; phone?: string | null; lang?: "en" | "ar" }) => familyRequest<One<ParentProfile>>("PATCH", "/parent/me", input),
   consents: () => familyRequest<One<Consent[]>>("GET", "/parent/consents"),
+  /** Closes and anonymises the parent account. Needs the current password; a wrong one answers 400 `INVALID_PASSWORD`. Throttled server-side. */
+  deleteAccount: (password: string) => familyRequest<{ deleted: true }>("DELETE", "/parent/me", { password }),
+  /** Public (the token is the proof); the parent API client is used so the one parent transport carries it. */
+  verifyEmail: (token: string) => familyRequest<unknown>("POST", "/parent/auth/verify-email", { token }),
+  /** Parent session required: answers `{ sent: true }`, `{ alreadyVerified: true }`, or 429 when throttled. */
+  resendVerification: () => familyRequest<unknown>("POST", "/parent/auth/verify-email/resend", {}),
 
   children: () => familyRequest<One<ChildLink[]>>("GET", "/parent/children"),
   addChild: (input: { firstName: string; birthDate: string; relationship: Relationship; isLegalRepresentative: boolean; verificationNote?: string }) =>

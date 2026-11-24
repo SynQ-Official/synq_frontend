@@ -27,7 +27,7 @@ export function useMiraChat(chatId?: string | null, lang: Lang = "en", { locked 
   // Scoped by account AND conversation: the pointer to an open session is never readable by another user, even
   // through a shared/back-navigated `?chatId=`. No user, no key (nothing personal is stored).
   const userId = useSessionUserId();
-  const storageKey = chatId && userId ? `vitamind-mira-session:${userId}:${chatId}` : null;
+  const storageKey = chatId && userId ? `synq-mira-session:${userId}:${chatId}` : null;
   const conv = useMiraConversation(locked);
   const consent = useMiraConsent();
   // The agent keeps its own chapter at MORNING: the one shown follows progress.

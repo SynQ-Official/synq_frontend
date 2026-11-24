@@ -1,6 +1,6 @@
 /**
  * Where the SynQ Nest API lives. Every backend route is versioned under
- * `/api/v1` (see vitamind_backend/apps/api/BACKEND_API.md).
+ * `/api/v1` (see synq_backend/apps/api/BACKEND_API.md).
  *
  * Server code (Next route handlers) may use the private `API_SERVICE_URL`;
  * the browser only sees `NEXT_PUBLIC_API_URL`.

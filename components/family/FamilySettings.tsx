@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { ApiError } from "@/lib/api/errors";
+import { signInHref } from "@/lib/config/auth-role";
 import { familyApi, type ChildLink, type ParentProfile } from "@/lib/family/api";
+import { familySignOut } from "@/lib/family/session";
 import { Card, inputClass, LoadError, Notice, PageHeading, PrimaryButton, SecondaryButton, useFamilyCopy, useLoad } from "./FamilyShell";
 
 /** 08 - Parent profile and family settings: profile, consents, and ending access per child (REVOKED is final). */
@@ -43,6 +47,8 @@ export function FamilySettings() {
           </ul>
         )}
       </Card>
+
+      <DeleteAccount />
     </div>
   );
 }
@@ -95,17 +101,31 @@ function ProfileForm({ profile, onSaved }: { profile: ParentProfile; onSaved: (p
 
 function AccessRow({ link, onChange }: { link: ChildLink; onChange: () => void }) {
   const { t } = useFamilyCopy();
+  const ended = link.status === "REVOKED";
+
+  return (
+    <li className="space-y-2 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="font-medium">{link.firstName} <span className="text-sm text-ink-muted">· {t.status[link.status]}</span></p>
+        {!ended && <WithdrawRequest link={link} onDone={onChange} />}
+      </div>
+    </li>
+  );
+}
+
+/** Ends the family access for a child after a confirm step. Used by Settings (ends access) and the home card (cancels a request). */
+export function WithdrawRequest({ link, onDone, label, confirmText }: { link: ChildLink; onDone: () => void; label?: string; confirmText?: string }) {
+  const { t } = useFamilyCopy();
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
-  const ended = link.status === "REVOKED";
 
   const withdraw = async () => {
     setBusy(true);
     setFailed(false);
     try {
       await familyApi.withdraw(link.childId);
-      onChange();
+      onDone();
     } catch {
       setFailed(true);
     } finally {
@@ -115,21 +135,62 @@ function AccessRow({ link, onChange }: { link: ChildLink; onChange: () => void }
   };
 
   return (
-    <li className="space-y-2 py-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="font-medium">{link.firstName} <span className="text-sm text-ink-muted">· {t.status[link.status]}</span></p>
-        {!ended && !confirming && <SecondaryButton onClick={() => setConfirming(true)}>{t.settings.withdraw}</SecondaryButton>}
-      </div>
+    <div className="flex flex-col items-start gap-2">
+      {!confirming && <SecondaryButton onClick={() => setConfirming(true)}>{label ?? t.settings.withdraw}</SecondaryButton>}
       {confirming && (
-        <div className="rounded-xl bg-rose-50 p-3 text-sm">
-          <p>{t.settings.withdrawConfirm}</p>
+        <div className="max-w-md rounded-xl bg-rose-50 p-3 text-sm">
+          <p>{confirmText ?? t.settings.withdrawConfirm}</p>
           <div className="mt-2 flex gap-2">
-            <PrimaryButton className="bg-rose-700 hover:bg-rose-800" disabled={busy} onClick={withdraw}>{t.settings.withdraw}</PrimaryButton>
+            <PrimaryButton className="bg-rose-700 hover:bg-rose-800" disabled={busy} onClick={withdraw}>{label ?? t.settings.withdraw}</PrimaryButton>
             <SecondaryButton onClick={() => setConfirming(false)}>{t.addChild.cancel}</SecondaryButton>
           </div>
         </div>
       )}
       {failed && <Notice kind="error">{t.error}</Notice>}
-    </li>
+    </div>
+  );
+}
+
+/** Closes the parent account: password re-entry, then sign out and back to the parent sign-in. */
+function DeleteAccount() {
+  const { t } = useFamilyCopy();
+  const router = useRouter();
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<"wrong" | "generic" | null>(null);
+
+  const remove = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await familyApi.deleteAccount(password);
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 400 && err.code === "INVALID_PASSWORD" ? "wrong" : "generic");
+      setBusy(false);
+      return;
+    }
+    await familySignOut().catch(() => undefined);
+    router.replace(signInHref("parent"));
+  };
+
+  return (
+    <Card tone="danger">
+      <h2 className="text-base text-rose-700">{t.settings.deleteTitle}</h2>
+      <p className="mt-1 text-sm text-ink-muted">{t.settings.deleteLead}</p>
+      <ul className="mt-3 list-disc space-y-1 ps-5 text-sm">
+        {t.settings.deletePoints.map((point) => <li key={point}>{point}</li>)}
+      </ul>
+      <form onSubmit={remove} className="mt-4 grid gap-3 sm:max-w-md">
+        <label className="text-sm font-medium">{t.settings.deletePassword}
+          <input type="password" autoComplete="current-password" required className={inputClass} value={password} onChange={(e) => setPassword(e.target.value)} />
+        </label>
+        {error && <Notice kind="error">{error === "wrong" ? t.settings.passwordWrong : t.error}</Notice>}
+        <div>
+          <PrimaryButton type="submit" className="bg-rose-700 hover:bg-rose-800" disabled={busy || !password}>{t.settings.deleteConfirm}</PrimaryButton>
+        </div>
+      </form>
+    </Card>
   );
 }

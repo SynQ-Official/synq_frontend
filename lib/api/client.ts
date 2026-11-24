@@ -82,6 +82,7 @@ export function refreshSession(): Promise<boolean> {
   refreshing ??= (async () => {
     try {
       const locks = typeof navigator !== "undefined" ? navigator.locks : undefined;
+      // legacy: lock name kept so tabs on the old bundle never refresh concurrently (token rotation); rename after 2026-12-22
       const outcome = locks ? await locks.request("vitamind-session-refresh", requestRefresh) : await requestRefresh();
       if (outcome === "rejected") clearTokens();
       else if (outcome === "unreachable") markSignedOut();
@@ -141,6 +142,13 @@ export async function apiRequest<T>(path: string, options: RequestOptions<T> = {
   const payload = await readJson(res);
   if (!res.ok) throw apiErrorFrom(payload, res.status);
   return unwrap(payload, options.schema, res.status);
+}
+
+/** A file answer (the data export): the same auth, refresh and error mapping as `apiRequest`, but the body is kept as a Blob. */
+export async function apiDownload(path: string, options: RequestOptions<unknown> = {}): Promise<Blob> {
+  const res = await send(path, options, true);
+  if (!res.ok) throw apiErrorFrom(await readJson(res), res.status);
+  return res.blob();
 }
 
 /**

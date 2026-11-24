@@ -118,13 +118,13 @@ describe("mandatory password change", () => {
 });
 
 describe("invitation acceptance", () => {
-  const input = { token: "t".repeat(43), email: "ana@example.com", nickname: "Ana", password: "My-new-pass-1!", confirmPassword: "My-new-pass-1!", lang: "en" as const };
+  const input = { token: "t".repeat(43), email: "ana@example.com", nickname: "Ana", birthDate: "1990-05-17", password: "My-new-pass-1!", confirmPassword: "My-new-pass-1!", lang: "en" as const };
 
   it("creates the session and says where the patient goes next", async () => {
     fetchMock.mockResolvedValueOnce(reply({ ...session, assignmentId: "a1", next: "TRACK" }));
     await expect(authApi.acceptInvitation(input)).resolves.toBe("TRACK");
     expect(fetchMock.mock.calls[0][0]).toBe("/api/session/accept-invitation");
-    expect(bodyOf(0)).toMatchObject({ token: input.token, email: "ana@example.com", nickname: "Ana" });
+    expect(bodyOf(0)).toMatchObject({ token: input.token, email: "ana@example.com", nickname: "Ana", birthDate: "1990-05-17" });
     expect(isAuthenticated()).toBe(true);
   });
 

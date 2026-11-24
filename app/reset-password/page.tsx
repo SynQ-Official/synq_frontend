@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<{ token?: string | string[] }> }) {
   const raw = (await searchParams).token;
   const token = typeof raw === "string" && /^[A-Za-z0-9_-]{43}$/.test(raw) ? raw : null;
-  const usable = token ? await isResetLinkUsable(token) : false;
+  const usable = token ? await isResetLinkUsable(token, "patient") : false;
   return (
     <AuthLayout>
-      <ResetPasswordScreen token={usable ? token : null} />
+      <ResetPasswordScreen token={usable ? token : null} audience="patient" />
     </AuthLayout>
   );
 }

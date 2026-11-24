@@ -14,6 +14,7 @@ import { ApiError } from "@/lib/api/client";
 import type { Consent, SecureMessage } from "@/lib/api/patient-types";
 import { fill } from "@/lib/i18n/patient";
 import { formatDay } from "@/lib/patient/format";
+import { bubbleKind } from "@/lib/patient/messages";
 import { cn } from "@/lib/utils";
 
 /** The API's own limit for one message. */
@@ -24,7 +25,24 @@ const clinicianName = (consent: Consent) => `${consent.clinician.firstName} ${co
 function Bubble({ message }: { message: SecureMessage }) {
   const copy = usePatientCopy().care.messages;
   const { language } = useLanguage();
-  const mine = message.senderRole === "PATIENT";
+  const kind = bubbleKind(message.senderRole);
+  const mine = kind === "mine";
+  const when = formatDay(message.createdAt, language, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  // From the platform, not from a person: a neutral, centred note that never carries the clinician's name.
+  if (kind === "system") {
+    return (
+      <li className="flex flex-col items-center gap-1">
+        <div dir="auto" className="max-w-[90%] whitespace-pre-wrap break-words rounded-2xl border border-dashed border-teal-200 bg-teal-50/60 px-4 py-2 text-center text-sm leading-relaxed text-ink-soft">
+          {message.content}
+        </div>
+        <p className="flex items-center gap-1.5 px-1 text-[0.6875rem] text-muted-foreground">
+          <span>{copy.system}</span>
+          <span aria-hidden>·</span>
+          <time dateTime={message.createdAt}>{when}</time>
+        </p>
+      </li>
+    );
+  }
   return (
     <li className={cn("flex flex-col gap-1", mine ? "items-end" : "items-start")}>
       <div
@@ -39,7 +57,7 @@ function Bubble({ message }: { message: SecureMessage }) {
       <p className="flex items-center gap-1.5 px-1 text-[0.6875rem] text-muted-foreground">
         <span>{mine ? copy.you : copy.clinician}</span>
         <span aria-hidden>·</span>
-        <time dateTime={message.createdAt}>{formatDay(message.createdAt, language, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</time>
+        <time dateTime={message.createdAt}>{when}</time>
         {mine && message.readAt && (
           <span className="inline-flex items-center gap-1 text-sage-700">
             <CheckCheck className="size-3" aria-hidden />

@@ -24,10 +24,18 @@ export const ROUTES = {
   familyRegister: "/family/register",
   /** First sign-in of an account a clinician created: replace the temporary password. */
   changePassword: "/auth/change-password",
+  /** An adult account's own consent before its first session (family access ends with it). */
+  adultConsent: "/auth/adult-consent",
   /** The link in a clinician's invitation e-mail (the API puts `?token=` after it). */
   invitation: "/invitation",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
+  /** The link in a patient's verification e-mail (the API puts `?token=` after it). */
+  verifyEmail: "/verify-email",
+  /** Parent counterparts of the password and e-mail links: the parent portal's own pages. */
+  familyForgotPassword: "/family/forgot-password",
+  familyResetPassword: "/family/reset-password",
+  familyVerifyEmail: "/family/verify-email",
   dashboard: "/dashboard",
   checkIn: "/dashboard/check-in",
   welcome: "/welcome",

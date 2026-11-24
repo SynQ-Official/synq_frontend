@@ -1,4 +1,4 @@
-import { AGENT_TIMEOUT_MS, api, sendOnClose } from "./client";
+import { AGENT_TIMEOUT_MS, api, apiDownload, sendOnClose } from "./client";
 import { profileSchema } from "./schemas";
 import type {
   AmbienceAnswer,
@@ -30,6 +30,7 @@ import type {
   OrientationConsent,
   OrientationStatus,
   SosResult,
+  SosStatus,
   SparkView,
 } from "./patient-types";
 
@@ -113,6 +114,8 @@ export const profileApi = {
  */
 export const sosApi = {
   raise: (): Promise<{ data: SosResult }> => api.post<{ data: SosResult }>("/me/sos", undefined, { timeoutMs: 20_000 }),
+  /** My SOS of the last 24 h and where it stands; `data` is null when there is none. */
+  latest: (signal?: AbortSignal): Promise<{ data: SosStatus | null }> => api.get<{ data: SosStatus | null }>("/me/sos/latest", undefined, { signal }),
 };
 
 export type CheckinList = { data: Checkin[]; meta: { from: string; to: string; count: number } };
@@ -186,6 +189,8 @@ export const careApi = {
   /** The thread with one clinician (an ACTIVE, consented relationship). Reading it marks the clinician's messages read. */
   messages: (assignmentId: string, signal?: AbortSignal): Promise<{ monitoringNotice: MessagingNotice; data: SecureMessage[] }> =>
     api.get<{ monitoringNotice: MessagingNotice; data: SecureMessage[] }>("/me/messages", { assignmentId }, { signal }),
+  /** How many care-team messages are unread. Reads only: nothing is marked read. */
+  unreadMessages: (signal?: AbortSignal): Promise<{ data: { unread: number } }> => api.get<{ data: { unread: number } }>("/me/messages/unread", undefined, { signal }),
   sendMessage: (input: { assignmentId: string; content: string }): Promise<{ monitoringNotice: MessagingNotice; data: SecureMessage }> =>
     api.post<{ monitoringNotice: MessagingNotice; data: SecureMessage }>("/me/messages", input),
 };
@@ -200,12 +205,27 @@ export const reportsApi = {
 
 export const clinicalApi = {
   consents: (signal?: AbortSignal): Promise<{ data: Consent[] }> => api.get<{ data: Consent[] }>("/me/consents", undefined, { signal }),
+  /** Asks a clinician to follow the patient. Always answers `requested: true` (the API does not reveal who has an account). */
+  requestCare: (clinicianEmail: string): Promise<{ data: { requested: boolean } }> =>
+    api.post<{ data: { requested: boolean } }>("/me/care/requests", { clinicianEmail }),
+  /** Ends a PENDING or ACTIVE relationship (or cancels the patient's own request). The caller refetches `consents`. */
+  endCare: (assignmentId: string, reason?: string): Promise<{ data: { assignmentId: string; status: string } }> =>
+    api.post<{ data: { assignmentId: string; status: string } }>(`/me/care/${id(assignmentId)}/end`, reason ? { reason } : {}),
   /** The caller refetches `consents` afterwards, so the updated row in the answer is not needed. */
   updateConsent: (assignmentId: string, input: ConsentInput): Promise<void> =>
     api.patch(`/me/consents/${id(assignmentId)}`, input).then(() => undefined),
   /** Confirm what is shared (optionally changing it in the same call). The API logs the before and after. */
   reconfirm: (assignmentId: string, input: ConsentInput = {}): Promise<void> =>
     api.post(`/me/consents/${id(assignmentId)}/reconfirm`, input).then(() => undefined),
+};
+
+/**
+ * Privacy: the patient's own data export (`GET /me/export`, a JSON attachment, 3 per hour) and account deletion
+ * (`DELETE /me`). A wrong password answers 400 INVALID_PASSWORD (not 401: a 401 would start the session refresh).
+ */
+export const accountApi = {
+  exportData: (): Promise<Blob> => apiDownload("/me/export"),
+  deleteAccount: (password: string): Promise<{ data: { deleted: boolean } }> => api.delete<{ data: { deleted: boolean } }>("/me", { body: { password } }),
 };
 
 /** Smart Library: the patient is the token's own; the library comes from their account, never from the request. */

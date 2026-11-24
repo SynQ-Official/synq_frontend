@@ -53,7 +53,7 @@ The app is a responsive, multilingual Next.js application. It presents conversat
 **Prerequisites:** Node.js 20+, npm (or pnpm / yarn), a modern browser, and a running SynQ API.
 
 ```bash
-cd vitamind_frontend
+cd synq_frontend
 npm install
 cp .env.local.example .env.local      # then adjust NEXT_PUBLIC_API_URL
 npm run dev
@@ -104,7 +104,7 @@ Browser ──► SynQ API (REST + SSE) ──► PostgreSQL, AI engines (Mira, 
 ## Project structure
 
 ```text
-vitamind_frontend/
+synq_frontend/
 ├── app/                 App Router: auth, dashboard, orientation, mira, lumina, tracks,
 │                        support, trust, welcome, password reset, SEO (sitemap, robots, og)
 ├── components/          UI grouped by domain (auth, dashboard, diagnostic, home, layout,

@@ -26,6 +26,9 @@ export const loginResponseSchema = z.object({
   requires_2fa: z.boolean().optional(),
   requires_password_change: z.boolean().optional(),
   password_change_token: z.string().min(1).optional(),
+  /** An adult account whose consent is still missing: the token is traded at `/auth/login/adult-consent` (no session yet). */
+  requires_adult_consent: z.boolean().optional(),
+  adult_consent_token: z.string().min(1).optional(),
 });
 
 /** Accepting an invitation opens a session and says where the patient goes next (the clinician may have set the track). */
@@ -47,4 +50,5 @@ export const profileSchema: Schema<Profile> = z.object({
   trackAssignedByClinician: z.boolean().optional(),
   memberSince: z.string(),
   careTeam: z.object({ hasClinician: z.boolean(), count: z.number() }),
+  isEmailVerified: z.boolean().optional(),
 });

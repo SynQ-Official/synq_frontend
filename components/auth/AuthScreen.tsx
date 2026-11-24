@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { authApi, cancelPasswordChange } from "@/lib/api/auth";
+import { authApi, cancelAdultConsent, cancelPasswordChange } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
 import { useSessionState } from "@/hooks/useSessionState";
 import { clearTokens, hasValidSession } from "@/lib/api/tokens";
@@ -14,11 +14,14 @@ import { FormField, IconInput } from "@/components/shared/FormField";
 import { countryName, defaultCountry, PhoneField, phoneExample, phoneStatus, toE164, type PhoneValue } from "@/components/shared/PhoneField";
 import { DURATION, EASE_OUT, fadeUp, stagger } from "@/lib/motion";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, ArrowRight, Check, Eye, EyeOff, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { AlertCircle, ArrowRight, CalendarDays, Check, Eye, EyeOff, Lock, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { birthDateFailure, birthDateStatus, birthYearReady, type BirthDateStatus } from "@/lib/auth/birth-date";
+import { countryOptions } from "@/lib/config/countries";
+import { accountVerificationCopy } from "@/lib/i18n/accountVerification";
 import { toast } from "sonner";
 import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore, useTransition } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, useTransition } from "react";
 import { ROUTES } from "@/lib/config/routes";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
 import { LinkedText } from "@/components/legal/LegalLinks";
@@ -49,19 +52,19 @@ function safeRedirect(redirect: string | null, mode: AuthMode, role: AuthRole | 
 }
 
 type FormValues = { nickname: string; email: string; password: string; confirmPassword: string };
-type FieldName = keyof FormValues | "phone" | "consent" | "terms";
+type FieldName = keyof FormValues | "phone" | "birthDate" | "country" | "consent" | "terms";
 
 /** The API's own bounds: a nickname is 2 to 30 characters (the profile edit applies the same). */
 const NICKNAME_MIN = 2;
 const NICKNAME_MAX = 30;
 
 /** The form field a 400 names first: class-validator messages start with the property ("nickname must be…"). */
-function rejectedField(error: ApiError): "nickname" | "email" | "password" | "phone" | null {
+function rejectedField(error: ApiError): "nickname" | "email" | "password" | "phone" | "birthDate" | "country" | null {
   const raw = (error.payload as { message?: unknown } | undefined)?.message;
   for (const message of Array.isArray(raw) ? raw : [raw]) {
     if (typeof message !== "string") continue;
     const field = message.trim().split(/\s/)[0];
-    if (field === "nickname" || field === "email" || field === "password" || field === "phone") return field;
+    if (field === "nickname" || field === "email" || field === "password" || field === "phone" || field === "birthDate" || field === "country") return field;
   }
   return null;
 }
@@ -71,6 +74,8 @@ const FIELD_IDS: Record<FieldName, string> = {
   nickname: "auth-nickname",
   email: "auth-email",
   phone: "auth-phone",
+  birthDate: "auth-birth-date",
+  country: "auth-country",
   password: "auth-password",
   confirmPassword: "auth-confirm-password",
   consent: "auth-consent",
@@ -79,6 +84,10 @@ const FIELD_IDS: Record<FieldName, string> = {
 
 const LINK_CLASS =
   "rounded-md  text-teal-700 underline-offset-4 transition-colors duration-200 hover:text-teal-800 hover:underline";
+
+/** Native select, styled like the text inputs next to it (same height, border, focus ring and invalid state). */
+const SELECT_CLASS =
+  "h-12 w-full min-w-0 rounded-control border border-line-strong bg-white ps-4 pe-10 text-[0.9375rem] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-200 hover:border-teal-300 focus:border-teal-500 focus:shadow-focus aria-[invalid=true]:border-rose";
 
 function VisibilityToggle({ show, toggle, label }: { show: boolean; toggle: () => void; label: string }) {
   return (
@@ -102,7 +111,15 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const [isPending, startTransition] = useTransition();
   const { dictionary, direction, language } = useLanguage();
   const auth = dictionary.auth;
+  const signupCopy = accountVerificationCopy[language].signup;
   const isSignUp = mode === "signup";
+  // Birth date and country are sign-up only: the API refuses anyone under 18 and needs an ISO country code.
+  const [birthDate, setBirthDate] = useState("");
+  const [country, setCountry] = useState("");
+  // UTC calendar day, the same day the server counts age on.
+  const today = new Date().toISOString().slice(0, 10);
+  const birthState = birthDateStatus(birthDate, today);
+  const countries = useMemo(() => countryOptions(language), [language]);
   // Sign-up is the patient's; sign-in serves two independent accounts and needs the visitor's explicit choice (`?role=`).
   const role: AuthRole | null = isSignUp ? "patient" : parseRole(searchParams.get("role"));
   const isParent = role === "parent";
@@ -168,12 +185,17 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const apiFailure = (err: unknown): { message: string; field?: FieldName } => {
     if (err instanceof ApiError) {
       if (err.status === 0) return { message: auth.errors.network };
+      // The API's own birth-date refusals land on the birth date field, whatever the status they travel with.
+      const birthFailure = birthDateFailure(err.code);
+      if (birthFailure) return { message: birthFailure === "minor" ? signupCopy.under18 : signupCopy.birthDateInvalid, field: "birthDate" };
       if (err.status === 400) {
         const field = rejectedField(err);
         const onField = {
           nickname: auth.errors.nicknameLength,
           email: auth.errors.email,
           phone: auth.errors.phone,
+          birthDate: signupCopy.birthDateInvalid,
+          country: signupCopy.countryInvalid,
           password: isSignUp ? auth.errors.passwordRules : auth.errors.invalidCredentials,
         };
         return field ? { message: onField[field], field } : { message: auth.errors.validation };
@@ -202,6 +224,8 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) return fail("email", auth.errors.email);
     const e164 = isSignUp ? toE164(phone) : null;
     if (isSignUp && !e164) return fail("phone", phoneMessage(phoneStatus(phone)) ?? auth.errors.phone);
+    if (isSignUp && birthState !== "adult") return fail("birthDate", birthDateMessage(birthState));
+    if (isSignUp && !country) return fail("country", signupCopy.countryRequired);
     // Sign-in only needs a password: the policy applies to new passwords, never to an existing account.
     if (!isSignUp && !values.password) return fail("password", auth.errors.passwordRequired);
     if (isSignUp && !passwordMeetsPolicy(values.password)) return fail("password", auth.errors.passwordRules);
@@ -224,13 +248,22 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
           // No leftover session (or half-finished password change) can ride along: only the answer to THIS request opens the space.
           clearTokens();
           cancelPasswordChange();
+          cancelAdultConsent();
           if (isSignUp) {
-            await authApi.register({ nickname, email, phone: e164 ?? undefined, password: values.password, lang: language, consentVersion: CONSENT_VERSION });
-          } else if ((await authApi.login(email, values.password)) === "password_change_required") {
-            // A clinician created this account: the temporary password opens only the password change, not the app.
-            // No session exists yet, so there is nothing to wait for or prefetch.
-            router.push(ROUTES.changePassword);
-            return;
+            await authApi.register({ nickname, email, phone: e164 ?? undefined, password: values.password, lang: language, consentVersion: CONSENT_VERSION, birthDate, country });
+          } else {
+            const outcome = await authApi.login(email, values.password);
+            if (outcome === "password_change_required") {
+              // A clinician created this account: the temporary password opens only the password change, not the app.
+              // No session exists yet, so there is nothing to wait for or prefetch.
+              router.push(ROUTES.changePassword);
+              return;
+            }
+            if (outcome === "adult_consent_required") {
+              // An adult account confirms itself first (family access ends there). No session exists yet.
+              router.push(ROUTES.adultConsent);
+              return;
+            }
           }
           // Navigate only once the session is really established.
           if (!hasValidSession()) throw new Error("session-not-established");
@@ -250,7 +283,9 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   };
 
   const phoneState = phoneStatus(phone);
-  const country = countryName(phone.country, language);
+  const phoneCountry = countryName(phone.country, language);
+  const birthDateMessage = (state: BirthDateStatus) =>
+    state === "minor" ? signupCopy.under18 : state === "empty" ? signupCopy.birthDateRequired : signupCopy.birthDateInvalid;
   const phoneMessage = (state: ReturnType<typeof phoneStatus>) =>
     state === "tooShort" ? auth.errors.phoneTooShort : state === "tooLong" ? auth.errors.phoneTooLong : state === "invalid" ? auth.errors.phone : null;
   const passwordsMatch = values.confirmPassword.length > 0 && values.password === values.confirmPassword;
@@ -259,6 +294,13 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
   const fieldError = (field: FieldName) => {
     if (errorField === field) return error;
     if (!isSignUp) return null;
+    // A minor is told at once (before submitting); other birth date problems once the field has been left.
+    if (field === "birthDate") {
+      if (birthState === "minor" && birthYearReady(birthDate)) return signupCopy.under18;
+      if (!touched.birthDate || birthState === "adult") return null;
+      return birthState === "empty" ? signupCopy.birthDateRequired : signupCopy.birthDateInvalid;
+    }
+    if (field === "country") return touched.country && !country ? signupCopy.countryRequired : null;
     if (field === "phone" && touched.phone) return phoneState === "empty" ? auth.errors.phone : phoneMessage(phoneState);
     if (field === "confirmPassword" && values.confirmPassword.length > 0 && !passwordsMatch && (touched.confirmPassword || values.confirmPassword.length >= values.password.length)) {
       return auth.errors.confirmPassword;
@@ -436,10 +478,66 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
                   className="mt-1.5 flex items-center gap-1.5 overflow-hidden text-[0.8125rem] leading-5 text-teal-700"
                 >
                   <Check className="size-3.5 shrink-0" strokeWidth={2.5} aria-hidden />
-                  {auth.phoneValid.replace("{country}", country)}
+                  {auth.phoneValid.replace("{country}", phoneCountry)}
                 </motion.p>
               )}
             </AnimatePresence>
+          </motion.div>
+        )}
+
+        {isSignUp && (
+          <motion.div variants={fadeUp(0, 8)}>
+            <FormField id="auth-birth-date" label={signupCopy.birthDate} error={fieldError("birthDate")} hint={signupCopy.birthDateHint}>
+              <IconInput
+                id="auth-birth-date"
+                icon={CalendarDays}
+                type="date"
+                dir="ltr"
+                max={today}
+                value={birthDate}
+                onChange={(e) => {
+                  setBirthDate(e.target.value);
+                  if (errorField === "birthDate") { setError(""); setErrorField(null); }
+                }}
+                onBlur={() => touch("birthDate")}
+                autoComplete="bday"
+                invalid={!!fieldError("birthDate")}
+                // IconInput adds the error id itself while the field is invalid.
+                aria-describedby="auth-birth-date-hint"
+              />
+            </FormField>
+            {fieldError("birthDate") === signupCopy.under18 && (
+              <p className="mt-1.5 text-[0.8125rem] leading-5 text-ink-soft">
+                {signupCopy.under18Guide}{" "}
+                <Link href={ROUTES.familyRegister} className={LINK_CLASS}>{signupCopy.under18Link}</Link>
+              </p>
+            )}
+          </motion.div>
+        )}
+
+        {isSignUp && (
+          <motion.div variants={fadeUp(0, 8)}>
+            <FormField id="auth-country" label={signupCopy.country} error={fieldError("country")}>
+              <select
+                id="auth-country"
+                name="country"
+                value={country}
+                onChange={(e) => {
+                  setCountry(e.target.value);
+                  if (errorField === "country") { setError(""); setErrorField(null); }
+                }}
+                onBlur={() => touch("country")}
+                autoComplete="country"
+                aria-invalid={!!fieldError("country") || undefined}
+                aria-describedby={fieldError("country") ? "auth-country-error" : undefined}
+                className={SELECT_CLASS}
+              >
+                <option value="">{signupCopy.countryChoose}</option>
+                {countries.map((option) => (
+                  <option key={option.code} value={option.code}>{option.name}</option>
+                ))}
+              </select>
+            </FormField>
           </motion.div>
         )}
 
@@ -567,12 +665,10 @@ export function AuthScreen({ mode }: { mode: AuthMode }) {
               />
               {auth.rememberMe}
             </label>
-            {/* The parent API has no password reset: no link to a flow that would not work for a parent account. */}
-            {!isParent && (
-              <Link href={ROUTES.forgotPassword} className={`${LINK_CLASS} inline-flex min-h-11 items-center text-[0.9375rem] font-medium`}>
-                {auth.forgotPassword}
-              </Link>
-            )}
+            {/* Each account type resets its password on its own pages: the parent's link opens the parent reset flow. */}
+            <Link href={isParent ? ROUTES.familyForgotPassword : ROUTES.forgotPassword} className={`${LINK_CLASS} inline-flex min-h-11 items-center text-[0.9375rem] font-medium`}>
+              {auth.forgotPassword}
+            </Link>
           </motion.div>
         )}
 

@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Bell, LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { Bell, Download, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import { EmptyState, ErrorState, GlassCard, Skeleton } from "@/components/patient/ui/primitives";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { VerifyToUseNotice } from "@/components/auth/EmailVerificationBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -15,7 +16,7 @@ import { useReminderPrefs } from "@/hooks/patient/useNotifications";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { usePatientCopy } from "@/hooks/usePatientCopy";
 import { ApiError } from "@/lib/api/client";
-import { profileApi, type JournalShareLevel } from "@/lib/api/patient";
+import { accountApi, profileApi, type JournalShareLevel } from "@/lib/api/patient";
 import type { Consent } from "@/lib/api/patient-types";
 import { fill } from "@/lib/i18n/patient";
 import { formatDay } from "@/lib/patient/format";
@@ -251,15 +252,12 @@ function ConsentCard({ consent }: { consent: Consent }) {
               ))}
             </div>
           </div>
-          <Row id={`${consent.assignmentId}-alerts`} label={s.alerts} hint={s.alertsBody}>
-            <Switch id={`${consent.assignmentId}-alerts`} checked={Boolean(consent.safetyAlertsConsentAt)} disabled={busy} onCheckedChange={(checked) => void apply({ safetyAlertsConsent: checked })} />
-          </Row>
         </div>
       )}
       {consent.reconfirm?.pending && !confirmed && (
         <div className="mt-3 rounded-xl bg-teal-50/70 p-3">
           <p className="text-sm font-medium text-ink">{s.reconfirm.bannerTitle}</p>
-          <p className="mt-0.5 text-xs text-ink-soft">{s.reconfirm.bannerBody}</p>
+          <p className="mt-0.5 text-xs text-ink-soft">{consent.reconfirm?.required ? s.reconfirm.pausedBody : s.reconfirm.bannerBody}</p>
           <Button
             className="mt-2"
             size="sm"
@@ -348,6 +346,118 @@ export function PrivacySection() {
         <ul className="space-y-3">{consents.data.map((consent) => <ConsentCard key={consent.assignmentId} consent={consent} />)}</ul>
       )}
       <OrientationConsentCard />
+    </Section>
+  );
+}
+
+/**
+ * Privacy: the patient's own export (a JSON file, 3 an hour) and the account closure. Closing ends the session through the
+ * same sign-out as everywhere else. A wrong password is 400 INVALID_PASSWORD (a 401 would start a session refresh).
+ */
+export function DataSection() {
+  const copy = usePatientCopy();
+  const s = copy.settings.data;
+  const { signOut } = usePatient();
+  const [exporting, setExporting] = useState(false);
+  const [exportState, setExportState] = useState<"idle" | "limited" | "error" | "unverified">("idle");
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteState, setDeleteState] = useState<"idle" | "wrongPassword" | "minor" | "limited" | "error">("idle");
+
+  async function download() {
+    setExporting(true);
+    setExportState("idle");
+    try {
+      const blob = await accountApi.exportData();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "synq-export.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      setExportState(error instanceof ApiError && error.code === "EMAIL_NOT_VERIFIED" ? "unverified" : error instanceof ApiError && error.status === 429 ? "limited" : "error");
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function remove(event: React.FormEvent) {
+    event.preventDefault();
+    if (!password || deleting) return;
+    setDeleting(true);
+    setDeleteState("idle");
+    try {
+      await accountApi.deleteAccount(password);
+    } catch (error) {
+      setPassword("");
+      setDeleteState(
+        error instanceof ApiError && error.code === "INVALID_PASSWORD" ? "wrongPassword"
+          : error instanceof ApiError && error.code === "MINOR_ACCOUNT" ? "minor"
+          : error instanceof ApiError && error.status === 429 ? "limited"
+          : "error",
+      );
+      setDeleting(false);
+      return;
+    }
+    // The account is closed on the server: leave the app whatever the logout answers (never re-enable the form).
+    setPassword("");
+    await signOut({ force: true });
+  }
+
+  const deleteMessage = deleteState === "wrongPassword" ? s.wrongPassword : deleteState === "minor" ? s.deleteMinor : deleteState === "limited" ? s.limited : s.deleteError;
+
+  return (
+    <Section icon={<Download className="size-[1.125rem]" aria-hidden />} title={s.title}>
+      <div className="space-y-5">
+        <div>
+          <p className="text-sm text-ink">{s.exportTitle}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{s.exportBody}</p>
+          <Button className="mt-3" variant="outline" disabled={exporting} onClick={() => void download()}>
+            {exporting && <LogoSpinner size={18} />}
+            {s.exportAction}
+          </Button>
+          {(exportState === "limited" || exportState === "error") && <p role="alert" className="mt-2 text-xs text-rose-700">{exportState === "limited" ? s.exportLimited : s.exportError}</p>}
+          {exportState === "unverified" && <VerifyToUseNotice audience="patient" />}
+        </div>
+
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-4">
+          <p className="text-sm text-rose-800">{s.deleteTitle}</p>
+          <p className="mt-1 text-xs leading-relaxed text-ink-soft">{s.deleteBody}</p>
+          {!open ? (
+            <Button className="mt-3" variant="destructive" onClick={() => setOpen(true)}>{s.deleteTitle}</Button>
+          ) : (
+            <form onSubmit={remove} noValidate className="mt-3 space-y-3">
+              <div>
+                <label htmlFor="delete-password" className="mb-1.5 block text-sm font-medium text-ink">{s.passwordLabel}</label>
+                <Input
+                  id="delete-password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => { setPassword(event.target.value); setDeleteState("idle"); }}
+                  aria-invalid={deleteState === "wrongPassword"}
+                  aria-describedby="delete-password-hint"
+                  disabled={deleting}
+                  className="field-soft px-4"
+                />
+                <p id="delete-password-hint" className="mt-1 text-xs text-muted-foreground">{s.passwordHint}</p>
+              </div>
+              {deleteState !== "idle" && <p role="alert" className="text-xs text-rose-700">{deleteMessage}</p>}
+              <div className="flex flex-wrap gap-2">
+                <Button type="submit" variant="destructive" disabled={!password || deleting}>
+                  {deleting && <LogoSpinner size={18} />}
+                  {s.deleteAction}
+                </Button>
+                <Button type="button" variant="outline" disabled={deleting} onClick={() => { setOpen(false); setPassword(""); setDeleteState("idle"); }}>{s.cancel}</Button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
     </Section>
   );
 }

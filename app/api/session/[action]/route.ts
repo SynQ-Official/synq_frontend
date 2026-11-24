@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Same-origin session gateway: `/api/session/{login,register,refresh,logout,change-password,accept-invitation}`.
+ * Same-origin session gateway: `/api/session/{login,register,refresh,logout,change-password,accept-invitation,adult-consent}`.
  * The browser sends credentials here; the Nest API's tokens come back split in two: the short-lived access token
  * in the JSON body (kept in memory by the client) and the refresh token in an HttpOnly cookie it cannot read.
  */
@@ -31,7 +31,7 @@ function sameOrigin(request: Request) {
  * (Redis/edge KV) if the app runs on several instances.
  */
 const WINDOW_MS = 5 * 60_000;
-const LIMITS: Record<string, number> = { login: 10, register: 10, refresh: 60, "change-password": 10, "accept-invitation": 10 };
+const LIMITS: Record<string, number> = { login: 10, register: 10, refresh: 60, "change-password": 10, "accept-invitation": 10, "adult-consent": 10 };
 const hits = new Map<string, { count: number; resetAt: number }>();
 
 function retryAfter(request: Request, action: string): number {
@@ -99,6 +99,15 @@ export async function POST(request: Request, context: { params: Promise<{ action
       const issued = session(payload);
       // A success that carries no session is a contract break, never a quiet success.
       return issued ? json(issued.body, 200, issued.cookie) : json({ message: "The SynQ API answered without a session." }, 502);
+    }
+
+    // Accepting an adult account's consent ends in a session too; a two-factor challenge (no session) goes back as is, like login.
+    if (action === "adult-consent") {
+      const input = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const { res, payload } = await call(request, "/auth/login/adult-consent", input);
+      if (!res.ok) return json(payload ?? { message: "Request failed" }, res.status);
+      const issued = session(payload);
+      return issued ? json(issued.body, 200, issued.cookie) : json(unwrap(payload) ?? {}, 200);
     }
 
     if (action === "refresh") {

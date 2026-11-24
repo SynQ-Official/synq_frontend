@@ -23,7 +23,7 @@ export function stopAllSpeech() {
 function ensureLangStop() {
   if (stopListenerAttached || typeof window === "undefined") return;
   stopListenerAttached = true;
-  window.addEventListener("vitamind-language-change", stopAllSpeech);
+  window.addEventListener("synq-language-change", stopAllSpeech);
 }
 
 function pickVoice(voices: SpeechSynthesisVoice[], bcp47: string) {

@@ -77,6 +77,8 @@ export function useConversation(assignmentId: string | null) {
     assignmentId ? `care:messages:${assignmentId}` : null,
     async (signal) => {
       const answer = await careApi.messages(assignmentId as string, signal);
+      // Reading the thread marked the clinician's messages read on the server: the Care tab's count is stale now.
+      invalidatePatientData(UNREAD_KEY);
       return { notice: answer.monitoringNotice, messages: answer.data };
     },
     { staleMs: 5_000 },
@@ -98,6 +100,29 @@ export function useConversation(assignmentId: string | null) {
     };
   }, [assignmentId]);
   return resource;
+}
+
+const UNREAD_KEY = "care:unread";
+
+/**
+ * How many care-team messages wait unread, for the badge on the Care tab. `enabled` is false for a patient without a
+ * clinician (nothing is read). The live stream refreshes it (`LiveUpdates`); it is also read again when the tab regains focus.
+ */
+export function useUnreadCare(enabled: boolean): number {
+  const resource = usePatientResource<number>(enabled ? UNREAD_KEY : null, async (signal) => (await careApi.unreadMessages(signal)).data.unread, { staleMs: 30_000 });
+  const refreshRef = useRef(resource.refresh);
+  useEffect(() => {
+    refreshRef.current = resource.refresh;
+  });
+  useEffect(() => {
+    if (!enabled) return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refreshRef.current();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [enabled]);
+  return enabled ? resource.data ?? 0 : 0;
 }
 
 /** Sends one message at a time; the thread is read again afterwards so it shows exactly what the API stored. */
@@ -133,7 +158,29 @@ export function useConsents() {
     invalidatePatientData("clinical:consents");
   }, []);
 
-  return { ...resource, update, reconfirm };
+  /** Ends the relationship (or cancels the patient's request). The thread and the list both change, so both refresh. */
+  const endCare = useCallback(async (assignmentId: string, reason?: string) => {
+    await clinicalApi.endCare(assignmentId, reason);
+    invalidatePatientData("clinical:consents");
+    invalidatePatientData("care");
+  }, []);
+
+  return { ...resource, update, reconfirm, endCare };
+}
+
+/** Asks a clinician (by e-mail) to follow the patient. The answer is always neutral, so there is nothing to refresh. */
+export function useRequestCare() {
+  const [sending, setSending] = useState(false);
+  const request = useCallback(async (clinicianEmail: string) => {
+    setSending(true);
+    try {
+      await clinicalApi.requestCare(clinicianEmail);
+      invalidatePatientData("clinical:consents");
+    } finally {
+      setSending(false);
+    }
+  }, []);
+  return { request, sending };
 }
 
 /** The consent to orientation and follow-up on file; accepting or withdrawing it updates the screen. */

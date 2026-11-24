@@ -8,7 +8,7 @@ type AudioContextType = {
 };
 
 const AudioContext = createContext<AudioContextType | null>(null);
-const STORAGE_KEY = "vitamind-diagnostic-sound";
+const STORAGE_KEY = "synq-diagnostic-sound";
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const [isSoundEnabled, setIsSoundEnabledState] = useState(true);

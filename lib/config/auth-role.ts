@@ -13,11 +13,12 @@ export const parseRole = (value: string | null | undefined): AuthRole | null => 
 
 /**
  * Where each role may be sent after signing in: internal paths inside its OWN area only (no open redirect, no landing
- * in the other role's app). The portal's public pages (register, the legacy sign-in alias) are excluded: they would loop.
+ * in the other role's app). The portal's public pages (register, password reset, e-mail verification, the legacy
+ * sign-in alias) are excluded: they are not destinations after sign-in, and some would loop.
  */
 const ALLOWED: Record<AuthRole, RegExp> = {
   patient: /^\/dashboard(?:[/?]|$)/,
-  parent: /^\/family(?!\/(?:sign-in|register)(?:[/?]|$))(?:[/?]|$)/,
+  parent: /^\/family(?!\/(?:sign-in|register|forgot-password|reset-password|verify-email)(?:[/?]|$))(?:[/?]|$)/,
 };
 const HOME: Record<AuthRole, string> = { patient: ROUTES.dashboard, parent: FAMILY_HOME };
 

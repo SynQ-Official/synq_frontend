@@ -11,10 +11,14 @@ import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { NotificationBell } from "@/components/patient/shell/NotificationBell";
 import { SosButton } from "@/components/patient/sos/SosButton";
+import { EmailVerificationBanner } from "@/components/auth/EmailVerificationBanner";
 import { HelpNow } from "@/components/help/HelpNow";
 import { isActive, navFor, PATIENT_NAV } from "@/components/patient/shell/nav";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAmbiences } from "@/hooks/patient/useAmbiences";
+import { useUnreadCare } from "@/hooks/patient/useCare";
+import { fill } from "@/lib/i18n/patient";
+import { unreadBadge } from "@/lib/patient/messages";
 import { usePatient } from "@/hooks/patient/usePatient";
 import { useCalmTrack } from "@/hooks/useCalmTrack";
 import { profileApi } from "@/lib/api/patient";
@@ -25,7 +29,7 @@ import { cn } from "@/lib/utils";
 const MotionLink = motion.create(Link);
 
 /** One rail item: an icon tile and its label. The current page carries the pill, which glides between items. */
-function RailLink({ href, active, calm, tour, variants, icon: Icon, tile = true, children }: {
+function RailLink({ href, active, calm, tour, variants, icon: Icon, tile = true, badge, children }: {
   href: string;
   active: boolean;
   calm: boolean;
@@ -34,6 +38,8 @@ function RailLink({ href, active, calm, tour, variants, icon: Icon, tile = true,
   icon: LucideIcon;
   /** The tile sits behind the main screens' icons; utility links keep the bare icon. */
   tile?: boolean;
+  /** A count on the link (unread messages): `label` is what is drawn, `sr` what a screen reader says. */
+  badge?: { label: string; sr: string } | null;
   children: ReactNode;
 }) {
   return (
@@ -52,6 +58,12 @@ function RailLink({ href, active, calm, tour, variants, icon: Icon, tile = true,
         <Icon className="size-[1.0625rem] shrink-0" />
       </span>
       <span className="min-w-0 flex-1 truncate">{children}</span>
+      {badge && (
+        <span className="ms-auto inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-teal-700 px-1.5 text-[0.625rem] font-semibold leading-none text-white">
+          <span aria-hidden>{badge.label}</span>
+          <span className="sr-only">{badge.sr}</span>
+        </span>
+      )}
     </MotionLink>
   );
 }
@@ -73,6 +85,8 @@ export function PatientRail() {
   const [signingOut, setSigningOut] = useState(false);
   const { available: hasAmbiences } = useAmbiences();
   const screens = navFor(profile.track, hasAmbiences, profile.careTeam.hasClinician).filter((item) => item.group !== "account");
+  const unread = useUnreadCare(profile.careTeam.hasClinician);
+  const unreadLabel = unreadBadge(unread);
   const settings = PATIENT_NAV.find((item) => item.key === "settings")!;
 
   // Items arrive one after another from the rail's edge (a plain fade on the calm tracks; still under reduced motion).
@@ -110,7 +124,16 @@ export function PatientRail() {
               </motion.p>
               <div className="space-y-0.5">
                 {rows.map(({ key, href, icon }) => (
-                  <RailLink key={key} href={href} icon={icon} active={isActive(pathname, href)} calm={calm} tour={`nav-${key}`} variants={item}>
+                  <RailLink
+                    key={key}
+                    href={href}
+                    icon={icon}
+                    active={isActive(pathname, href)}
+                    calm={calm}
+                    tour={`nav-${key}`}
+                    variants={item}
+                    badge={key === "care" && unreadLabel ? { label: unreadLabel, sr: fill(copy.shell.unread, { n: unread }) } : null}
+                  >
                     {copy.shell.nav[key]}
                   </RailLink>
                 ))}
@@ -191,6 +214,13 @@ function RailProfile() {
   );
 }
 
+/** A soft notice in the main column while the account's e-mail is unconfirmed: the app stays fully usable meanwhile. */
+export function PatientVerificationNotice() {
+  const { profile } = usePatient();
+  if (profile.isEmailVerified !== false) return null;
+  return <EmailVerificationBanner audience="patient" />;
+}
+
 /** Desktop only: notifications sit at the top end of the content, not in the rail. */
 export function PatientTopActions() {
   return (
@@ -238,6 +268,8 @@ export function PatientTabBar() {
   const calm = useCalmTrack();
   const { profile } = usePatient();
   const tabs = navFor(profile.track, false, profile.careTeam.hasClinician).filter((item) => item.key !== "settings");
+  const unread = useUnreadCare(profile.careTeam.hasClinician);
+  const unreadLabel = unreadBadge(unread);
 
   return (
     <nav
@@ -275,6 +307,12 @@ export function PatientTabBar() {
               )}
             >
               <Icon className={center ? "size-5" : "size-[1.15rem]"} aria-hidden />
+              {key === "care" && unreadLabel && (
+                <span className="absolute -end-2.5 -top-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-teal-700 px-1 text-[0.5625rem] font-semibold leading-none text-white">
+                  <span aria-hidden>{unreadLabel}</span>
+                  <span className="sr-only">{fill(copy.shell.unread, { n: unread })}</span>
+                </span>
+              )}
             </span>
             <span className="relative max-w-full truncate px-0.5">{copy.shell.nav[key]}</span>
           </Link>

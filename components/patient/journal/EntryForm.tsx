@@ -25,7 +25,7 @@ export type EntryValues = {
 
 export const EMPTY_ENTRY: EntryValues = { content: "", moodScore: null, goalScore: null, emotions: [], isPrivate: false };
 
-const DRAFT_KEY = "vitamind_journal_draft";
+const DRAFT_KEY = "synq_journal_draft";
 
 /**
  * A half-written entry survives a refresh or a dropped connection (text only, on this device). It is stored under

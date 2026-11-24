@@ -30,15 +30,12 @@ export type AccessCopy = {
     title: string;
     body: string;
     noPatientData: string;
-    fields: { name: string; role: string; clinic: string; country: string; city: string; email: string; phone: string; optional: string; message: string };
-    roles: readonly string[];
-    countries: { AE: string; TN: string };
-    choose: string;
-    consent: string;
-    submit: string;
-    pendingEmail: string;
-    sent: string;
-    subject: string;
+    /** The primary action: opens the clinician app's sign-up (its address comes from NEXT_PUBLIC_PSY_URL). */
+    signUp: string;
+    /** Screen-reader cue for the sign-up link, which opens in a new tab. */
+    opensNewTab: string;
+    /** Shown instead of the action while the clinician app's address is not configured. */
+    signUpUnavailable: string;
     /** The panel beside the form (same shape as the patient auth panel), written for clinics. */
     brand: { eyebrow: string; titleA: string; titleB: string; body: string; points: readonly string[]; quote: string };
   };
@@ -83,17 +80,11 @@ const en: AccessCopy = {
     seoDescription: "Licensed clinicians in the UAE and Tunisia can apply to use SynQ with their patients. The SynQ team reviews every application and replies by e-mail.",
     eyebrow: "For clinicians",
     title: "Apply as a clinician",
-    body: "For licensed clinicians in the UAE and Tunisia. Send your details: the SynQ team checks every application and replies by e-mail. Your workspace opens only once it is approved.",
+    body: "For licensed clinicians in the UAE and Tunisia. You create your account in the clinician app, and your licence is verified before you can see patients.",
     noPatientData: "Please don't include any patient information.",
-    fields: { name: "Full name", role: "Role", clinic: "Clinic", country: "Country", city: "City", email: "Work e-mail", phone: "Phone", optional: "optional", message: "Message" },
-    roles: ["Psychiatrist", "Psychologist", "Therapist", "Nurse", "Clinic manager", "Other"],
-    countries: { AE: "United Arab Emirates", TN: "Tunisia" },
-    choose: "Choose…",
-    consent: "I agree to be contacted by SynQ about this request.",
-    submit: "Send request",
-    pendingEmail: "Clinic contact e-mail",
-    sent: "Your e-mail app is opening with your request. Send it from there.",
-    subject: "Clinic access request",
+    opensNewTab: "(opens in a new tab)",
+    signUp: "Create your clinician account",
+    signUpUnavailable: "Clinician sign-up is not open yet. Please check back soon.",
     brand: {
       eyebrow: "For clinicians",
       titleA: "Follow patients",
@@ -144,17 +135,11 @@ const ar: AccessCopy = {
     seoDescription: "يمكن للمختصين المرخّصين في الإمارات وتونس التقدّم لاستخدام SynQ مع مرضاهم. يراجع فريق SynQ كل طلب ويرد بالبريد الإلكتروني.",
     eyebrow: "للمختصين",
     title: "قدّم طلب انضمام كمختص",
-    body: "للمختصين المرخّصين في الإمارات وتونس. أرسل بياناتك: يتحقق فريق SynQ من كل طلب ويرد عليك بالبريد الإلكتروني. ولا تُفتح مساحة عملك إلا بعد الموافقة.",
+    body: "للمختصين المرخّصين في الإمارات وتونس. تُنشئ حسابك في تطبيق المختصين، ويُتحقق من ترخيصك قبل أن تتمكن من رؤية المرضى.",
     noPatientData: "يرجى عدم ذكر أي معلومات عن المرضى.",
-    fields: { name: "الاسم الكامل", role: "الدور", clinic: "العيادة", country: "البلد", city: "المدينة", email: "بريد العمل", phone: "الهاتف", optional: "اختياري", message: "الرسالة" },
-    roles: ["طبيب نفسي", "أخصائي نفسي", "معالج", "ممرض", "مدير عيادة", "غير ذلك"],
-    countries: { AE: "الإمارات العربية المتحدة", TN: "تونس" },
-    choose: "اختر…",
-    consent: "أوافق على أن تتواصل معي SynQ بشأن هذا الطلب.",
-    submit: "إرسال الطلب",
-    pendingEmail: "بريد التواصل مع العيادات",
-    sent: "يفتح تطبيق البريد الآن بطلبك. أرسله من هناك.",
-    subject: "طلب انضمام عيادة",
+    opensNewTab: "(يُفتح في نافذة جديدة)",
+    signUp: "إنشاء حساب الطبيب",
+    signUpUnavailable: "التسجيل للأطباء غير متاح بعد. يرجى التحقق لاحقاً.",
     brand: {
       eyebrow: "للمختصين",
       titleA: "تابع مرضاك",

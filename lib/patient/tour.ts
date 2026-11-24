@@ -52,7 +52,7 @@ export function resolveTourSteps(track: PatientTrack): TourStep[] {
 }
 
 // "Seen" is remembered per patient on this device (there is no backend flag for it).
-const TOUR_SEEN_KEY = "vitamind_tour_seen";
+const TOUR_SEEN_KEY = "synq_tour_seen";
 
 export function hasSeenTour(userId: string): boolean {
   try {

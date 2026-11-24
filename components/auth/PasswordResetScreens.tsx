@@ -10,7 +10,8 @@ import { FormField, IconInput } from "@/components/shared/FormField";
 import { LogoSpinner } from "@/components/shared/LogoLoader";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { passwordResetApi, resetFailure } from "@/lib/api/password-reset";
+import { passwordResetApi, resetFailure, type ResetAudience } from "@/lib/api/password-reset";
+import { signInHref } from "@/lib/config/auth-role";
 import { ROUTES } from "@/lib/config/routes";
 import { DURATION, EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -85,10 +86,19 @@ export function SubmitLabel({ pending, label, busy }: { pending: boolean; label:
   );
 }
 
-export function ForgotPasswordScreen() {
+/** Each account type has its own sign-in page and reset links; the patient values are the defaults, unchanged. */
+function accountLinks(audience: ResetAudience) {
+  return {
+    signIn: signInHref(audience),
+    forgot: audience === "parent" ? ROUTES.familyForgotPassword : ROUTES.forgotPassword,
+  };
+}
+
+export function ForgotPasswordScreen({ audience = "patient" }: { audience?: ResetAudience }) {
   const { language, dictionary } = useLanguage();
   const auth = dictionary.auth;
   const copy = passwordResetCopy[language].forgot;
+  const { signIn: signInPath } = accountLinks(audience);
   const [email, setEmail] = useState("");
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +116,7 @@ export function ForgotPasswordScreen() {
     setPending(true);
     setError(null);
     try {
-      await passwordResetApi.forgot(address);
+      await passwordResetApi.forgot(address, audience);
       setSentTo(address);
       setWait(RESEND_AFTER_SECONDS);
     } catch (reason) {
@@ -148,7 +158,7 @@ export function ForgotPasswordScreen() {
             <Button type="button" variant="outline" size="lg" disabled={wait > 0 || pending} onClick={() => void send(sentTo)} className="min-h-12">
               {wait > 0 ? copy.resendIn(wait) : copy.resend}
             </Button>
-            <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
+            <Link href={signInPath} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
               <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
               {copy.back}
             </Link>
@@ -185,7 +195,7 @@ export function ForgotPasswordScreen() {
               <SubmitLabel pending={pending} label={copy.submit} busy={dictionary.auth.processing} />
             </Button>
           </form>
-          <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
+          <Link href={signInPath} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center gap-2 text-[0.9375rem]`}>
             <ArrowLeft className="h-4 w-4 rtl:-scale-x-100" aria-hidden />
             {copy.back}
           </Link>
@@ -199,10 +209,11 @@ export function ForgotPasswordScreen() {
  * `token` is null when the server already found the link unusable (missing, malformed, expired, used). The token
  * travelled in the URL once; it is removed from the address bar so it is not kept in the history.
  */
-export function ResetPasswordScreen({ token }: { token: string | null }) {
+export function ResetPasswordScreen({ token, audience = "patient" }: { token: string | null; audience?: ResetAudience }) {
   const { language, dictionary } = useLanguage();
   const auth = dictionary.auth;
   const copy = passwordResetCopy[language].reset;
+  const { signIn: signInPath, forgot: forgotPath } = accountLinks(audience);
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -233,7 +244,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
 
     setPending(true);
     try {
-      await passwordResetApi.reset(token, password, confirmation);
+      await passwordResetApi.reset(token, password, confirmation, audience);
       setPassword("");
       setConfirmation("");
       setDone(true);
@@ -260,7 +271,7 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
           {copy.doneBody}
         </p>
         <Button asChild variant="auth" size="lg" className="min-h-14">
-          <Link href={`${ROUTES.signIn}?role=patient`}>{copy.goToSignIn}</Link>
+          <Link href={signInPath}>{copy.goToSignIn}</Link>
         </Button>
       </Card>
     );
@@ -280,9 +291,9 @@ export function ResetPasswordScreen({ token }: { token: string | null }) {
           {copy.invalidBody}
         </p>
         <Button asChild variant="auth" size="lg" className="min-h-14">
-          <Link href={ROUTES.forgotPassword}>{copy.requestNew}</Link>
+          <Link href={forgotPath}>{copy.requestNew}</Link>
         </Button>
-        <Link href={`${ROUTES.signIn}?role=patient`} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
+        <Link href={signInPath} className={`${LINK_CLASS} inline-flex min-h-11 items-center justify-center text-[0.9375rem]`}>
           {copy.backToSignIn}
         </Link>
       </Card>

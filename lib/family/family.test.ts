@@ -36,6 +36,7 @@ describe("family portal logic", () => {
     expect(errorKind(new ApiError("x", 409, "FAMILY_LINK_STALE"))).toBe("stale");
     expect(errorKind(new ApiError("x", 404))).toBe("not-found");
     expect(errorKind(new ApiError("x", 0))).toBe("network");
+    expect(errorKind(new ApiError("x", 403, "EMAIL_NOT_VERIFIED"))).toBe("unverified");
     expect(errorKind(new Error("x"))).toBe("other");
   });
 });

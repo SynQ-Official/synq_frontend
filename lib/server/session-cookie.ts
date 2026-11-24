@@ -4,7 +4,9 @@
  * production, SameSite=Strict keeps other sites from riding it, and the narrow Path means it is sent to the
  * session routes and nowhere else.
  */
-export const REFRESH_COOKIE = "vitamind_rt";
+export const REFRESH_COOKIE = "synq_rt";
+// legacy: read until 2026-12-22, then remove
+export const LEGACY_REFRESH_COOKIE = "vitamind_rt";
 const COOKIE_PATH = "/api/session";
 const FALLBACK_TTL_S = 7 * 24 * 60 * 60;
 
@@ -25,7 +27,9 @@ function ttlSeconds(token: string): number {
  * A presence-only hint that a session exists, readable by `proxy.ts` on /dashboard and /welcome (the refresh cookie's
  * narrow Path never reaches those routes). It carries no token and grants nothing: the API still decides.
  */
-export const SESSION_HINT_COOKIE = "vitamind_s";
+export const SESSION_HINT_COOKIE = "synq_s";
+// legacy: read until 2026-12-22, then remove
+export const LEGACY_SESSION_HINT_COOKIE = "vitamind_s";
 
 /** The parent portal's equivalent: set by `/api/family-session/*` beside its own refresh cookie, read by `proxy.ts` on /family. */
 export const FAMILY_HINT_COOKIE = "synq_family_s";
@@ -33,22 +37,34 @@ export const FAMILY_HINT_COOKIE = "synq_family_s";
 const attrs = (path: string, maxAge: number, sameSite: "Strict" | "Lax") =>
   [`Path=${path}`, `Max-Age=${maxAge}`, "HttpOnly", `SameSite=${sameSite}`, secure() ? "Secure" : ""].filter(Boolean).join("; ");
 
+/** Expiring headers for the legacy cookies, so a browser that still holds them drops them on the next session response. */
+const legacyExpired = () => [`${LEGACY_REFRESH_COOKIE}=; ${attrs(COOKIE_PATH, 0, "Strict")}`, `${LEGACY_SESSION_HINT_COOKIE}=; ${attrs("/", 0, "Lax")}`];
+
 /** `Set-Cookie` values that open a session: the refresh token and the presence hint (same lifetime). */
 export function refreshCookie(token: string): string[] {
   const ttl = ttlSeconds(token);
-  return [`${REFRESH_COOKIE}=${token}; ${attrs(COOKIE_PATH, ttl, "Strict")}`, `${SESSION_HINT_COOKIE}=1; ${attrs("/", ttl, "Lax")}`];
+  return [
+    `${REFRESH_COOKIE}=${token}; ${attrs(COOKIE_PATH, ttl, "Strict")}`,
+    `${SESSION_HINT_COOKIE}=1; ${attrs("/", ttl, "Lax")}`,
+    ...legacyExpired(),
+  ];
 }
 
 /** `Set-Cookie` values that end it. */
 export function clearedCookie(): string[] {
-  return [`${REFRESH_COOKIE}=; ${attrs(COOKIE_PATH, 0, "Strict")}`, `${SESSION_HINT_COOKIE}=; ${attrs("/", 0, "Lax")}`];
+  return [`${REFRESH_COOKIE}=; ${attrs(COOKIE_PATH, 0, "Strict")}`, `${SESSION_HINT_COOKIE}=; ${attrs("/", 0, "Lax")}`, ...legacyExpired()];
 }
 
-export function readRefreshCookie(request: Request): string | null {
+function cookieValue(request: Request, name: string): string | null {
   const header = request.headers.get("cookie") ?? "";
   for (const part of header.split(";")) {
-    const [name, ...value] = part.trim().split("=");
-    if (name === REFRESH_COOKIE) return value.join("=") || null;
+    const [key, ...value] = part.trim().split("=");
+    if (key === name) return value.join("=") || null;
   }
   return null;
+}
+
+/** The refresh token from the new cookie, else from the legacy one (until it is retired). */
+export function readRefreshCookie(request: Request): string | null {
+  return cookieValue(request, REFRESH_COOKIE) ?? cookieValue(request, LEGACY_REFRESH_COOKIE);
 }

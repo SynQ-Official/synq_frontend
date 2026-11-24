@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Lock, Mail, MailWarning, TriangleAlert, UserRound } from "lucide-react";
+import { CalendarDays, CheckCircle2, Lock, Mail, MailWarning, TriangleAlert, UserRound } from "lucide-react";
 import { LocaleLink as Link } from "@/components/shared/LocaleLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react";
@@ -12,10 +12,12 @@ import { FormField, IconInput } from "@/components/shared/FormField";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { authApi, hasPendingPasswordChange } from "@/lib/api/auth";
+import { authApi, hasPendingAdultConsent, hasPendingPasswordChange } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
+import { birthDateFailure, birthDateStatus, birthYearReady, type BirthDateStatus } from "@/lib/auth/birth-date";
 import { ROUTES } from "@/lib/config/routes";
 import { accountAccessCopy } from "@/lib/i18n/accountAccess";
+import { accountVerificationCopy } from "@/lib/i18n/accountVerification";
 import { LEGAL } from "@/config/legal";
 import { legalUi } from "@/lib/i18n/legal";
 import { CONSENT_VERSION } from "@/lib/patient/consent";
@@ -222,12 +224,118 @@ export function ChangePasswordScreen() {
   );
 }
 
+/**
+ * /auth/adult-consent: an adult account's own consent before its first session. Like the password change, the proof
+ * (`adult_consent_token`) lives in memory only; a reload or direct visit lands on "please sign in again".
+ */
+export function AdultConsentScreen() {
+  const router = useRouter();
+  const { language, dictionary } = useLanguage();
+  const auth = dictionary.auth;
+  const copy = accountAccessCopy[language].adultConsent;
+  const held = useSyncExternalStore(noSubscription, hasPendingAdultConsent, () => null);
+  const [accepted, setAccepted] = useState(false);
+  const [problem, setProblem] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    router.prefetch(ROUTES.dashboard);
+  }, [router]);
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (pending) return; // one request at a time: a double tap must not spend the single-use token twice
+    setError(null);
+    if (!accepted) {
+      setProblem(copy.mustConfirm);
+      document.getElementById("adult-consent-accept")?.focus();
+      return;
+    }
+    setProblem(null);
+    setPending(true);
+    try {
+      await authApi.acceptAdultConsent();
+      prefetchPatientHome();
+      // The dashboard's gate sends the patient on from there (welcome, or Mira when no track is set yet).
+      router.replace(ROUTES.dashboard);
+    } catch (reason) {
+      if (reason instanceof ApiError && reason.status === 401) setExpired(true);
+      else setError(failureMessage(reason, auth.errors));
+      setPending(false);
+    }
+  };
+
+  if (held === null) return <AuthLoading />;
+
+  if (!held || expired) {
+    return (
+      <Card
+        title={copy.expiredTitle}
+        icon={
+          <Badge tone="gold">
+            <TriangleAlert className="size-6" />
+          </Badge>
+        }
+      >
+        <p role="alert" className="text-[1.0625rem] leading-7 text-ink-soft">
+          {copy.expiredBody}
+        </p>
+        <Button asChild variant="auth" size="lg" className="min-h-14">
+          <Link href={`${ROUTES.signIn}?role=patient`}>{copy.backToSignIn}</Link>
+        </Button>
+      </Card>
+    );
+  }
+
+  return (
+    <Card title={copy.title}>
+      <p className="text-[1.0625rem] leading-7 text-ink-soft">{copy.intro}</p>
+      <ul className="list-disc space-y-2 ps-5 text-[0.9375rem] leading-6 text-ink-soft marker:text-teal-600">
+        {copy.points.map((point) => (
+          <li key={point}>{point}</li>
+        ))}
+      </ul>
+      {error && <Alert>{error}</Alert>}
+      <form onSubmit={submit} noValidate className="flex flex-col gap-5" aria-busy={pending}>
+        <div>
+          <label htmlFor="adult-consent-accept" className="flex cursor-pointer select-none items-start gap-3 text-[0.9375rem] leading-6 text-ink">
+            <Checkbox
+              id="adult-consent-accept"
+              name="accept"
+              checked={accepted}
+              disabled={pending}
+              aria-invalid={problem !== null}
+              aria-describedby={problem ? "adult-consent-error" : undefined}
+              onCheckedChange={(state) => {
+                setAccepted(state === true);
+                setProblem(null);
+              }}
+              className={CHECKBOX_CLASS}
+            />
+            <span>{copy.checkbox}</span>
+          </label>
+          {problem && (
+            <p id="adult-consent-error" role="alert" className="mt-2 text-[0.8125rem] leading-5 text-rose-700">
+              {problem}
+            </p>
+          )}
+        </div>
+        <Button type="submit" variant="auth" size="lg" disabled={pending} aria-busy={pending} className="group min-h-14 hover:shadow-[0_18px_36px_-14px_rgb(17_76_97/0.65)]">
+          <SubmitLabel pending={pending} label={copy.submit} busy={auth.processing} />
+        </Button>
+      </form>
+    </Card>
+  );
+}
+
 export type InvitationView =
   | { state: "usable"; email: string; token: string }
   | { state: "invalid" }
   | { state: "unavailable" };
 
-type InvitationField = "nickname" | PasswordField | "terms";
+type InvitationField = "nickname" | "birthDate" | PasswordField | "terms";
 
 /**
  * /invitation: the page a clinician's invitation e-mail leads to. The link was checked on the server before this
@@ -239,7 +347,12 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
   const { language, dictionary } = useLanguage();
   const auth = dictionary.auth;
   const copy = accountAccessCopy[language].invitation;
+  const signupCopy = accountVerificationCopy[language].signup;
   const [nickname, setNickname] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  // UTC calendar day, the same day the server counts age on.
+  const today = new Date().toISOString().slice(0, 10);
+  const birthState = birthDateStatus(birthDate, today);
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
   // Not pre-ticked. Only Mira needs it, and Mira asks again when it is missing, so it is optional here.
@@ -264,6 +377,11 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
     document.getElementById(id === "nickname" ? "invite-nickname" : id === "terms" ? "invite-terms" : `invite-${id}`)?.focus();
   };
 
+  const birthDateMessage = (state: BirthDateStatus) =>
+    state === "minor" ? signupCopy.under18 : state === "empty" ? signupCopy.birthDateRequired : signupCopy.birthDateInvalid;
+  // A minor is told at once, as the patient types; other problems are shown once the field has been submitted.
+  const birthDateError = birthYearReady(birthDate) && birthState === "minor" ? signupCopy.under18 : field?.id === "birthDate" ? field.message : null;
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (pending || view.state !== "usable") return;
@@ -271,6 +389,7 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
     setField(null);
     const name = nickname.trim();
     if (name.length < NICKNAME_MIN || name.length > NICKNAME_MAX) return fail("nickname", auth.errors.nicknameLength);
+    if (birthState !== "adult") return fail("birthDate", birthDateMessage(birthState));
     const found = checkPasswords(password, confirmation, copy.mismatch, auth.errors);
     if (found) return fail(found.field, found.message);
     if (!agreed) return fail("terms", legalUi[language].agreeError);
@@ -281,6 +400,7 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
         token: view.token,
         email: view.email,
         nickname: name,
+        birthDate,
         password,
         confirmPassword: confirmation,
         lang: language,
@@ -294,6 +414,9 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
     } catch (reason) {
       setPending(false);
       if (reason instanceof ApiError) {
+        // The API's own birth-date refusals land on the birth date field, whatever the status they travel with.
+        const birthFailure = birthDateFailure(reason.code);
+        if (birthFailure) return fail("birthDate", birthFailure === "minor" ? signupCopy.under18 : signupCopy.birthDateInvalid);
         if (reason.code === "INVITATION_INVALID") return setUnusable(true);
         if (reason.code === "ACCOUNT_EXISTS") return setExisting(true);
         if (reason.code === "NICKNAME_TAKEN") return fail("nickname", copy.nicknameTaken);
@@ -384,6 +507,32 @@ export function InvitationScreen({ view }: { view: InvitationView }) {
             disabled={pending}
           />
         </FormField>
+        <div>
+          <FormField id="invite-birthDate" label={signupCopy.birthDate} error={birthDateError} hint={signupCopy.birthDateHint}>
+            <IconInput
+              id="invite-birthDate"
+              icon={CalendarDays}
+              type="date"
+              dir="ltr"
+              max={today}
+              value={birthDate}
+              onChange={(event) => {
+                setBirthDate(event.target.value);
+                if (field?.id === "birthDate") setField(null);
+              }}
+              autoComplete="bday"
+              invalid={!!birthDateError}
+              disabled={pending}
+              aria-describedby="invite-birthDate-hint"
+            />
+          </FormField>
+          {birthDateError === signupCopy.under18 && (
+            <p className="mt-1.5 text-[0.8125rem] leading-5 text-ink-soft">
+              {signupCopy.under18Guide}{" "}
+              <Link href={ROUTES.familyRegister} className={LINK_CLASS}>{signupCopy.under18Link}</Link>
+            </p>
+          )}
+        </div>
         <PasswordPair
           idPrefix="invite"
           label={auth.password}

@@ -8,7 +8,8 @@ export function getVoiceApiUrl() {
 }
 
 export function getVoiceApiKey() {
-  return process.env.ELEVENLABS_API_KEY || process.env.VITAMIND_VOICE || process.env.SynQ_voice;
+  // legacy: VITAMIND_VOICE is read until 2026-12-22, then remove
+  return process.env.ELEVENLABS_API_KEY || process.env.SYNQ_VOICE || process.env.VITAMIND_VOICE || process.env.SynQ_voice;
 }
 
 export function getVoiceId(language?: VoiceLanguage) {

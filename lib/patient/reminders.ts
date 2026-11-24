@@ -10,9 +10,9 @@ import { patientKey } from "@/lib/api/tokens";
 
 export type ReminderPrefs = { enabled: boolean; time: string; browser: boolean };
 
-const PREFS_KEY = "vitamind_reminder_prefs";
-const READ_KEY = "vitamind_notifications_read";
-const CHANGE_EVENT = "vitamind-reminders-change";
+const PREFS_KEY = "synq_reminder_prefs";
+const READ_KEY = "synq_notifications_read";
+const CHANGE_EVENT = "synq-reminders-change";
 
 export const DEFAULT_REMINDER: ReminderPrefs = { enabled: true, time: "20:00", browser: false };
 

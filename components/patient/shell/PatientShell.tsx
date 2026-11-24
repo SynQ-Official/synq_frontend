@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { LuminaOrb, Skeleton } from "@/components/patient/ui/primitives";
 import { MotionConfig } from "framer-motion";
-import { PatientMobileStrip, PatientRail, PatientTabBar, PatientTopActions } from "@/components/patient/shell/PatientChrome";
+import { PatientMobileStrip, PatientRail, PatientTabBar, PatientTopActions, PatientVerificationNotice } from "@/components/patient/shell/PatientChrome";
 import { navFor } from "@/components/patient/shell/nav";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { LogoLoader } from "@/components/shared/LogoLoader";
@@ -138,6 +138,7 @@ export function PatientChrome({ children }: { children: ReactNode }) {
             <PatientMobileStrip />
             <main id="patient-main" className="mx-auto w-full max-w-[88rem] px-4 pb-28 pt-4 sm:px-6 lg:px-8 lg:pb-10 lg:pt-5">
               <PatientTopActions />
+              <PatientVerificationNotice />
               <SharingReconfirmGate />
               {children}
             </main>

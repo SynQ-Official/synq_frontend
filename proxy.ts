@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { FAMILY_HINT_COOKIE, SESSION_HINT_COOKIE } from "@/lib/server/session-cookie";
+import { FAMILY_HINT_COOKIE, LEGACY_SESSION_HINT_COOKIE, SESSION_HINT_COOKIE } from "@/lib/server/session-cookie";
 import { ROUTES } from "@/lib/config/routes";
 import { signInHref } from "@/lib/config/auth-role";
-import { LANGUAGE_STORAGE_KEY } from "@/lib/i18n/config";
+import { LANGUAGE_STORAGE_KEY, LEGACY_LANGUAGE_STORAGE_KEY } from "@/lib/i18n/config";
 import { AR_PREFIX, LANG_HEADER, followsSavedArabic, isLocalizedPath, localizedPath, splitLangPrefix } from "@/lib/i18n/routing";
 
-/** The parent portal's public pages: registration (and the legacy sign-in alias, which only redirects). */
-const FAMILY_PUBLIC = /^\/family\/(?:register|sign-in)(?:\/|$)/;
+/** The parent portal's public pages: registration, password reset and e-mail verification (and the legacy sign-in alias, which only redirects). */
+const FAMILY_PUBLIC = /^\/family\/(?:register|sign-in|forgot-password|reset-password|verify-email)(?:\/|$)/;
 
 const LANGUAGE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
@@ -14,7 +14,10 @@ const LANGUAGE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 function withLanguage(request: NextRequest, lang: "en" | "ar", rewriteTo?: URL) {
   const headers = new Headers(request.headers);
   headers.set(LANG_HEADER, lang);
-  return rewriteTo ? NextResponse.rewrite(rewriteTo, { request: { headers } }) : NextResponse.next({ request: { headers } });
+  const response = rewriteTo ? NextResponse.rewrite(rewriteTo, { request: { headers } }) : NextResponse.next({ request: { headers } });
+  // legacy: the pre-rename language cookie is expired as soon as the visitor is on a page that sets the new one (remove after 2026-12-22)
+  if (request.cookies.has(LEGACY_LANGUAGE_STORAGE_KEY)) response.cookies.set(LEGACY_LANGUAGE_STORAGE_KEY, "", { path: "/", maxAge: 0 });
+  return response;
 }
 
 /**
@@ -32,7 +35,8 @@ function localize(request: NextRequest) {
     response.cookies.set(LANGUAGE_STORAGE_KEY, "ar", { path: "/", maxAge: LANGUAGE_COOKIE_MAX_AGE, sameSite: "lax" });
     return response;
   }
-  const savedArabic = request.cookies.get(LANGUAGE_STORAGE_KEY)?.value === "ar";
+  // legacy: fall back to the pre-rename cookie until the visitor has a synq one (remove after 2026-12-22)
+  const savedArabic = (request.cookies.get(LANGUAGE_STORAGE_KEY) ?? request.cookies.get(LEGACY_LANGUAGE_STORAGE_KEY))?.value === "ar";
   if (savedArabic && followsSavedArabic(path, request.headers.get("referer"), request.nextUrl.origin)) {
     return NextResponse.redirect(new URL(localizedPath(path, "ar") + search, request.url));
   }
@@ -55,7 +59,7 @@ export function proxy(request: NextRequest) {
     if (FAMILY_PUBLIC.test(pathname) || request.cookies.has(FAMILY_HINT_COOKIE)) return NextResponse.next();
     return NextResponse.redirect(new URL(signInHref("parent", pathname + search), request.url));
   }
-  if (request.cookies.has(SESSION_HINT_COOKIE)) return NextResponse.next();
+  if (request.cookies.has(SESSION_HINT_COOKIE) || request.cookies.has(LEGACY_SESSION_HINT_COOKIE)) return NextResponse.next();
   const target = pathname.startsWith(ROUTES.dashboard) ? pathname + search : ROUTES.dashboard;
   const url = new URL(signInHref("patient", target), request.url);
   url.searchParams.set("from", "lumina");

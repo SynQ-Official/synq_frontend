@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
 import { sleep } from "@/lib/async";
 import { ApiError } from "@/lib/api/client";
-import { copy, LANGUAGE_STORAGE_KEY, normalizeLanguage, type Lang } from "@/lib/i18n/config";
+import { copy, LANGUAGE_STORAGE_KEY, LEGACY_LANGUAGE_STORAGE_KEY, normalizeLanguage, type Lang } from "@/lib/i18n/config";
 import { miraApi, ORIENTATION_COMPLETED, ORIENTATION_CONSENT_REQUIRED, TRACK_ASSIGNED_BY_CLINICIAN, type MiraStart } from "../lib/mira-api";
 import { typingDelay } from "../lib/pacing";
 import { assistantMessage, countOf, lastProgress, restoredMessages, uid } from "../lib/transcript";
@@ -20,7 +20,7 @@ type SessionOptions = { storageKey: string | null; lang: Lang; reconnectError: s
  */
 function preferredLanguage(fallback: Lang): Lang {
   try {
-    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? window.localStorage.getItem(LEGACY_LANGUAGE_STORAGE_KEY);
     return stored ? normalizeLanguage(stored) : fallback;
   } catch {
     return fallback;

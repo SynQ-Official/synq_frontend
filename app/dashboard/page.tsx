@@ -7,7 +7,7 @@ import { CheckinScheduleCard } from "@/components/patient/home/CheckinScheduleCa
 import { DayWelcome } from "@/components/patient/home/DayWelcome";
 import { ReadsBand } from "@/components/patient/home/ReadsBand";
 import { PlanCard, ProgressStrip, SignalsCard, TrendCard, WellbeingCard } from "@/components/patient/home/HomeCards";
-import { RecommendedExercises } from "@/components/patient/home/RecommendedExercises";
+import { LuminaHome } from "@/components/patient/lumina/LuminaHome";
 import { TourReplayButton } from "@/components/patient/tour/TourProvider";
 import { SparkCard } from "@/components/patient/home/SparkCard";
 import { CareTeamInvitationBanner, SharingReconfirmBanner } from "@/components/patient/consent/SharingReconfirm";
@@ -73,7 +73,8 @@ export default function HomePage() {
       {/* Reading follows the patient's own day, for the tracks that have a library. */}
       <ReadsBand />
 
-      <div className="mt-5 lg:mt-6"><Cell index={7}><RecommendedExercises /></Cell></div>
+      {/* Lumina's suggestions; the older exercise ranking only follows it when the server says NORMAL (never under SAFETY_YIELD). */}
+      <div className="mt-5 lg:mt-6"><Cell index={7}><LuminaHome /></Cell></div>
 
       {/* Small screens have no rail, so the way back into the tour sits here. */}
       <div className="mt-8 flex justify-center lg:hidden">

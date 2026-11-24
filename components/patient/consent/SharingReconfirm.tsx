@@ -27,7 +27,7 @@ function usePendingReconfirm() {
 export function SharingReconfirmBanner() {
   const { language } = useLanguage();
   const s = usePatientCopy().settings.privacy.reconfirm;
-  const { pending } = usePendingReconfirm();
+  const { pending, required } = usePendingReconfirm();
   if (pending.length === 0) return null;
   const due = pending.map((consent) => consent.reconfirm?.dueAt).filter(Boolean).sort()[0];
   return (
@@ -36,7 +36,11 @@ export function SharingReconfirmBanner() {
         <ShieldCheck className="mt-0.5 size-5 shrink-0 text-teal-700" aria-hidden />
         <div>
           <p className="text-sm  text-ink">{s.bannerTitle}</p>
-          <p className="text-sm text-ink-soft">{s.bannerBody}{due ? ` ${fill(s.dueNote, { date: formatDay(due as string, language) })}` : ""}</p>
+          {required.length > 0 ? (
+            <p className="text-sm text-ink-soft">{s.pausedBody}</p>
+          ) : (
+            <p className="text-sm text-ink-soft">{s.bannerBody}{due ? ` ${fill(s.dueNote, { date: formatDay(due as string, language) })}` : ""}</p>
+          )}
         </div>
       </div>
       <Button asChild size="sm" variant="outline">
@@ -133,6 +137,7 @@ export function SharingReconfirmGate() {
           <DialogTitle>{s.gateTitle}</DialogTitle>
           <DialogDescription>{s.gateBody}</DialogDescription>
         </DialogHeader>
+        <p className="text-sm text-ink-soft">{s.pausedBody}</p>
         <ul className="space-y-3">{required.map((consent) => <GateRow key={consent.assignmentId} consent={consent} />)}</ul>
         <Button asChild variant="outline" size="sm">
           <Link href={SETTINGS_PATH}>{s.gateReview}</Link>

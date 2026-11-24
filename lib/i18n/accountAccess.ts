@@ -18,6 +18,18 @@ type AccountAccessCopy = {
     expiredBody: string;
     backToSignIn: string;
   };
+  adultConsent: {
+    title: string;
+    intro: string;
+    points: string[];
+    checkbox: string;
+    /** Shown when the patient submits without ticking the box. */
+    mustConfirm: string;
+    submit: string;
+    expiredTitle: string;
+    expiredBody: string;
+    backToSignIn: string;
+  };
   invitation: {
     title: string;
     subtitle: string;
@@ -54,6 +66,23 @@ export const accountAccessCopy: Record<Lang, AccountAccessCopy> = {
       expiredBody: "For your safety this step expires after a few minutes. Sign in with your temporary password to continue.",
       backToSignIn: "Back to sign in",
     },
+    adultConsent: {
+      title: "Welcome to your adult account",
+      intro: "Your account is now for adults. Here is what changes:",
+      points: [
+        "You are now 18.",
+        "Family access to your account has ended automatically.",
+        "From now on only you decide what is shared with your care team.",
+        "You can review sharing in Settings > Privacy.",
+        "SynQ does not diagnose.",
+      ],
+      checkbox: "I understand and want to continue with my own account",
+      mustConfirm: "Please tick the box to confirm you understand before continuing.",
+      submit: "Continue to my account",
+      expiredTitle: "Please sign in again",
+      expiredBody: "For your safety this step expires after a few minutes. Sign in again to continue.",
+      backToSignIn: "Back to sign in",
+    },
     invitation: {
       title: "Create your private space",
       subtitle: "Your clinician invited you to SynQ. Set up your account to get started.",
@@ -85,6 +114,23 @@ export const accountAccessCopy: Record<Lang, AccountAccessCopy> = {
       rejected: "لم تُقبل كلمة المرور هذه. اختر كلمة مختلفة: لا يمكن أن تكون كلمة المرور المؤقتة.",
       expiredTitle: "يرجى تسجيل الدخول من جديد",
       expiredBody: "لأمانك، تنتهي صلاحية هذه الخطوة بعد دقائق قليلة. سجّل الدخول بكلمة المرور المؤقتة للمتابعة.",
+      backToSignIn: "العودة إلى تسجيل الدخول",
+    },
+    adultConsent: {
+      title: "مرحبًا بك في حسابك للبالغين",
+      intro: "حسابك الآن مخصص للبالغين. إليك ما يتغيّر:",
+      points: [
+        "أنت الآن في الثامنة عشرة من عمرك.",
+        "انتهى وصول العائلة إلى حسابك تلقائيًا.",
+        "من الآن فصاعدًا أنت وحدك من يقرر ما يُشارَك مع فريق رعايتك.",
+        "يمكنك مراجعة المشاركة في الإعدادات > الخصوصية.",
+        "SynQ لا يقدّم تشخيصًا.",
+      ],
+      checkbox: "فهمت، وأريد المتابعة بحسابي الخاص",
+      mustConfirm: "يُرجى تحديد المربع لتأكيد فهمك قبل المتابعة.",
+      submit: "المتابعة إلى حسابي",
+      expiredTitle: "يرجى تسجيل الدخول من جديد",
+      expiredBody: "لأمانك، تنتهي صلاحية هذه الخطوة بعد دقائق قليلة. سجّل الدخول من جديد للمتابعة.",
       backToSignIn: "العودة إلى تسجيل الدخول",
     },
     invitation: {

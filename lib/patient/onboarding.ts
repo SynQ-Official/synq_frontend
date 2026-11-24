@@ -1,4 +1,4 @@
-const WELCOME_SEEN_KEY = "vitamind_welcome_seen";
+const WELCOME_SEEN_KEY = "synq_welcome_seen";
 
 /** The immersive welcome is forced once per patient; after that they may leave the first conversation. */
 export function hasSeenWelcome(userId: string): boolean {
